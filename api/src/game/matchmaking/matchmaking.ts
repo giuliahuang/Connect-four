@@ -28,7 +28,6 @@ export const play = (socket: Socket, playerData: any) => {
 
 function match_make(mm_pool: Map<string, MatchingPlayer>) {
   if (mm_pool.size < 1) return
-  logger.info('test')
 
   //enabled down level iteration, look for better alternative
   for (const [A, p1] of mm_pool) {
