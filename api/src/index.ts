@@ -1,6 +1,7 @@
 import express from 'express'
 import logger from './logger/logger'
 import health from './routes/health'
+import gameplay from './routes/gameplay'
 import config from './config/config'
 import http from 'http'
 
@@ -24,6 +25,8 @@ app.use((req, res, next) => {
 })
 
 app.use('/health', health)
+
+app.use('/gameplay', gameplay)
 
 // Catch undefined endpoints
 app.use((req, res, next) => {
