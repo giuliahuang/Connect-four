@@ -10,24 +10,14 @@ const gameplayCheck = (req: Request, res: Response, next: NextFunction) => {
 
 class GameBoard {
 
-    private game_board:number[][];
-    private heights:number[]; //heights of columns
     private row = 6;
     private column = 7;
+    private game_board:number[][];
+    private heights:number[]; //heights of columns
 
     constructor(){
-        this.game_board = [];
-        this.heights = [];
-        for(var i:number=0; i<this.row;i++){
-            this.game_board[i] = [];
-            for(var j:number=0; j<this.column; j++){
-                this.game_board[i][j] = 0;
-            }
-        }
-
-        for(var i:number=0; i<this.column;i++){
-            this.heights[i] = 0;
-        }
+        this.game_board = Array.from(Array(this.row), _ => Array(this.column).fill(0));
+        this.heights = Array(this.column).fill(0);
     }
 
     public is_winner(col:number):boolean{
