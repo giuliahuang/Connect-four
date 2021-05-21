@@ -1,23 +1,31 @@
 import { Server as IOServer } from 'socket.io'
 import { Logger } from 'tslog'
 import freePortFinder from '../../utils/freePortFinder'
-import { MatchingPlayer } from '../matchmaking/MatchingPlayer'
+import { Player } from './Player'
+import { Match } from './Match'
 
 const logger = new Logger()
 
-export async function gameStart(p1: MatchingPlayer, p2: MatchingPlayer) {
+export async function gameStart(p1: Player, p2: Player) {
   const port = await freePortFinder()
-  let io
 
   if (port) {
-    io = new IOServer(port, { cors: { origin: "*" } })
+    const match = new Match(p1, p2)
+    const io = new IOServer(port, { cors: { origin: "*" } })
+
+    p1.ws.emit('matched', port)
+    p2.ws.emit('matched', port)
+
     io.on('connection', (socket) => {
-      logger.info(`Started a new match between ${p1.player} and ${p2.player}`)
+      logger.info(`Started a new match between ${p1.id} and ${p2.id}`)
       p1.ws = socket
       p2.ws = socket
 
       socket.on('move', (message) => {
-        //do something
+        if (match.addDot(message.col, message.player)) {
+          socket.broadcast.emit(`Player ${message.player} has won the match!`)
+          io.disconnectSockets()
+        }
       })
     })
   } else {

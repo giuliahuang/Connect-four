@@ -6,11 +6,17 @@
 </head>
 
 <body>
+  <!--Placeholder file for websocket testing purposes-->
   <button onclick="play()">Play</button>
   <h1></h1>
   <script src="socket.io/socket.io.js"></script>
   <script>
-    const socket = io()
+    let socket = io()
+
+    socket.on('matched', (port) => {
+      socket = io("http://localhost:"+port)
+    })
+
     const player = {
       id: Math.random() * 200,
       mmr: Math.random() * 50

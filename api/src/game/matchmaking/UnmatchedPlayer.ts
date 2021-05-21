@@ -1,5 +1,5 @@
-export type UnmatchedPlayer = {
-  id: string
-  time_joined: number
+export interface UnmatchedPlayer {
+  id: number
   mmr: number
+  timeJoined: number
 }
