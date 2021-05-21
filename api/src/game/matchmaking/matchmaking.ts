@@ -24,20 +24,20 @@ export const play = (socket: Socket, playerData: any) => {
   else
     socket.disconnect()
 
-  setInterval(() => match_make(mm_pool), POOL_POLL_INTERVAL)
+  setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
 }
 
-function match_make(mm_pool: Map<number, MatchingPlayer>) {
+function matchmake(mm_pool: Map<number, MatchingPlayer>) {
   if (mm_pool.size < 1) return
 
   //enabled down level iteration, look for better alternative
   for (const [A, p1] of mm_pool) {
     for (const [B, p2] of mm_pool) {
-      if (is_match(p1, p2)) {
+      if (isMatch(p1, p2)) {
         const a = mm_pool.get(A)
         const b = mm_pool.get(B)
         if (a && b) {
-          do_battle({ ...a }, { ...b })
+          matchmakingSuccess({ ...a }, { ...b })
           mm_pool.delete(A)
           mm_pool.delete(B)
         }
@@ -53,7 +53,7 @@ function match_make(mm_pool: Map<number, MatchingPlayer>) {
   }
 }
 
-function is_match(p1: MatchingPlayer, p2: MatchingPlayer): boolean {
+function isMatch(p1: MatchingPlayer, p2: MatchingPlayer): boolean {
   if (p1 !== p2 && Math.abs(p1.player.mmr - p2.player.mmr) < 500)
     if (Math.abs(p1.player.mmr - p2.player.mmr) < (10 * p1.player.timeJoined * 1000))
       return true
@@ -61,7 +61,7 @@ function is_match(p1: MatchingPlayer, p2: MatchingPlayer): boolean {
   return false
 }
 
-async function do_battle(p1: MatchingPlayer, p2: MatchingPlayer) {
+function matchmakingSuccess(p1: MatchingPlayer, p2: MatchingPlayer) {
   console.log(`${p1.player.id} was matched with ${p2.player.id}`)
   p1.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)
   p2.ws.send(`${p2.player.id} you were matched with ${p1.player.id}`)
