@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Matchmaking</title>
+</head>
+
+<body>
+  <button onclick="play()">Play</button>
+  <h1></h1>
+  <script src="socket.io/socket.io.js"></script>
+  <script>
+    const socket = io()
+    const player = {
+      id: Math.random() * 200,
+      mmr: Math.random() * 50
+    }
+    const play = () => {
+      socket.emit('play', player)
+    }
+  </script>
+</body>
+
+</html>
