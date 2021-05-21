@@ -8,83 +8,55 @@ const gameplayCheck = (req: Request, res: Response, next: NextFunction) => {
   return res.status(200).json({ message: 'GAMEPLAY PAGE' })
 }
 
+class GameBoard {
 
-
-
-class GamePlay {
     private game_board:number[][];
+    private heights:number[]; //heights of columns
+    private row = 6;
+    private column = 7;
 
     constructor(){
         this.game_board = [];
-
-        for(var i:number=0; i<3; i++){
-
-            this.game_board[i] = []
-            for(var j:number=0;j<13;j++)
-            this.game_board[i][j]=-9;
-        }
-
-        for(var i: number = 3; i<9; i++){
-            this.game_board[i] = []
-            for(var j: number = 0; j<3; j++){
-                this.game_board[i][j] = -9;
-            }
-
-            for(var j: number = 3; j<10; j++){
-                this.game_board[i][j] = -5;
-            }
-
-            for(var j: number = 10; j<13; j++){
-                this.game_board[i][j] = -9;
+        this.heights = [];
+        for(var i:number=0; i<this.row;i++){
+            this.game_board[i] = [];
+            for(var j:number=0; j<this.column; j++){
+                this.game_board[i][j] = 0;
             }
         }
 
-        for(var i:number=9; i<12; i++){
-
-            this.game_board[i] = []
-            for(var j:number=0;j<13;j++)
-            this.game_board[i][j]=-9;
+        for(var i:number=0; i<this.column;i++){
+            this.heights[i] = 0;
         }
     }
 
-    public is_empty(r:number,c:number):boolean{
-        return this.game_board[r+3][c+3]==0 ? true : false;
-    }
-
-    private is_winner(m:number[][],n:number):boolean{
-        var counter = 0;
-        for(var i:number=0; i<4;i++){
-            for(var j:number=0; j<7;j++){
-                if(m[i][j]!=n){
-                    counter=0;
-                }
-                else{
-                    counter++;
-                    process.stdout.write("COUNTER: "+ counter + "\n");
-                }
-                if(counter==4){
-                    return true;
-                }
-            }
-            counter=0;
+    public is_winner(col:number):boolean{
+        if(this.heights[col] == 0){
+            process.stdout.write("ERROR: Empty column\n")
+            return false;
         }
-        return false;
-    }
 
-    //input: color, column
-    //output: row
-    public add_dot(color:number,col:number):boolean{
-        if(!this.col_is_full(col)){
-            for(var i:number = 5; i>=0; i--){
-                if(this.game_board[i+3][col+3]==-5){
-                    this.game_board[i+3][col+3]=color;
+        var player = this.game_board[this.heights[col]-1][col];
 
-                    process.stdout.write("The player " + color + " added on (" + i + "," + col + ")!\n");
-                    var m:number[][] = this.find_matrix(i,col);
-                    this.print_matrix(m,4,7);
-                    if(this.is_winner(m,color)){
-                        process.stdout.write("The player " + color + " won the match !!\n")
-                    }
+        //vertical alignment
+        if(this.heights[col]>3
+            &&this.game_board[this.heights[col]-2][col] == player
+            &&this.game_board[this.heights[col]-3][col] == player
+            &&this.game_board[this.heights[col]-4][col] == player){
+                return true;
+        }
+
+        //dx = -1 -> diagonal alignment /
+        //dx = 0  -> horizontal alignment --
+        //dx = 1  -> diagonal alignment \
+        for(var dx=-1; dx<=1; dx++){
+            var nb = 0;
+            for(var dy=-1; dy<=1; dy+=2){
+                for(var x = this.heights[col]-1+dx*dy, y=col+dy; x>=0 && x<this.row&&y>=0&& y<this.column &&this.game_board[x][y]==player;nb++){
+                    x += dx*dy;
+                    y += dy;
+                }
+                if(nb>=3){
                     return true;
                 }
             }
@@ -92,96 +64,65 @@ class GamePlay {
         return false;
     }
 
-    public print_board(){
-        for(var i:number = 0; i<12; i++){
-            for(var j:number=0; j<13; j++){
+    public col_is_full(col:number):boolean{
+        return (this.heights[col]==this.row);
+    }
+
+    public add_dot(col:number,player:number){
+        this.game_board[this.heights[col]][col]=player;
+        this.heights[col]++;
+    }
+
+    public print_matrix(){
+        for(var i:number = 0; i<this.row; i++){
+            for(var j:number=0; j<this.column; j++){
                 process.stdout.write("" + this.game_board[i][j] + " ");
             }
             process.stdout.write("\n");
         }
         process.stdout.write("\n");
-        
     }
+}
 
-    public print_matrix(m:number[][],row:number,col:number){
-        for(var i:number = 0; i<row; i++){
-            for(var j:number=0; j<col; j++){
-                process.stdout.write("" + m[i][j] + " ");
-            }
-            process.stdout.write("\n");
-        }
-        process.stdout.write("\n");
-    }
+export class Game{
 
-    private find_matrix(row:number,col:number):number[][]{
-        //row1: horizontal
-        //row2: vertical
-        //row3: diagonal(left-right)
-        //row4: diagonal(right-left)
-        var m:number[][];
-        m = [];
-        var real_col = col+3;
-        var real_row = row+3;
-        var j = 0;
-        var k = 0;
+    private player1;
+    private player2;
+    private board:GameBoard;
+    
 
-        for(var i:number=0;i<4;i++){
-            m[i]=[];
-        }
-
-        //row1
-        for(var i:number = real_col-3; i<=real_col+3;i++){
-            m[j][k++]=this.game_board[real_row][i];
-        }
-        j++;
-        k=0;
-        //row2
-        for(var i:number = real_row-3; i<=real_row+3;i++){
-            m[j][k++]=this.game_board[i][real_col];
-        }
-        j++;
-        k=0;
-        //row3
-        var i = real_row-3;
-        var u = real_col-3;
-        while(i<=real_row+3){
-            m[j][k++]=this.game_board[i++][u++];
-        }
-        j++;
-        k=0;
-        //row4
-        var i = real_row-3;
-        var u = real_col+3;
-        while(i<=real_row+3){
-            m[j][k++]=this.game_board[i++][u--];
-        }
-        return m;
-    }
-
-    public col_is_full(col:number):boolean{
-        var real_col = col+3;
-        if(this.game_board[3][real_col]!=-5){
-            return true;
-        }
-        return false;
+    constructor(player1:number,player2:number){
+        this.board = new GameBoard;
+        this.player1 = player1;
+        this.player2 = player2;
+        var win = false;
     }
 
 }
 
+var game = new GameBoard;
 
-var game = new GamePlay;
+game.add_dot(0,1);
+game.add_dot(1,2);
+game.add_dot(1,1);
+game.add_dot(2,2);
+game.add_dot(2,2);
+game.add_dot(3,2);
+game.add_dot(3,2);
+game.add_dot(3,2);
+game.add_dot(3,1);
+game.add_dot(2,1);
+game.add_dot(3,1);
+game.add_dot(3,1);
 
-game.print_board();
+game.add_dot(4,2);
 
-game.add_dot(1,3);
+game.print_matrix();
 
-game.add_dot(2,4);
+process.stdout.write(""+game.is_winner(5));
 
-game.add_dot(1,3);
 
-game.add_dot(1,3);
-game.add_dot(1,3);
-
-game.print_board();
+process.stdout.write("FULL: "+game.col_is_full(2));
+process.stdout.write("FULL: "+game.col_is_full(3));
 
 export default { gameplayCheck }
