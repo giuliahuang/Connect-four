@@ -7,5 +7,3 @@ export async function main() {
   logger.info('App start')
   await setup()
 }
-
-main()
