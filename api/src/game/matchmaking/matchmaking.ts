@@ -2,6 +2,7 @@ import { MatchingPlayer } from "./MatchingPlayer"
 import { Logger } from 'tslog'
 import { UnmatchedPlayer } from "./UnmatchedPlayer"
 import { Socket } from 'socket.io'
+import { gameStart } from '../gameplay/gameplay'
 
 const logger = new Logger()
 const MAX_TIME_IN_QUEUE = 20000
@@ -10,7 +11,7 @@ const mm_pool = new Map<string, MatchingPlayer>()
 
 // playerdata should be provided by database
 export const play = (socket: Socket, playerData: any) => {
-  logger.info(`Client ${playerData.id} has requested to play`)
+  logger.info(`Client ${playerData.id} with ${playerData.mmr} mmr has requested to play`)
 
   const player: UnmatchedPlayer = {
     id: playerData.id,
@@ -54,7 +55,10 @@ function match_make(mm_pool: Map<string, MatchingPlayer>) {
 
 function is_match(p1: MatchingPlayer, p2: MatchingPlayer): boolean {
   // modify constant value 100
-  if (p1 !== p2 && Math.abs(p1.player.mmr - p2.player.mmr) < 100) return true
+  if (p1 !== p2 && Math.abs(p1.player.mmr - p2.player.mmr) < 500)
+    if (Math.abs(p1.player.mmr - p2.player.mmr) < (10 * p1.player.time_joined * 1000))
+      return true
+
   return false
 }
 
@@ -62,6 +66,5 @@ async function do_battle(p1: MatchingPlayer, p2: MatchingPlayer) {
   console.log(`${p1.player.id} was matched with ${p2.player.id}`)
   p1.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)
   p2.ws.send(`${p2.player.id} you were matched with ${p1.player.id}`)
-  p1.ws.disconnect()
-  p2.ws.disconnect()
+  gameStart(p1, p2)
 }
