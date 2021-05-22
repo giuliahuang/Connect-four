@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import * as user from '../users/User';
+import * as user from '../mongo/User';
 
 //signup
 const signup = (req: Request, res: Response, next: NextFunction) => {

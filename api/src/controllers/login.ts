@@ -1,7 +1,7 @@
 import passport = require('passport');
 import passportHTTP = require('passport-http');  // implements Basic and Digest authentication for HTTP (used for /login endpoint)
 import jsonwebtoken = require('jsonwebtoken');  // JWT generation
-import * as user from '../users/User';
+import * as user from '../mongo/User';
 
 declare global {
     namespace Express {

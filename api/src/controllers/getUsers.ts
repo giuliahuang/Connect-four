@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import * as user from '../users/User';
+import * as user from '../mongo/User';
 import jwt = require('express-jwt');            // JWT parsing middleware for express
 const result = require('dotenv').config()     // The dotenv module will load a file named ".env"
                                               // file and load all the key-value pairs into
