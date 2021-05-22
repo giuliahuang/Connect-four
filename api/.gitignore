@@ -79,3 +79,6 @@ typings/
 
 # Javascript files
 *.js
+
+# Ignore Mac system files
+.DS_store
