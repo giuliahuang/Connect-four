@@ -15,6 +15,8 @@ export function setupIOServer(httpServer: WebServer): IOServer {
     socket.on('play', (message) => {
       play(socket, message)
     })
+
+    socket.on('dm', () => { })
   })
 
   return io

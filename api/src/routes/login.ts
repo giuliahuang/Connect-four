@@ -1,7 +1,7 @@
 import express from 'express'
-import controller from '../controllers/login'
+import { login } from '../controllers/login'
 const router = express.Router()
 
-router.get("/login", controller.login)
+router.post("/", login)
 
 export = router

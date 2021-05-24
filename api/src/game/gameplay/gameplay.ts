@@ -1,7 +1,7 @@
 import { Server as IOServer } from 'socket.io'
 import { Logger } from 'tslog'
 import freePortFinder from '../../utils/freePortFinder'
-import { Player } from './Player'
+import { Player } from '../Player'
 import { Match } from './Match'
 
 const logger = new Logger()

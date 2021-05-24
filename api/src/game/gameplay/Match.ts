@@ -1,4 +1,4 @@
-import { Player } from './Player'
+import { Player } from '../Player'
 import { Logger } from 'tslog'
 
 const logger = new Logger()

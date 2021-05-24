@@ -1,30 +1,32 @@
 import mongoose = require('mongoose')
-import * as user from '../mongo/User'
+import * as user from '../models/User'
 import { Logger } from 'tslog'
+import crypto from 'crypto'
 
 const logger = new Logger()
 
 export async function setupDB() {
   // Connect to mongodb and launch the HTTP server trough Express
   try {
-    mongoose.set('useNewUrlParser', true)
-    mongoose.set('useFindAndModify', false)
-    mongoose.set('useCreateIndex', true)
-    mongoose.set('useUnifiedTopology', true)
-    const db = await mongoose.connect('mongodb://localhost:27017/connectfourdb')
+    const db = await mongoose.connect('mongodb://localhost:27017/connectfourdb', {
+      useNewUrlParser: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+      useUnifiedTopology: true
+    })
     logger.info("Connected to MongoDB")
-    const doc = await user.getModel().findOne({ mail: "admin@postmessages.it" })
+    const doc = await user.userModel.findOne({ mail: "admin@postmessages.it" })
     if (!doc) {
       logger.info("Creating admin user")
-
-      var u = user.newUser({
+      const salt = crypto.randomBytes(16).toString('hex')
+      const hmac = crypto.createHmac('sha512', salt)
+      const u = user.newUser({
         username: "admin",
-        mail: "admin@connectfour.it"
+        mail: "admin@connectfour.it",
+        roles: ['ADMIN'],
+        salt: salt,
+        digest: hmac.digest('hex')
       })
-      u.setAdmin()
-      u.setModerator()
-      u.setPassword("admin")
-      u.save()
     } else {
       logger.info("Admin user already exists")
     }

@@ -1,23 +1,28 @@
 import { Request, Response, NextFunction } from 'express'
-import * as user from '../mongo/User';
+import { setPassword, newUser, User } from '../models/User'
 
-//signup
-const signup = (req: Request, res: Response, next: NextFunction) => {
-
-    var u = user.newUser( req.body );
-    if( !req.body.password ) {
-      return next({ statusCode:404, error: true, errormessage: "Password field missing"} );
-    }
-    u.setPassword( req.body.password );
+export async function signup(req: Request, res: Response, next: NextFunction) {
+  if (!req.body.password) {
+    console.log('memes');
+    return next({ statusCode: 404, error: true, errormessage: "Password field missing" })
+  }
   
-    u.save().then( (data) => {
-      return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch( (reason) => {
-      if( reason.code === 11000 )
-        return next({statusCode:404, error:true, errormessage: "User already exists"} );
-      return next({ statusCode:404, error: true, errormessage: "DB error: "+reason.errmsg });
-    })
+  const u: User = {
+    username: req.body.username,
+    mail: req.body.mail,
+    salt: '',
+    digest: '',
+    roles: []
+  }
   
-  };
+  try {
+    const user = await newUser(u)
+    await setPassword(user, req.body.password)
+  } catch (err) {
+    if (err.code === 11000)
+      return next({ statusCode: 404, error: true, errormessage: "User already exists" })
+    return next({ statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg })
+  }
 
-export default { signup }
+  return res.status(200).json({ message: 'Success' })
+}

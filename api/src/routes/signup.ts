@@ -1,6 +1,7 @@
 import express from 'express'
-import controller from '../controllers/signup'
-const router = express.Router()
+import { signup } from '../controllers/signup'
 
-router.post('/users', controller.signup)
+const router = express.Router()
+router.post('/', express.urlencoded({ extended: true }), express.json(), signup)
+
 export = router
