@@ -1,8 +1,6 @@
 import { Schema, model } from 'mongoose'
-import { Logger } from 'tslog'
+import logger from '../logger/'
 import { User } from './User'
-
-const logger = new Logger()
 
 export interface Message {
   sender: string,
@@ -40,8 +38,8 @@ export async function storeNewMessage(message: Message) {
 export async function getMessageHistory(user1: User, user2: User): Promise<any> {
   return MessageModel.find({
     $or: [
-      { sender: user1.mail, recipient: user2.mail },
-      { sender: user2.mail, recipient: user1.mail }
+      { sender: user1.email, recipient: user2.email },
+      { sender: user2.email, recipient: user1.email }
     ]
   })
 }

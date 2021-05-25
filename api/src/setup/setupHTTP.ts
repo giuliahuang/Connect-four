@@ -1,8 +1,6 @@
 import { ExpressServer } from '../server/ExpressServer'
 import http from 'http'
-import { Logger } from 'tslog'
-
-const logger = new Logger()
+import logger from '../logger/'
 
 export function setupHTTP(expressApp: ExpressServer): http.Server {
   logger.info('Bootstrapping Express server')

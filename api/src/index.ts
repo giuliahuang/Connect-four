@@ -1,7 +1,5 @@
-import { Logger } from "tslog"
+import logger from './logger/'
 import { setup } from "./setup/setup"
-
-const logger = new Logger()
 
 async function main() {
   logger.info('App start')

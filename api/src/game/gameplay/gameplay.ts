@@ -1,10 +1,8 @@
 import { Server as IOServer } from 'socket.io'
-import { Logger } from 'tslog'
+import logger from '../../logger/'
 import freePortFinder from '../../utils/freePortFinder'
 import { Player } from '../Player'
 import { Match } from './Match'
-
-const logger = new Logger()
 
 export async function gameStart(p1: Player, p2: Player) {
   const port = await freePortFinder()

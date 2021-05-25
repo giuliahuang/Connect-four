@@ -8,6 +8,7 @@ import { requestLogger } from '../server/middleware/requestLogger'
 import passport from 'passport'
 import login from '../routes/login'
 import signup from '../routes/signup'
+import auth from '../routes/auth'
 
 export function setupExpressApp(): ExpressServer {
   const middlewareList: Middleware[] = [
@@ -32,6 +33,10 @@ export function setupExpressApp(): ExpressServer {
     {
       path: '/signup',
       router: signup
+    },
+    {
+      path: '/auth',
+      router: auth
     }
   ]
 

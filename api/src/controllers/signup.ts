@@ -1,28 +1,14 @@
-import { Request, Response, NextFunction } from 'express'
-import { setPassword, newUser, User } from '../models/User'
+import logger from '../logger/'
+import { newUser } from '../models/User'
+import { issueJWT } from '../utils/issueJWT'
 
-export async function signup(req: Request, res: Response, next: NextFunction) {
-  if (!req.body.password) {
-    console.log('memes');
-    return next({ statusCode: 404, error: true, errormessage: "Password field missing" })
-  }
-  
-  const u: User = {
-    username: req.body.username,
-    mail: req.body.mail,
-    salt: '',
-    digest: '',
-    roles: []
-  }
-  
+export async function signup(req, res) {
   try {
-    const user = await newUser(u)
-    await setPassword(user, req.body.password)
+    const user = await newUser(req.body?.username, req.body?.email, req.body?.password)
+    const jwt = issueJWT(user)
+    res.status(200).json({ message: 'User successfully created', token: jwt.token, expiresIn: jwt.expires })
   } catch (err) {
-    if (err.code === 11000)
-      return next({ statusCode: 404, error: true, errormessage: "User already exists" })
-    return next({ statusCode: 404, error: true, errormessage: "DB error: " + err.errmsg })
+    logger.error(err)
+    res.send({ error: true, message: 'An error has occurred' })
   }
-
-  return res.status(200).json({ message: 'Success' })
 }

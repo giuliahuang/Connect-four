@@ -1,10 +1,8 @@
 import Express from 'express'
 import type { Middleware } from './middleware/Middleware'
-import { Logger } from 'tslog'
+import logger from '../logger/'
 import { Route } from '../routes/Route'
 import { notFoundCatcher } from './middleware/notFoundCatcher'
-
-const logger = new Logger()
 
 export class ExpressServer {
   public app: Express.Express

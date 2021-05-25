@@ -1,9 +1,7 @@
 import { Server as WebServer } from 'http'
 import { Server as IOServer } from 'socket.io'
-import { Logger } from 'tslog'
+import logger from '../logger/'
 import { play } from '../game/matchmaking/matchmaking'
-
-const logger = new Logger()
 
 export function setupIOServer(httpServer: WebServer): IOServer {
   logger.info('Bootstrapping IO server')

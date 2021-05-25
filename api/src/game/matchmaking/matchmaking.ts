@@ -1,10 +1,9 @@
-import { Logger } from 'tslog'
+import logger from '../../logger/'
 import { Socket } from 'socket.io'
 import { gameStart } from '../gameplay/gameplay'
 import { UnmatchedPlayer } from "./UnmatchedPlayer"
 import { MatchingPlayer } from "./MatchingPlayer"
 
-const logger = new Logger()
 const MAX_TIME_IN_QUEUE = 20000
 const POOL_POLL_INTERVAL = 1000
 const mm_pool = new Map<number, MatchingPlayer>()
