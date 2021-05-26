@@ -1,8 +1,12 @@
 import { Server as IOServer } from 'socket.io'
 import logger from '../../logger/'
+import { decreaseMmr, increaseMmr } from '../../mongo/user'
 import freePortFinder from '../../utils/freePortFinder'
 import { Player } from '../Player'
 import { Match } from './Match'
+
+const MMR_INCR = 30
+const MMR_DECR = 25
 
 export async function gameStart(p1: Player, p2: Player) {
   const port = await freePortFinder()
@@ -19,9 +23,13 @@ export async function gameStart(p1: Player, p2: Player) {
       p1.ws = socket
       p2.ws = socket
 
-      socket.on('move', (message) => {
+      socket.on('dot', (message) => {
         if (match.addDot(message.col, message.player)) {
           socket.broadcast.emit(`Player ${message.player} has won the match!`)
+
+          //todo
+          increaseMmr('winning player', MMR_INCR)
+          decreaseMmr('losing player', MMR_DECR)
           io.disconnectSockets()
         }
       })

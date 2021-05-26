@@ -10,8 +10,8 @@ export function setupIOServer(httpServer: WebServer): IOServer {
   io.on('connection', (socket) => {
     logger.info(`A new socket connection has been established by ${socket.id}`)
 
-    socket.on('play', (message) => {
-      play(socket, message)
+    socket.on('play', (jwt) => {
+      play(socket, jwt)
     })
 
     socket.on('dm', () => { })

@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
 import logger from '../logger'
-import { UserModel } from '../models/User'
+import { getUserById } from '../mongo/user'
 import fs from 'fs'
 import passport from 'passport'
 
@@ -12,9 +12,7 @@ const options = {
 
 async function callback(payload, done) {
   try {
-    logger.info(payload)
-    const user = await UserModel.findOne({ _id: payload.sub })
-    logger.info(user)
+    const user = await getUserById(payload.sub)
     if (user) return done(null, user)
     else return done(null, false)
   } catch (err) {

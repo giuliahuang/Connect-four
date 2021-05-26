@@ -4,4 +4,4 @@ const router = express.Router()
 
 router.post('/', express.urlencoded({ extended: true }), express.json(), login)
 
-export = router
+export default router

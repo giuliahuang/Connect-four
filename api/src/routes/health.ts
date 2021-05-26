@@ -4,4 +4,4 @@ const router = express.Router()
 
 router.get('/', healthCheck)
 
-export = router
+export default router

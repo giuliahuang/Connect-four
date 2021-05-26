@@ -1,5 +1,5 @@
-import {Logger} from 'tslog'
-import {Request, Response, NextFunction} from 'express'
+import { Logger } from 'tslog'
+import { Request, Response, NextFunction } from 'express'
 
 const logger = new Logger()
 

@@ -1,5 +1,6 @@
+import { Player } from "../Player"
+
 export interface UnmatchedPlayer {
-  id: number
-  mmr: number
+  player: Player
   timeJoined: number
 }
