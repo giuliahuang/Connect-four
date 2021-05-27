@@ -1,12 +1,11 @@
+import fs from 'fs'
 import { Server as WebServer } from 'http'
 import { Server as IOServer } from 'socket.io'
+import jwtAuth from 'socketio-jwt-auth'
+import { jwtCallback } from '../config/passport'
+import { invitePlayer, inviteResponse } from '../game/friends/invite'
 import { play } from '../game/matchmaking/matchmaking'
 import logger from '../logger/'
-import { getUserById } from '../mongo/user'
-import extractTokenPayload from '../utils/extractTokenPayload'
-import jwtAuth from 'socketio-jwt-auth'
-import fs from 'fs'
-import { jwtCallback } from '../config/passport'
 
 export function setupIOServer(httpServer: WebServer): IOServer {
   logger.info('Bootstrapping IO server')
@@ -18,19 +17,18 @@ export function setupIOServer(httpServer: WebServer): IOServer {
 
   io.on('connection', socket => {
     logger.info(`A new socket connection has been established by ${socket.id}`)
+    socket.join(socket.request['user.email'])
 
     socket.on('play', () => {
       play(socket)
     })
 
-    socket.on('invite', message => {
-      const payload = extractTokenPayload(message.jwt)
-      if (payload) {
-        getUserById(payload.sub).then(user => {
-          if (user)
-            socket.to(message.invitee).emit('invite', user.username)
-        })
-      }
+    socket.on('invite', invitedUid => {
+      invitePlayer(socket, invitedUid)
+    })
+
+    socket.on('inviteResponse', (hasAccepted: boolean, inviterEmail: string) => {
+      inviteResponse(socket, hasAccepted, inviterEmail)
     })
 
     socket.on('dm', ({ message, dest }) => {
