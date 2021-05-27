@@ -1,9 +1,22 @@
-import { Player } from '../Player'
 import { Logger } from 'tslog'
+import { decreaseMmr, increaseMmr } from '../../mongo/user'
+import { Player } from '../Player'
 
 const logger = new Logger()
 const rows = 6
 const columns = 7
+const MMR_INCR = 30
+const MMR_DECR = 25
+
+interface MoveResult {
+  accepted: boolean,
+  matchResult: MatchResult | undefined
+}
+
+interface MatchResult {
+  winner: Player,
+  loser: Player
+}
 
 export class Match {
   public readonly player1: Player
@@ -55,13 +68,35 @@ export class Match {
     return (this.heights[col] == rows)
   }
 
-  public addDot(col: number, player: Player): boolean {
+  public addDot(col: number, player: Player): MoveResult {
+    let res: MoveResult = {
+      accepted: false,
+      matchResult: undefined
+    }
+
     if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
       this.game_board[this.heights[col]][col] = player.id
       this.heights[col]++
+      res.accepted = true
+
+      if (this.isWinner(col)) {
+        let loser: Player
+        if (player === this.player1) loser = this.player2
+        else loser = this.player1
+        res.matchResult = {
+          winner: player,
+          loser: loser
+        }
+
+        this.endGame(res.matchResult)
+      }
       this.p1Turn = !this.p1Turn
-      return this.isWinner(col)
     }
-    return false
+    return res
+  }
+
+  private endGame(res: MatchResult) {
+    increaseMmr(res.winner.id, MMR_INCR)
+    decreaseMmr(res.loser.id, MMR_DECR)
   }
 }

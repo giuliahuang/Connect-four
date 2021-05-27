@@ -3,6 +3,7 @@ import logger from '../logger'
 import { getUserById } from '../mongo/user'
 import fs from 'fs'
 import passport from 'passport'
+import { Payload } from '../utils/issueJWT'
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -10,7 +11,7 @@ const options = {
   algorithms: ['RS256']
 }
 
-async function callback(payload, done) {
+export async function jwtCallback(payload: Payload, done) {
   try {
     const user = await getUserById(payload.sub)
     if (user) return done(null, user)
@@ -21,6 +22,6 @@ async function callback(payload, done) {
   }
 }
 
-const strategy = new JWTStrategy(options, callback)
+const strategy = new JWTStrategy(options, jwtCallback)
 
 passport.use(strategy)

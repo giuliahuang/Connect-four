@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Matchmaking</title>
+</head>
+
+<body>
+  <!--Placeholder file for websocket testing purposes-->
+  <button onclick="play()">Play</button>
+  <h1></h1>
+  <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"
+    integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh"
+    crossorigin="anonymous"></script>
+  <script>
+    let socket = io('http://localhost:5000', {
+      extraHeaders: {
+        'x-auth-token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGFmYzhjNjRjYmI0ODQ2NzQwMzEzZjkiLCJpYXQiOjE2MjIxMzMwNjU3MTYsImV4cCI6MTYyMjEzMzE1MjExNn0.WWUkmTTd6_cg81b7kLesL28OH5rLWhJvjreGzUOmwq4jeYXFCXt5UMGH_wWTupfV3ArIdEseRknvg-87Sx4m3v7GiviFs700LNuyUc_wRoUqZyimU8Iaw0VH2falWSluYChyL-EwlptlJlxUvHSzx5V7fTQX3FOnrzhOiOGHguwaxkM27wncsKclUuhrvX8TtDwLGQVNkeMlvhI6qZFC7ddMbjZAArAUPyb9OCQi8rF6C1kl6p3ydQp53V-vdmMQR2g3mrx3LPXiZQ5BNDHYz32A1Ae0EERjh4MNejLiXSsi-PLJm0cpJyiPw8ryUVdO-I0NHST_GBiLpezJFTBTMQ'
+      },
+      transportOptions: {
+        polling: {
+          extraHeaders: {
+            'x-auth-token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGFmYzhjNjRjYmI0ODQ2NzQwMzEzZjkiLCJpYXQiOjE2MjIxMzMwNjU3MTYsImV4cCI6MTYyMjEzMzE1MjExNn0.WWUkmTTd6_cg81b7kLesL28OH5rLWhJvjreGzUOmwq4jeYXFCXt5UMGH_wWTupfV3ArIdEseRknvg-87Sx4m3v7GiviFs700LNuyUc_wRoUqZyimU8Iaw0VH2falWSluYChyL-EwlptlJlxUvHSzx5V7fTQX3FOnrzhOiOGHguwaxkM27wncsKclUuhrvX8TtDwLGQVNkeMlvhI6qZFC7ddMbjZAArAUPyb9OCQi8rF6C1kl6p3ydQp53V-vdmMQR2g3mrx3LPXiZQ5BNDHYz32A1Ae0EERjh4MNejLiXSsi-PLJm0cpJyiPw8ryUVdO-I0NHST_GBiLpezJFTBTMQ'
+          }
+        }
+      },
+    })
+    socket.on('matched', (port) => {
+      socket = io("http://localhost:" + port)
+    })
+
+    const player = {
+      id: Math.random() * 200,
+      mmr: Math.random() * 50
+    }
+    const play = () => {
+      socket.emit('play', player)
+    }
+  </script>
+</body>
+
+</html>

@@ -1,38 +1,27 @@
-import logger from '../../logger/'
 import { Socket } from 'socket.io'
+import logger from '../../logger/'
+import User from '../../models/User'
 import { gameStart } from '../gameplay/gameplay'
-import { UnmatchedPlayer } from "./UnmatchedPlayer"
-import extractTokenPayload from '../../utils/extractTokenPayload'
 import { Player } from '../Player'
-import { getUserById } from '../../mongo/user'
+import { UnmatchedPlayer } from "./UnmatchedPlayer"
 
 const MAX_TIME_IN_QUEUE = 20000
 const POOL_POLL_INTERVAL = 1000
 const mm_pool = new Map<string, UnmatchedPlayer>()
 
-async function getPlayerData(socket: Socket, jwt: any): Promise<Player | undefined> {
-  const payload = extractTokenPayload(jwt)
-  if (payload) {
-    const user = await getUserById(payload.sub)
-    if (user) {
-      const player: Player = {
-        id: user._id,
-        mmr: user.mmr,
-        ws: socket
-      }
-      return player
-    }
+export async function play(socket: Socket) {
+  const user: User = socket.request['user']
+  const player: Player = {
+    id: user._id,
+    username: user.username,
+    mmr: user.mmr
   }
-  return undefined
-}
-
-export async function play(socket: Socket, jwt: any) {
-  const player = await getPlayerData(socket, jwt)
   if (player) {
-    logger.info(`Player: ${player.id} requested to play`)
+    logger.info(`Player: ${player.username} with ${player.mmr} mmr requested to play`)
     const unmatchedPlayer: UnmatchedPlayer = {
       player: player,
-      timeJoined: Date.now()
+      timeJoined: Date.now(),
+      ws: socket
     }
 
     if (!mm_pool.has(unmatchedPlayer.player.id))
@@ -61,8 +50,8 @@ function matchmake(mm_pool: Map<string, UnmatchedPlayer>) {
       } else {
         const b = mm_pool.get(B)
         if (b && Date.now() - b.timeJoined > MAX_TIME_IN_QUEUE) {
-          b.player.ws.send(`${b.player.id} didn't find a match`)
-          b.player.ws.disconnect()
+          b.ws.send(`${b.player.id} didn't find a match`)
+          b.ws.disconnect()
           mm_pool.delete(B)
         }
       }
@@ -79,7 +68,7 @@ function isMatch(p1: UnmatchedPlayer, p2: UnmatchedPlayer): boolean {
 
 function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
   console.log(`${p1.player.id} was matched with ${p2.player.id}`)
-  p1.player.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)
-  p2.player.ws.send(`${p2.player.id} you were matched with ${p1.player.id}`)
-  gameStart(p1.player, p2.player)
+  p1.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)
+  p2.ws.send(`${p2.player.id} you were matched with ${p1.player.id}`)
+  gameStart(p1, p2)
 }
