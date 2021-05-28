@@ -1,14 +1,19 @@
+import passport from 'passport'
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
 import logger from '../logger'
 import { getUserById } from '../mongo/user'
-import fs from 'fs'
-import passport from 'passport'
+import { RSA_KEYS } from '../setup/setup'
 import { Payload } from '../utils/issueJWT'
 
-const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: fs.readFileSync('/workspace/api/src/config/id_rsa_pub.pem'),
-  algorithms: ['RS256']
+export async function passportConfig() {
+  const key = RSA_KEYS.PUB_KEY
+  const options = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: key,
+    algorithms: ['RS256']
+  }
+  const strategy = new JWTStrategy(options, jwtCallback)
+  passport.use(strategy)
 }
 
 export async function jwtCallback(payload: Payload, done) {
@@ -21,7 +26,3 @@ export async function jwtCallback(payload: Payload, done) {
     done(err)
   }
 }
-
-const strategy = new JWTStrategy(options, jwtCallback)
-
-passport.use(strategy)

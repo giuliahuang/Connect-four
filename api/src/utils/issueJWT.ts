@@ -1,14 +1,12 @@
 import jwt from 'jsonwebtoken'
-import fs from 'fs'
-
-const PRIV_KEY = fs.readFileSync('/workspace/api/src/config/id_rsa_priv.pem', 'utf8')
+import { RSA_KEYS } from '../setup/setup'
 
 export interface Payload {
   sub: string,
   iat: number
 }
 
-export function issueJWT(user) {
+export async function issueJWT(user): Promise<any> {
   const _id = user._id
   const expiresIn = '30d'
 
@@ -17,6 +15,7 @@ export function issueJWT(user) {
     iat: Date.now()
   }
 
+  const PRIV_KEY = RSA_KEYS.PRIV_KEY
   const signedToken = jwt.sign(payload, { key: PRIV_KEY, passphrase: 'secret' }, { expiresIn: expiresIn, algorithm: 'RS256' })
   return {
     token: `Bearer ${signedToken}`,

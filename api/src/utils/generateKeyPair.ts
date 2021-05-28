@@ -1,6 +1,4 @@
 import crypto from 'crypto'
-import fs from 'fs'
-import logger from '../logger'
 
 const RSA = 'rsa'
 const passphrase = 'secret'
@@ -18,15 +16,6 @@ const options = {
   }
 }
 
-function callback(err, publicKey, privateKey) {
-  if (err) {
-    logger.error(err)
-  } else {
-    fs.writeFileSync(`/workspace/api/src/config/id_rsa_pub.pem`, publicKey)
-    fs.writeFileSync(`/workspace/api/src/config/id_rsa_priv.pem`, privateKey)
-  }
-}
-
-export function generateKeyPair() {
-  crypto.generateKeyPair(RSA, options, callback)
+export function generateKeyPair(): crypto.KeyPairKeyObjectResult {
+  return crypto.generateKeyPairSync(RSA, options)
 }

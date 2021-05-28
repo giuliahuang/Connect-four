@@ -1,5 +1,3 @@
-import FriendRequest from "../game/friends/FriendRequest"
-
 export default interface User {
     readonly _id: string,
     username: string,
@@ -9,6 +7,6 @@ export default interface User {
     roles: string[],
     mmr: number,
     friends: string[],
-    sentFriendReqs: FriendRequest[],
-    receivedFriendReqs: FriendRequest[]
+    sentFriendReqs: string[],
+    receivedFriendReqs: string[]
 }

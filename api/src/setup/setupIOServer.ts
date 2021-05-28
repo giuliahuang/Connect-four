@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { Server as WebServer } from 'http'
 import { Server as IOServer } from 'socket.io'
 import jwtAuth from 'socketio-jwt-auth'
@@ -6,12 +5,14 @@ import { jwtCallback } from '../config/passport'
 import { invitePlayer, inviteResponse } from '../game/friends/invite'
 import { play } from '../game/matchmaking/matchmaking'
 import logger from '../logger/'
+import { RSA_KEYS } from './setup'
 
-export function setupIOServer(httpServer: WebServer): IOServer {
+export async function setupIOServer(httpServer: WebServer): Promise<IOServer> {
   logger.info('Bootstrapping IO server')
   const io = new IOServer(httpServer, { cors: { origin: "*" } })
+  const secretKey = RSA_KEYS.PUB_KEY
   io.use(jwtAuth.authenticate({
-    secret: fs.readFileSync('/workspace/api/src/config/id_rsa_pub.pem').toString(),
+    secret: secretKey,
     algorithm: 'RS256'
   }, jwtCallback))
 

@@ -1,12 +1,13 @@
+import RSA from '../config/RSA'
 import logger from '../logger'
 import { generateKeyPair } from '../utils/generateKeyPair'
-import fs from 'fs'
 
-export function setupRSA(): any {
+export function setupRSA(): RSA {
   logger.info('Generating RSA keys')
-  generateKeyPair()
+  const keys = generateKeyPair()
+
   return {
-    PUB_KEY: fs.readFileSync('/workspace/api/src/config/id_rsa_pub.pem', 'utf8'),
-    PRIV_KEY: fs.readFileSync('/workspace/api/src/config/id_rsa_priv.pem', 'utf8')
+    PUB_KEY: keys.publicKey.toString(),
+    PRIV_KEY: keys.privateKey.toString()
   }
 }
