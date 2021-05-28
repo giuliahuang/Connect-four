@@ -32,7 +32,15 @@ const userSchema = new mongoose.Schema<User>({
   friends: {
     type: [mongoose.SchemaTypes.ObjectId],
     required: true
-  }
+  },
+  sentFriendReqs: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    required: true
+  },
+  receivedFriendReqs: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    required: true
+  },
 })
 
 const UserModel = mongoose.model<User>('User', userSchema)
@@ -71,30 +79,65 @@ export async function newUser(username: string, email: string, password: string)
     salt: pwdObj.salt,
     hash: pwdObj.hash,
     mmr: 0,
-    friends: []
+    friends: [],
+    sentFriendReqs: [],
+    receivedFriendReqs: []
   })
   return await doc.save()
 }
 
-export async function addFriend(sourceEmail: string, requestedEmail: string): Promise<boolean> {
+export async function sendFriendRequest(sourceEmail: string, requestedEmail: string): Promise<boolean> {
   try {
-    const doc1 = await UserModel.findOne({ email: sourceEmail })
-    const doc2 = await UserModel.findOne({ email: requestedEmail })
+    const src = await UserModel.findOne({ email: sourceEmail })
+    const dest = await UserModel.findOne({ email: requestedEmail })
 
-    if (!doc1 || !doc2) {
-      logger.error('Users not found')
-      return false
-    } else {
-      if (doc1.friends.includes(doc2.id) && doc2.friends.includes(doc1.id))
-        return false
+    if (src && dest) {
+      if (!src.sentFriendReqs.includes(dest._id)) {
+        src.sentFriendReqs.push(dest._id)
+      }
+      if (!dest.receivedFriendReqs.includes(src._id))
+        dest.receivedFriendReqs.push(src._id)
 
-      doc1.friends.push(doc2.id)
-      doc2.friends.push(doc1.id)
-      await doc1.save()
-      await doc2.save()
+      src.update()
+      dest.update()
       return true
-
     }
+  } catch (err) {
+    logger.error(err)
+  }
+  return false
+}
+
+export async function respondFriendRequest(hasAccepted: boolean, sourceEmail: string, requestedEmail: string) {
+  try {
+    const src = await UserModel.findOne({ email: sourceEmail })
+    const dest = await UserModel.findOne({ email: requestedEmail })
+
+    if (src && dest) {
+      src.sentFriendReqs = src.sentFriendReqs.filter(id => id === dest._id)
+      dest.receivedFriendReqs = dest.receivedFriendReqs.filter(id => id === src._id)
+      src.update()
+      dest.update()
+      if (hasAccepted) {
+        addFriend(src, dest)
+      }
+    }
+  } catch (err) {
+    logger.error(err)
+  }
+}
+
+async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>): Promise<boolean> {
+  try {
+    if (user1.friends.includes(user2._id) && user2.friends.includes(user1._id))
+      return false
+
+    user1.friends.push(user2._id)
+    user2.friends.push(user1._id)
+    await user1.save()
+    await user1.save()
+    return true
+
   } catch (err) {
     logger.error(err)
     return false
@@ -163,6 +206,16 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
   } catch (err) {
     logger.error(err)
     return undefined
+  }
+}
+
+export async function getUsersByUsername(username: string): Promise<User[]> {
+  try {
+    const docs = await UserModel.find({ username: username })
+    return docs
+  } catch (err) {
+    logger.error(err)
+    return []
   }
 }
 

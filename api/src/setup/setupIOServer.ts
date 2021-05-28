@@ -18,6 +18,7 @@ export function setupIOServer(httpServer: WebServer): IOServer {
   io.on('connection', socket => {
     logger.info(`A new socket connection has been established by ${socket.id}`)
     socket.join(socket.request['user.email'])
+    socket.broadcast.emit('connected', socket)
 
     socket.on('play', () => {
       play(socket)
@@ -31,8 +32,12 @@ export function setupIOServer(httpServer: WebServer): IOServer {
       inviteResponse(socket, hasAccepted, inviterEmail)
     })
 
-    socket.on('dm', ({ message, dest }) => {
-      io.to(dest).emit('dm', message)
+    socket.on('dm', ({ message, destEmail }) => {
+      io.to(destEmail).emit('dm', message)
+    })
+
+    socket.on('disconnect', () => {
+      io.emit('disconnected', socket)
     })
   })
   return io
