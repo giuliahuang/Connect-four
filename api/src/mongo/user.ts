@@ -6,7 +6,8 @@ import mongoose from 'mongoose'
 const userSchema = new mongoose.Schema<User>({
   username: {
     type: mongoose.SchemaTypes.String,
-    required: true
+    required: true,
+    unique: true
   },
   email: {
     type: mongoose.SchemaTypes.String,
@@ -44,7 +45,6 @@ const userSchema = new mongoose.Schema<User>({
 })
 
 const UserModel = mongoose.model<User>('User', userSchema)
-
 
 export async function setPassword(user: User, pwd: string) {
   const pwdObj = genPassword(pwd)
@@ -92,19 +92,27 @@ export async function sendFriendRequest(sourceEmail: string, requestedEmail: str
     const dest = await UserModel.findOne({ email: requestedEmail })
 
     if (src && dest) {
-      if (!src.sentFriendReqs.includes(dest._id)) {
-        src.sentFriendReqs.push(dest._id)
-      }
-      if (!dest.receivedFriendReqs.includes(src._id))
-        dest.receivedFriendReqs.push(src._id)
+      if (!checkRequest(src, dest)) {
+        if (!src.sentFriendReqs.includes(dest._id)) {
+          src.sentFriendReqs.push(dest._id)
+        }
+        if (!dest.receivedFriendReqs.includes(src._id))
+          dest.receivedFriendReqs.push(src._id)
 
-      src.update()
-      dest.update()
+        src.update()
+        dest.update()
+      }
       return true
     }
   } catch (err) {
     logger.error(err)
   }
+  return false
+}
+
+async function checkRequest(src: User & mongoose.Document<any, any>, dest: User & mongoose.Document<any, any>): Promise<boolean> {
+  if (dest.sentFriendReqs.includes(src._id))
+    return await addFriend(src, dest)
   return false
 }
 
@@ -177,7 +185,6 @@ export async function getFriends(uid: string): Promise<any | undefined> {
       for (const friendId of doc.friends) {
         const doc = await UserModel.findOne({ _id: friendId })
         if (doc) {
-          logger.info(doc.username)
           friends.push(doc.username)
         }
       }
@@ -189,34 +196,31 @@ export async function getFriends(uid: string): Promise<any | undefined> {
   return undefined
 }
 
-export async function getUserById(uid: string): Promise<User | undefined> {
+export async function getUserById(uid: string): Promise<User | null> {
   try {
-    const doc = await UserModel.findOne({ _id: uid })
-    if (doc) return doc
+    return await UserModel.findOne({ _id: uid })
   } catch (err) {
     logger.error(err)
-    return undefined
+  }
+  return null
+}
+
+export async function getUserByEmail(email: string): Promise<User | null> {
+  try {
+    return await UserModel.findOne({ email: email })
+  } catch (err) {
+    logger.error(err)
+    return null
   }
 }
 
-export async function getUserByEmail(email: string): Promise<User | undefined> {
+export async function getUsersByUsername(username: string): Promise<User | null> {
   try {
-    const doc = await UserModel.findOne({ email: email })
-    if (doc) return doc
+    return await UserModel.findOne({ username: username })
   } catch (err) {
     logger.error(err)
-    return undefined
   }
-}
-
-export async function getUsersByUsername(username: string): Promise<User[]> {
-  try {
-    const docs = await UserModel.find({ username: username })
-    return docs
-  } catch (err) {
-    logger.error(err)
-    return []
-  }
+  return null
 }
 
 export async function increaseMmr(uid: string, points: number) {

@@ -39,19 +39,16 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
           socket.to('observersChat').emit('message', message)
       })
 
-      socket.on('dot', (message) => {
-        const moveResult = match.addDot(message.col, message.player)
-        if (moveResult.accepted) {
-          socket.broadcast.emit(message)
+      socket.on('dot', (column: number) => {
+        const playerId: string = socket.request['user._id']
+        const moveResult = match.addDot(column, playerId)
+        if (moveResult && moveResult.accepted) {
+          socket.broadcast.emit('dot', column)
           if (moveResult.matchResult) {
             io.emit(`Player ${moveResult.matchResult.winner.id} has won the match!`)
             io.disconnectSockets()
           }
         }
-      })
-
-      socket.on('chat', message => {
-        socket.broadcast.emit('chat', message)
       })
     })
   } else {

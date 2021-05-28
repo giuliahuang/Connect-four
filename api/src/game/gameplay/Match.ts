@@ -68,11 +68,15 @@ export class Match {
     return (this.heights[col] == rows)
   }
 
-  public addDot(col: number, player: Player): MoveResult {
+  public addDot(col: number, playerId: string): MoveResult | undefined {
     let res: MoveResult = {
       accepted: false,
       matchResult: undefined
     }
+    let player: Player
+    if (this.player1.id === playerId) player = this.player1
+    else if (this.player2.id === playerId) player = this.player2
+    else return undefined
 
     if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
       this.game_board[this.heights[col]][col] = player.id

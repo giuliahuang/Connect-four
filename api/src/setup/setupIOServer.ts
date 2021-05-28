@@ -17,23 +17,17 @@ export function setupIOServer(httpServer: WebServer): IOServer {
 
   io.on('connection', socket => {
     logger.info(`A new socket connection has been established by ${socket.id}`)
-    socket.join(socket.request['user.email'])
+    socket.join(socket.request['user.username'])
     socket.broadcast.emit('connected', socket)
 
-    socket.on('play', () => {
-      play(socket)
-    })
+    socket.on('play', play)
 
-    socket.on('invite', invitedUid => {
-      invitePlayer(socket, invitedUid)
-    })
+    socket.on('invite', invitePlayer)
 
-    socket.on('inviteResponse', (hasAccepted: boolean, inviterEmail: string) => {
-      inviteResponse(socket, hasAccepted, inviterEmail)
-    })
+    socket.on('inviteResponse', inviteResponse)
 
-    socket.on('dm', ({ message, destEmail }) => {
-      io.to(destEmail).emit('dm', message)
+    socket.on('dm', (message: string, destUsername: string) => {
+      io.to(destUsername).emit('dm', message)
     })
 
     socket.on('disconnect', () => {

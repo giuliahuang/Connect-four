@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
 import User from "../../models/User"
-import { getUserById } from "../../mongo/user"
+import { getUsersByUsername } from "../../mongo/user"
 import { gameStart } from "../gameplay/gameplay"
 import { UnmatchedPlayer } from "../matchmaking/UnmatchedPlayer"
 import { Player } from "../Player"
@@ -14,8 +14,8 @@ interface Invite {
 let inviteMap = new Map<string, Invite>()
 const FIVE_MINUTES = 5 * 60000
 
-export async function invitePlayer(socket: Socket, invitedUid: string) {
-  const invited = await getUserById(invitedUid)
+export async function invitePlayer(socket: Socket, playerUsername: string) {
+  const invited = await getUsersByUsername(playerUsername)
 
   if (invited) {
     const user: User = socket.request['user']
@@ -34,8 +34,8 @@ export async function invitePlayer(socket: Socket, invitedUid: string) {
       invited: invited,
       iat: new Date(Date.now())
     }
-    inviteMap.set(user.email, invite)
-    socket.emit('invite', invited.email)
+    inviteMap.set(user.username, invite)
+    socket.emit('invite', invited.username)
     setInterval(clearStaleInvites, FIVE_MINUTES)
   }
 }
@@ -48,11 +48,11 @@ async function clearStaleInvites() {
   })
 }
 
-export async function inviteResponse(socket: Socket, hasAccepted: boolean, inviterEmail: string) {
-  const invite = inviteMap.get(inviterEmail)
+export async function inviteResponse(socket: Socket, hasAccepted: boolean, inviterUsername: string) {
+  const invite = inviteMap.get(inviterUsername)
 
   if (invite) {
-    inviteMap.delete(inviterEmail)
+    inviteMap.delete(inviterUsername)
     const fiveMinutesAgo = new Date(Date.now() - FIVE_MINUTES)
 
     if ((invite.iat < fiveMinutesAgo) && hasAccepted) {
@@ -67,7 +67,7 @@ export async function inviteResponse(socket: Socket, hasAccepted: boolean, invit
         timeJoined: 0,
         ws: socket
       }
-      socket.to(inviterEmail).emit('inviteResponse', `${user.username} has accepted your invite`)
+      socket.to(inviterUsername).emit('inviteResponse', `${user.username} has accepted your invite`)
       gameStart(invite.inviter, unmatchedPlayer)
     }
   }

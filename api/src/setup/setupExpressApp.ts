@@ -3,7 +3,6 @@ import { Middleware } from '../server/middleware'
 import cors from 'cors'
 import health from '../routes/health'
 import { Route } from '../routes/Route'
-import root from '../routes/root'
 import { requestLogger } from '../server/middleware/requestLogger'
 import passport from 'passport'
 import login from '../routes/login'
@@ -19,10 +18,6 @@ export function setupExpressApp(): ExpressServer {
   ]
 
   const routeList: Route[] = [
-    {
-      path: '/',
-      router: root
-    },
     {
       path: '/health',
       router: health

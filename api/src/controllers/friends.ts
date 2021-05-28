@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { sendFriendRequest, respondFriendRequest as rfr, getUserById, getFriends, deleteFriend as df } from '../mongo/user'
+import { sendFriendRequest, getUserById, getFriends, deleteFriend as df } from '../mongo/user'
 import extractTokenPayload from '../utils/extractTokenPayload'
 
 export async function getFriendsList(req: Request, res: Response) {
@@ -24,20 +24,10 @@ export async function getFriendsRequests(req: Request, res: Response) {
   res.status(500).json({ error: true, message: 'Failed to retrieve friends list' })
 }
 
-export async function friendsRequestsHandler(req: Request, res: Response) {
-  if (req.body.add) addFriend(req, res)
-  else respondFriendRequest(req, res)
-}
-
 export async function addFriend(req: Request, res: Response) {
   const result = await sendFriendRequest(req.body.sourceEmail, req.body.requestedEmail)
   if (result) res.status(200).json({ message: 'Friend request sent' })
   else res.status(400).json({ error: true, message: 'Friend request failed' })
-}
-
-export async function respondFriendRequest(req: Request, res: Response) {
-  await rfr(req.body.accepted, req.body.sourceEmail, req.body.requestedEmail)
-  res.status(200).json({ message:'Friend request reply sent'})
 }
 
 export async function deleteFriend(req: Request, res: Response) {
