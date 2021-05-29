@@ -1,3 +1,5 @@
+import Match from "./Match"
+
 export default interface User {
     readonly _id: string,
     username: string,
@@ -8,5 +10,6 @@ export default interface User {
     mmr: number,
     friends: string[],
     sentFriendReqs: string[],
-    receivedFriendReqs: string[]
+    receivedFriendReqs: string[],
+    matchesPlayed: Match[]
 }

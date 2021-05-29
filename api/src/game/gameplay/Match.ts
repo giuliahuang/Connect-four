@@ -1,21 +1,15 @@
 import { Logger } from 'tslog'
-import { decreaseMmr, increaseMmr } from '../../mongo/user'
+import MatchResult from '../../models/Match'
+import { endMatch } from '../../mongo/user'
 import { Player } from '../Player'
 
 const logger = new Logger()
 const rows = 6
 const columns = 7
-const MMR_INCR = 30
-const MMR_DECR = 25
 
 interface MoveResult {
   accepted: boolean,
   matchResult: MatchResult | undefined
-}
-
-interface MatchResult {
-  winner: Player,
-  loser: Player
 }
 
 export class Match {
@@ -88,8 +82,8 @@ export class Match {
         if (player === this.player1) loser = this.player2
         else loser = this.player1
         res.matchResult = {
-          winner: player,
-          loser: loser
+          winner: player.username,
+          loser: loser.username
         }
 
         this.endGame(res.matchResult)
@@ -100,7 +94,6 @@ export class Match {
   }
 
   private endGame(res: MatchResult) {
-    increaseMmr(res.winner.id, MMR_INCR)
-    decreaseMmr(res.loser.id, MMR_DECR)
+    endMatch(res)
   }
 }

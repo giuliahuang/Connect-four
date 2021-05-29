@@ -1,7 +1,12 @@
 import logger from '../logger'
-import { genPassword, validatePassword as isValid } from '../utils/passwordUtils'
+import { genPassword } from '../utils/passwordUtils'
 import User from '../models/User'
 import mongoose from 'mongoose'
+import { matchSchema } from './MatchModel'
+import MatchResult from '../models/Match'
+
+const MMR_INCR = 30
+const MMR_DECR = 25
 
 const userSchema = new mongoose.Schema<User>({
   username: {
@@ -42,6 +47,10 @@ const userSchema = new mongoose.Schema<User>({
     type: [mongoose.SchemaTypes.ObjectId],
     required: true
   },
+  matchesPlayed: {
+    type: [matchSchema],
+    required: true
+  }
 })
 
 const UserModel = mongoose.model<User>('User', userSchema)
@@ -81,7 +90,8 @@ export async function newUser(username: string, email: string, password: string)
     mmr: 0,
     friends: [],
     sentFriendReqs: [],
-    receivedFriendReqs: []
+    receivedFriendReqs: [],
+    matchesPlayed: []
   })
   return await doc.save()
 }
@@ -215,25 +225,20 @@ export async function getUsersByUsername(username: string): Promise<User | null>
   return null
 }
 
-export async function increaseMmr(uid: string, points: number) {
+async function increaseMmr(player: User & mongoose.Document<any, any>, points: number) {
   try {
-    const doc = await UserModel.findOne({ _id: uid })
-    if (doc) {
-      doc.mmr += points
-      doc.update()
-    }
+    player.mmr += points
+    player.update()
+
   } catch (err) {
     logger.error(err)
   }
 }
 
-export async function decreaseMmr(uid: string, points: number) {
+async function decreaseMmr(player: User & mongoose.Document<any, any>, points: number) {
   try {
-    const doc = await UserModel.findOne({ _id: uid })
-    if (doc) {
-      doc.mmr -= points
-      doc.update()
-    }
+    player.mmr -= points
+    player.update()
   } catch (err) {
     logger.error(err)
   }
@@ -247,6 +252,47 @@ export async function globalRanking(): Promise<any> {
       topTen.push({ username: user.username, mmr: user.mmr })
     })
     return topTen
+  } catch (err) {
+    logger.error(err)
+  }
+}
+
+export async function userStats(userId: string): Promise<any> {
+  try {
+    const user = await UserModel.findById(userId)
+    if (user) {
+      const matches = user.matchesPlayed
+      let wins = 0, losses = 0
+      matches.forEach(match => {
+        if (match.winner === user._id) ++wins
+        else ++losses
+      })
+      let stats = {
+        matchesWon: wins,
+        matchesLost: losses,
+        winRate: wins / (wins + losses)
+      }
+      return stats
+    }
+  } catch (err) {
+    logger.error(err)
+  }
+}
+
+export async function endMatch(res: MatchResult) {
+  try {
+    const winner = await UserModel.findById(res.winner)
+    const loser = await UserModel.findById(res.loser)
+
+    if (winner && loser) {
+      winner.matchesPlayed.push(res)
+      loser.matchesPlayed.push(res)
+
+      increaseMmr(winner, MMR_INCR)
+      decreaseMmr(loser, MMR_DECR)
+      winner.update()
+      loser.update()
+    }
   } catch (err) {
     logger.error(err)
   }

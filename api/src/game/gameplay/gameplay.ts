@@ -45,7 +45,7 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
         if (moveResult && moveResult.accepted) {
           socket.broadcast.emit('dot', column)
           if (moveResult.matchResult) {
-            io.emit(`Player ${moveResult.matchResult.winner.id} has won the match!`)
+            io.emit(`Player ${socket.request['user.username']} has won the match!`)
             io.disconnectSockets()
           }
         }
