@@ -86,23 +86,19 @@ export async function newUser(username: string, email: string, password: string)
   return await doc.save()
 }
 
-export async function sendFriendRequest(sourceEmail: string, requestedEmail: string): Promise<boolean> {
+export async function sendFriendRequest(askerEmail: string, requestedEmail: string): Promise<boolean> {
   try {
-    const src = await UserModel.findOne({ email: sourceEmail })
-    const dest = await UserModel.findOne({ email: requestedEmail })
+    const asker = await UserModel.findOne({ email: askerEmail })
+    const requested = await UserModel.findOne({ email: requestedEmail })
 
-    if (src && dest) {
-      if (!checkRequest(src, dest)) {
-        if (!src.sentFriendReqs.includes(dest._id)) {
-          src.sentFriendReqs.push(dest._id)
-        }
-        if (!dest.receivedFriendReqs.includes(src._id))
-          dest.receivedFriendReqs.push(src._id)
-
-        src.update()
-        dest.update()
+    if (asker && requested) {
+      if (!asker.sentFriendReqs.includes(requested._id) && !requested.receivedFriendReqs.includes(asker._id)) {
+        asker.sentFriendReqs.push(requested._id)
+        requested.receivedFriendReqs.push(asker._id)
+        asker.update()
+        requested.update()
+        return true
       }
-      return true
     }
   } catch (err) {
     logger.error(err)
@@ -110,29 +106,25 @@ export async function sendFriendRequest(sourceEmail: string, requestedEmail: str
   return false
 }
 
-async function checkRequest(src: User & mongoose.Document<any, any>, dest: User & mongoose.Document<any, any>): Promise<boolean> {
-  if (dest.sentFriendReqs.includes(src._id))
-    return await addFriend(src, dest)
-  return false
-}
-
-export async function respondFriendRequest(hasAccepted: boolean, sourceEmail: string, requestedEmail: string) {
+export async function respondFriendRequest(hasAccepted: boolean, askerEmail: string, requestedEmail: string): Promise<boolean> {
   try {
-    const src = await UserModel.findOne({ email: sourceEmail })
-    const dest = await UserModel.findOne({ email: requestedEmail })
+    const asker = await UserModel.findOne({ email: askerEmail })
+    const requested = await UserModel.findOne({ email: requestedEmail })
 
-    if (src && dest) {
-      src.sentFriendReqs = src.sentFriendReqs.filter(id => id === dest._id)
-      dest.receivedFriendReqs = dest.receivedFriendReqs.filter(id => id === src._id)
-      src.update()
-      dest.update()
+    if (asker && requested) {
+      asker.sentFriendReqs = asker.sentFriendReqs.filter(id => id === requested._id)
+      requested.receivedFriendReqs = requested.receivedFriendReqs.filter(id => id === asker._id)
+      asker.update()
+      requested.update()
       if (hasAccepted) {
-        addFriend(src, dest)
+        addFriend(asker, requested)
+        return true
       }
     }
   } catch (err) {
     logger.error(err)
   }
+  return false
 }
 
 async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>): Promise<boolean> {
@@ -142,8 +134,8 @@ async function addFriend(user1: User & mongoose.Document<any, any>, user2: User 
 
     user1.friends.push(user2._id)
     user2.friends.push(user1._id)
-    await user1.save()
-    await user1.save()
+    await user1.update()
+    await user2.update()
     return true
 
   } catch (err) {
@@ -166,8 +158,8 @@ export async function deleteFriend(sourceEmail: string, requestedEmail: string):
 
       doc1.friends = doc1.friends.filter(data => data === doc2.id)
       doc2.friends = doc2.friends.filter(data => data === doc1.id)
-      await doc1.save()
-      await doc2.save()
+      await doc1.update()
+      await doc2.update()
       return true
     }
   } catch (err) {
@@ -228,7 +220,7 @@ export async function increaseMmr(uid: string, points: number) {
     const doc = await UserModel.findOne({ _id: uid })
     if (doc) {
       doc.mmr += points
-      doc.save()
+      doc.update()
     }
   } catch (err) {
     logger.error(err)
@@ -240,7 +232,7 @@ export async function decreaseMmr(uid: string, points: number) {
     const doc = await UserModel.findOne({ _id: uid })
     if (doc) {
       doc.mmr -= points
-      doc.save()
+      doc.update()
     }
   } catch (err) {
     logger.error(err)
