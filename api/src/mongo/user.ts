@@ -238,3 +238,16 @@ export async function decreaseMmr(uid: string, points: number) {
     logger.error(err)
   }
 }
+
+export async function globalRanking(): Promise<any> {
+  try {
+    const result = await UserModel.find().sort({ length: -1 }).limit(10)
+    let topTen: any[] = []
+    result.forEach(user => {
+      topTen.push({ username: user.username, mmr: user.mmr })
+    })
+    return topTen
+  } catch (err) {
+    logger.error(err)
+  }
+}

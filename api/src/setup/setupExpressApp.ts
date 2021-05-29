@@ -8,7 +8,7 @@ import passport from 'passport'
 import login from '../routes/login'
 import signup from '../routes/signup'
 import auth from '../routes/auth'
-import ws from '../routes/ws'
+import ranking from '../routes/ranking'
 
 export function setupExpressApp(): ExpressServer {
   const middlewareList: Middleware[] = [
@@ -35,8 +35,8 @@ export function setupExpressApp(): ExpressServer {
       router: auth
     },
     {
-      path: '/ws',
-      router: ws
+      path: '/ranking',
+      router: ranking
     }
   ]
 
