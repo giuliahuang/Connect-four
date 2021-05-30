@@ -1,7 +1,7 @@
-import { getUserByEmail } from '../mongo/user'
+import { Request, Response } from 'express'
+import { getUserByEmail } from '../mongo/userMethods'
 import { issueJWT } from '../utils/issueJWT'
 import { validatePassword } from '../utils/passwordUtils'
-import { Request, Response } from 'express'
 
 export async function login(req: Request, res: Response) {
   const user = await getUserByEmail(req.body.email)

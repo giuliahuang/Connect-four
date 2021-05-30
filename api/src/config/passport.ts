@@ -1,7 +1,7 @@
 import passport from 'passport'
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
 import logger from '../logger'
-import { getUserById } from '../mongo/user'
+import { getUserById } from '../mongo/userMethods'
 import { Payload } from '../utils/issueJWT'
 
 export async function passportConfig() {

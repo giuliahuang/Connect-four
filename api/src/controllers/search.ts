@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUsersByUsername } from '../mongo/user'
+import { getUsersByUsername } from '../mongo/userMethods'
 
 export async function search(req: Request, res: Response) {
   const uname = req.body.username

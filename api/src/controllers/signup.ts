@@ -1,5 +1,5 @@
 import logger from '../logger/'
-import { newUser } from '../mongo/user'
+import { newUser } from '../mongo/userMethods'
 import { issueJWT } from '../utils/issueJWT'
 
 export async function signup(req, res) {

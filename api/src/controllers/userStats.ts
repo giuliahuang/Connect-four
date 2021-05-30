@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { userStats } from '../mongo/user'
+import { userStats } from '../mongo/userMethods'
 import extractTokenPayload from "../utils/extractTokenPayload"
 
 export async function getUserStats(req: Request, res: Response) {

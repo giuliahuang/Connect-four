@@ -1,7 +1,7 @@
 import mongoose = require('mongoose')
 import { exit } from 'process'
 import logger from '../logger/'
-import { getUserByEmail, newUser, setAdmin } from '../mongo/user'
+import { getUserByEmail, newUser, setAdmin } from '../mongo/userMethods'
 
 export async function setupDB() {
   // Connect to mongodb and launch the HTTP server trough Express

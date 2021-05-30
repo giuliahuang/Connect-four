@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
 import User from "../../models/User"
-import { getUsersByUsername } from "../../mongo/user"
+import { getUsersByUsername } from "../../mongo/userMethods"
 import { gameStart } from "../gameplay/gameplay"
 import { UnmatchedPlayer } from "../matchmaking/UnmatchedPlayer"
 import { Player } from "../Player"

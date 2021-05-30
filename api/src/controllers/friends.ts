@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
-import { sendFriendRequest, getUserById, getFriends, deleteFriend as df, respondFriendRequest as rfr } from '../mongo/user'
+import { deleteFriend as df, getFriends, respondFriendRequest as rfr, sendFriendRequest } from '../mongo/friendsMethods'
+import { getUserById } from '../mongo/userMethods'
 import extractTokenPayload from '../utils/extractTokenPayload'
 
 export async function getFriendsList(req: Request, res: Response) {

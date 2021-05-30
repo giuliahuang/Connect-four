@@ -1,4 +1,4 @@
-import Match from "./Match"
+import Match from "./MatchResults"
 
 export default interface User {
     readonly _id: string,

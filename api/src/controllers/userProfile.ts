@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUserById } from '../mongo/user'
+import { getUserById } from '../mongo/userMethods'
 import extractTokenPayload from '../utils/extractTokenPayload'
 
 export async function getUserProfile(req: Request, res: Response) {

@@ -1,6 +1,6 @@
 import { Logger } from 'tslog'
-import MatchResult from '../../models/Match'
-import { endMatch } from '../../mongo/user'
+import MatchResults from '../../models/MatchResults'
+import { endMatch } from '../../mongo/matchMethods'
 import { Player } from '../Player'
 
 const logger = new Logger()
@@ -9,7 +9,7 @@ const columns = 7
 
 interface MoveResult {
   accepted: boolean,
-  matchResult: MatchResult | undefined
+  matchResult: MatchResults | undefined
 }
 
 export class Match {
@@ -93,7 +93,7 @@ export class Match {
     return res
   }
 
-  private endGame(res: MatchResult) {
+  private endGame(res: MatchResults) {
     endMatch(res)
   }
 }

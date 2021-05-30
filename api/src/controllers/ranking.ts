@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { globalRanking } from '../mongo/user'
+import { globalRanking } from '../mongo/userMethods'
 
 export async function getRanking(req: Request, res: Response) {
   const topTen = await globalRanking()
