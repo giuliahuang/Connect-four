@@ -7,10 +7,10 @@ export async function getFriendsList(req: Request, res: Response) {
   if (token) {
     const result = await getFriends(token.sub)
     if (result) {
-      res.status(200).json(result)
+      return res.status(200).json(result)
     }
   }
-  res.status(500).json({ error: true, message: 'Internal server error' })
+  return res.status(500).json({ error: true, message: 'Internal server error' })
 }
 
 export async function getFriendsRequests(req: Request, res: Response) {
@@ -18,10 +18,10 @@ export async function getFriendsRequests(req: Request, res: Response) {
   if (token) {
     const result = await getUserById(token.sub)
     if (result) {
-      res.status(200).json(JSON.parse(JSON.stringify(result.friends)))
+      return res.status(200).json(JSON.parse(JSON.stringify(result.friends)))
     }
   }
-  res.status(500).json({ error: true, message: 'Failed to retrieve friends list' })
+  return res.status(500).json({ error: true, message: 'Failed to retrieve friends list' })
 }
 
 export async function addFriend(req: Request, res: Response) {
