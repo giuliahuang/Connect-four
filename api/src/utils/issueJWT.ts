@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken'
-import { RSA_KEYS } from '../setup/setup'
 
 export interface Payload {
   sub: string,
@@ -15,10 +14,11 @@ export async function issueJWT(user): Promise<any> {
     iat: Date.now()
   }
 
-  const PRIV_KEY = RSA_KEYS.PRIV_KEY
-  const signedToken = jwt.sign(payload, { key: PRIV_KEY, passphrase: 'secret' }, { expiresIn: expiresIn, algorithm: 'RS256' })
-  return {
-    token: `Bearer ${signedToken}`,
-    expires: expiresIn
+  if (process.env.JWT_SECRET) {
+    const signedToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expiresIn, algorithm: 'HS256' })
+    return {
+      token: `Bearer ${signedToken}`,
+      expires: expiresIn
+    }
   }
 }
