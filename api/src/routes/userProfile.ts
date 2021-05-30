@@ -1,4 +1,8 @@
 import { getUserProfile } from '../controllers/userProfile'
-import router from './auth'
+import { Router } from 'express'
+
+const router = Router()
 
 router.get('/profile', getUserProfile)
+
+export default router
