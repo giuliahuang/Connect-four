@@ -7,12 +7,11 @@ import { Player } from "../Player"
 
 interface Invite {
   inviter: UnmatchedPlayer,
-  invited: User,
-  iat: Date
+  invited: User
 }
 
 let inviteMap = new Map<string, Invite>()
-const FIVE_MINUTES = 5 * 60000
+const THIRTY_SECONDS = 30000
 
 export async function invitePlayer(socket: Socket, playerUsername: string) {
   const invited = await getUsersByUsername(playerUsername)
@@ -31,21 +30,16 @@ export async function invitePlayer(socket: Socket, playerUsername: string) {
     }
     const invite: Invite = {
       inviter: unmatchedPlayer,
-      invited: invited,
-      iat: new Date(Date.now())
+      invited: invited
     }
     inviteMap.set(user.username, invite)
     socket.emit('invite', invited.username)
-    setInterval(clearStaleInvites, FIVE_MINUTES)
+    setTimeout(clearInvite, THIRTY_SECONDS, invite)
   }
 }
 
-async function clearStaleInvites() {
-  if (inviteMap.size == 0) return
-  inviteMap.forEach((value, key, map) => {
-    const fiveMinutesAgo = new Date(Date.now() - FIVE_MINUTES)
-    if (value.iat < fiveMinutesAgo) inviteMap.delete(key)
-  })
+async function clearInvite(invite: Invite) {
+  inviteMap.delete(invite.inviter.player.username)
 }
 
 export async function inviteResponse(socket: Socket, hasAccepted: boolean, inviterUsername: string) {
@@ -53,9 +47,8 @@ export async function inviteResponse(socket: Socket, hasAccepted: boolean, invit
 
   if (invite) {
     inviteMap.delete(inviterUsername)
-    const fiveMinutesAgo = new Date(Date.now() - FIVE_MINUTES)
 
-    if ((invite.iat < fiveMinutesAgo) && hasAccepted) {
+    if (hasAccepted) {
       const user: User = socket.request['user']
       const player: Player = {
         id: user._id,
