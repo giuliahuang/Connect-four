@@ -1,8 +1,15 @@
 import logger from '../logger/'
 import { newUser } from '../mongo/userMethods'
 import { issueJWT } from '../utils/issueJWT'
+import { Request, Response } from 'express'
 
-export async function signup(req, res) {
+/**
+ * Signup function, it requires the properties username, email and password set
+ * into the request's body
+ * @param req 
+ * @param res 
+ */
+export async function signup(req: Request, res: Response) {
   try {
     const user = await newUser(req.body?.username, req.body?.email, req.body?.password)
     const jwt = await issueJWT(user)

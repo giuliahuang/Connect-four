@@ -2,13 +2,17 @@ import { Socket } from 'socket.io'
 import logger from '../../logger/'
 import User from '../../models/User'
 import { gameStart } from '../gameplay/gameplay'
-import { Player } from '../Player'
-import { UnmatchedPlayer } from "./UnmatchedPlayer"
+import Player from '../Player'
+import UnmatchedPlayer from "./UnmatchedPlayer"
 
 const MAX_TIME_IN_QUEUE = 20000
 const POOL_POLL_INTERVAL = 1000
 const mm_pool = new Map<string, UnmatchedPlayer>()
 
+/**
+ * Puts a user into matchmaking throught the Socket.io event
+ * @param socket 
+ */
 export async function play(socket: Socket) {
   const user: User = socket.request['user']
   const player: Player = {
@@ -33,6 +37,10 @@ export async function play(socket: Socket) {
   setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
 }
 
+/**
+ * Iterates through the pool until all players have been matched, then it returns
+ * @param mm_pool Matchmaking map
+ */
 function matchmake(mm_pool: Map<string, UnmatchedPlayer>) {
   if (mm_pool.size < 1) return
 
@@ -59,6 +67,14 @@ function matchmake(mm_pool: Map<string, UnmatchedPlayer>) {
   }
 }
 
+/**
+ * Checks whether the users provided are a good match. The condition gets
+ * looser the longer player 1 has been in queue.
+ * The maximum difference in MMR is 500
+ * @param p1 player 1
+ * @param p2 player 2
+ * @returns true if the two player have been matched, false otherwise
+ */
 function isMatch(p1: UnmatchedPlayer, p2: UnmatchedPlayer): boolean {
   if (p1 !== p2 && Math.abs(p1.player.mmr - p2.player.mmr) < 500)
     if (Math.abs(p1.player.mmr - p2.player.mmr) < (10 * p1.timeJoined * 1000))
@@ -66,6 +82,11 @@ function isMatch(p1: UnmatchedPlayer, p2: UnmatchedPlayer): boolean {
   return false
 }
 
+/**
+ * Starts the game between player 1 and player 2
+ * @param p1 player 1
+ * @param p2 player 2
+ */
 function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
   console.log(`${p1.player.id} was matched with ${p2.player.id}`)
   p1.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)

@@ -1,15 +1,13 @@
-import mongoose = require('mongoose')
+import mongoose from 'mongoose'
 import { exit } from 'process'
 import logger from '../logger/'
 import { getUserByEmail, newUser, setAdmin } from '../mongo/userMethods'
 
 export async function setupDB() {
-  // Connect to mongodb and launch the HTTP server trough Express
   if (process.env.DB_CONNECTION_STRING) {
     try {
       const db = await mongoose.connect(process.env.DB_CONNECTION_STRING, {
         useNewUrlParser: true,
-        useFindAndModify: false,
         useCreateIndex: true,
         useUnifiedTopology: true
       })
@@ -22,7 +20,7 @@ export async function setupDB() {
       }
       return db
     } catch (err) {
-      logger.error(`Error Occurred during initialization: ${err}`)
+      logger.error(`Error occurred during DB initialization: ${err}`)
       exit(1)
     }
   }

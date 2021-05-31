@@ -1,6 +1,11 @@
 import { Request, Response } from 'express'
 import { globalRanking } from '../mongo/userMethods'
 
+/**
+ * Send a response containing the top ten players stored in the database
+ * @param req Request
+ * @param res Response
+ */
 export async function getRanking(req: Request, res: Response) {
   const topTen = await globalRanking()
   if (topTen)

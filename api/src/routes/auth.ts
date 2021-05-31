@@ -7,6 +7,9 @@ import userProfileRouter from './userProfile'
 
 const router = Router()
 
+/**
+ * Dummy route use for authenticating all requests in the router hierarchy
+ */
 router.use(passport.authenticate('jwt', { session: false }))
 router.use(friendsRouter)
 router.use(searchRouter)

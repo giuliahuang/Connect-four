@@ -4,9 +4,14 @@ import jwtAuth from 'socketio-jwt-auth'
 import { jwtCallback } from '../../config/passport'
 import logger from '../../logger/'
 import freePortFinder from '../../utils/freePortFinder'
-import { UnmatchedPlayer } from '../matchmaking/UnmatchedPlayer'
+import UnmatchedPlayer from '../matchmaking/UnmatchedPlayer'
 import { Match } from './Match'
 
+/**
+ * Creates a new Socket.io server and starts the game
+ * @param p1 player 1
+ * @param p2 player 2
+ */
 export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
   const port = await freePortFinder()
 

@@ -4,7 +4,7 @@ import logger from '../logger/'
 
 export function setupEnv() {
   if (dotenv.config().error) {
-    logger.error('No .env file detected. Make sure it\'s located in api/')
+    logger.error('No .env file detected')
     exit(1)
   }
 }

@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema<User>({
   },
   roles: {
     type: [mongoose.SchemaTypes.String],
-    required: true
+    required: false,
+    default: []
   },
   salt: {
     type: mongoose.SchemaTypes.String,
@@ -27,24 +28,30 @@ const userSchema = new mongoose.Schema<User>({
   },
   mmr: {
     type: mongoose.SchemaTypes.Number,
-    required: true
+    required: false,
+    default: 0
   },
   friends: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: true
+    required: false,
+    default: []
   },
   sentFriendReqs: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: true
+    required: false,
+    default: []
   },
   receivedFriendReqs: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: true
+    required: false,
+    default: []
   },
   matchesPlayed: {
     type: [matchSchema],
-    required: true
+    required: false,
+    default: []
   }
 })
 
-export const UserModel = mongoose.model<User>('User', userSchema)
+const UserModel = mongoose.model<User>('User', userSchema)
+export default UserModel

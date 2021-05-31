@@ -2,56 +2,50 @@ import mongoose from 'mongoose'
 import logger from "../logger"
 import User from "../models/User"
 import { genPassword } from "../utils/passwordUtils"
-import { UserModel } from "./User"
+import UserModel from "./User"
 
-export async function setPassword(user: User, pwd: string) {
+/**
+ * Receives the hash + salt and stores them in the user's document
+ * @param user user who requested the password change
+ * @param pwd string containing the password provided by the user
+ */
+export async function setPassword(user: User & mongoose.Document<any, any>, pwd: string) {
   const pwdObj = genPassword(pwd)
-  UserModel.findOneAndUpdate({ email: user.email }, { hash: pwdObj.hash, salt: pwdObj.salt })
+  user.hash = pwdObj.hash
+  user.salt = pwdObj.salt
+  await user.update()
 }
 
-export function hasAdminRole(user: User): boolean {
-  return user.roles.includes('ADMIN')
-}
-
-export async function setAdmin(user: User) {
-  if (!hasAdminRole(user)) {
-    await UserModel.findOneAndUpdate({ email: user.email }, { $push: { roles: 'ADMIN' } })
+export async function setAdmin(user: User & mongoose.Document<any, any>) {
+  if (!user.roles.includes('ADMIN')) {
+    user.roles.push('ADMIN')
+    await user.update()
   }
 }
 
-export function hasModeratorRole(user: User): boolean {
-  return user.roles.includes('MODERATOR')
+export async function setModerator(user: User & mongoose.Document<any, any>) {
+  if (!user.roles.includes('MODERATOR')) {
+    user.roles.push('MODERATOR')
+    await user.update()
+  }
 }
 
-export async function setModerator(user: User) {
-  if (!hasModeratorRole(user))
-    await UserModel.findOneAndUpdate({ email: user.email }, { $push: { roles: 'MODERATOR' } })
-}
-
+/**
+ * Creates a new user with the provided parameters
+ * @param username 
+ * @param email 
+ * @param password 
+ * @returns the mongodb document after it got stored in the DB
+ */
 export async function newUser(username: string, email: string, password: string): Promise<User & mongoose.Document<any, any>> {
   const pwdObj = genPassword(password)
   const doc = new UserModel({
     username: username,
     email: email,
-    roles: [],
     salt: pwdObj.salt,
-    hash: pwdObj.hash,
-    mmr: 0,
-    friends: [],
-    sentFriendReqs: [],
-    receivedFriendReqs: [],
-    matchesPlayed: []
+    hash: pwdObj.hash
   })
   return await doc.save()
-}
-
-export async function getUserById(uid: string): Promise<User | null> {
-  try {
-    return await UserModel.findOne({ _id: uid })
-  } catch (err) {
-    logger.error(err)
-  }
-  return null
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
@@ -91,6 +85,9 @@ export async function decreaseMmr(player: User & mongoose.Document<any, any>, po
   }
 }
 
+/**
+ * @returns the 10 top ranked players in the database
+ */
 export async function globalRanking(): Promise<any> {
   try {
     const result = await UserModel.find().sort({ length: -1 }).limit(10)
@@ -104,6 +101,11 @@ export async function globalRanking(): Promise<any> {
   }
 }
 
+/**
+ * @param userId of the user who requested the statistics
+ * @returns an object containing the number of wins, losses and the winrate | undefined
+ * if the user is not found
+ */
 export async function userStats(userId: string): Promise<any> {
   try {
     const user = await UserModel.findById(userId)

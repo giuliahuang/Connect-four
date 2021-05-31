@@ -1,5 +1,10 @@
 import { Request, Response } from 'express'
 
+/**
+ * API health check function, used to verify the running state of the server
+ * @param req Request
+ * @param res Response
+ */
 export function healthCheck(req: Request, res: Response) {
-  return res.status(200).json({ message: 'API is up and running' })
+  res.status(200).json({ message: 'API is up and running' })
 }

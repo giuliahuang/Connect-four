@@ -1,7 +1,7 @@
 import Express from 'express'
-import type { Middleware } from './middleware/Middleware'
-import logger from '../logger/'
+import logger from '../logger'
 import { Route } from '../routes/Route'
+import type { Middleware } from './middleware/Middleware'
 import { notFoundCatcher } from './middleware/notFoundCatcher'
 
 export class ExpressServer {

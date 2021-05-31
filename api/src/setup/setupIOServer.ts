@@ -3,13 +3,20 @@ import { exit } from 'process'
 import { Server as IOServer } from 'socket.io'
 import jwtAuth from 'socketio-jwt-auth'
 import { jwtCallback } from '../config/passport'
-import { invitePlayer, inviteResponse } from '../game/friends/invite'
+import { invitePlayer, inviteResponse } from '../game/friends/gameInvites'
 import { play } from '../game/matchmaking/matchmaking'
 import logger from '../logger/'
 
-export async function setupIOServer(httpServer: WebServer): Promise<IOServer> {
+/**
+ * Global Socket.io server definition, used for matchmaking, player chats and invites
+ * @param httpServer required for binding the global Socket.io server
+ */
+export async function setupIOServer(httpServer: WebServer) {
   logger.info('Bootstrapping IO server')
   const io = new IOServer(httpServer, { cors: { origin: "*" } })
+
+  // Socket.io middleware that provides authentication through the JWT token set into
+  // the websocket request's auth headers
   if (process.env.JWT_SECRET) {
     io.use(jwtAuth.authenticate({
       secret: process.env.JWT_SECRET,

@@ -1,4 +1,4 @@
-import { ExpressServer } from '../server'
+import { ExpressServer } from '../server/ExpressServer'
 import { Middleware } from '../server/middleware'
 import cors from 'cors'
 import health from '../routes/health'
@@ -10,6 +10,11 @@ import signup from '../routes/signup'
 import auth from '../routes/auth'
 import ranking from '../routes/ranking'
 
+/**
+ * Creates a new instance of the Express server with the predefined route list and
+ * middleware list
+ * @returns ExpressServer
+ */
 export function setupExpressApp(): ExpressServer {
   const middlewareList: Middleware[] = [
     cors(),

@@ -1,6 +1,11 @@
 import crypto from 'crypto'
 
-export function genPassword(password: string): any {
+interface HashAndSalt {
+  salt: string,
+  hash: string
+}
+
+export function genPassword(password: string): HashAndSalt {
   const salt = crypto.randomBytes(32).toString('hex')
   const genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex')
   return {
