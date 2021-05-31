@@ -11,5 +11,6 @@ export default interface User {
     friends: string[],
     sentFriendReqs: string[],
     receivedFriendReqs: string[],
-    matchesPlayed: Match[]
+    matchesPlayed: Match[],
+    avatar: string
 }

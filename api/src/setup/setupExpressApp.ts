@@ -9,6 +9,9 @@ import login from '../routes/login'
 import signup from '../routes/signup'
 import auth from '../routes/auth'
 import ranking from '../routes/ranking'
+import express from 'express'
+import path from 'path'
+import logger from '../logger'
 
 /**
  * Creates a new instance of the Express server with the predefined route list and
@@ -19,7 +22,8 @@ export function setupExpressApp(): ExpressServer {
   const middlewareList: Middleware[] = [
     cors(),
     requestLogger,
-    passport.initialize()
+    passport.initialize(),
+    express.static(path.join(__dirname, '../../public'))
   ]
 
   const routeList: Route[] = [

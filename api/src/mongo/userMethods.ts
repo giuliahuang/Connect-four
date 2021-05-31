@@ -76,10 +76,9 @@ export async function increaseMmr(player: User & mongoose.Document<any, any>, po
   }
 }
 
-export async function decreaseMmr(player: User & mongoose.Document<any, any>, points: number) {
+export async function decreaseMmr(player: string, points: number) {
   try {
-    player.mmr -= points
-    player.update()
+    await UserModel.findByIdAndUpdate(player, {$inc: {mmr: -points}})
   } catch (err) {
     logger.error(err)
   }
@@ -126,4 +125,14 @@ export async function userStats(userId: string): Promise<any> {
   } catch (err) {
     logger.error(err)
   }
+}
+
+export async function setAvatar(uid: string, path: string): Promise<boolean> {
+  try {
+    await UserModel.findByIdAndUpdate(uid, { avatar: path })
+    return true
+  } catch (err) {
+    logger.error(err)
+  }
+  return false
 }

@@ -9,7 +9,8 @@ export async function setupDB() {
       const db = await mongoose.connect(process.env.DB_CONNECTION_STRING, {
         useNewUrlParser: true,
         useCreateIndex: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useFindAndModify: false
       })
       logger.info("Connected to MongoDB")
       const doc = await getUserByEmail("admin@connectfour.it")

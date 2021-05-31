@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema<User>({
   },
   roles: {
     type: [mongoose.SchemaTypes.String],
-    required: false,
     default: []
   },
   salt: {
@@ -28,28 +27,27 @@ const userSchema = new mongoose.Schema<User>({
   },
   mmr: {
     type: mongoose.SchemaTypes.Number,
-    required: false,
     default: 0
   },
   friends: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: false,
     default: []
   },
   sentFriendReqs: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: false,
     default: []
   },
   receivedFriendReqs: {
     type: [mongoose.SchemaTypes.ObjectId],
-    required: false,
     default: []
   },
   matchesPlayed: {
     type: [matchSchema],
-    required: false,
     default: []
+  },
+  avatar: {
+    type: mongoose.SchemaTypes.String,
+    default: 'placeholder.jpg'
   }
 })
 
