@@ -9,12 +9,12 @@ import { getUsersByUsername } from '../mongo/userMethods'
  * @param res Response
  */
 export async function search(req: Request, res: Response) {
-  const uname = req.body.username
-  const user = await getUsersByUsername(uname)
-  if (user) {
-    const jsonObj = JSON.parse(JSON.stringify(user))
-    res.status(200).json(jsonObj)
-  } else {
-    res.status(404).json({ error: true, message: 'User not found' })
+  const username = req.query.username
+  if (username) {
+    const user = await getUsersByUsername(username as string)
+    if (user) {
+      return res.status(200).json(JSON.parse(JSON.stringify(user)))
+    }
   }
+  return res.status(404).json({ error: true, message: 'User not found' })
 }

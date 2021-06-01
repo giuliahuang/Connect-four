@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import logger from "../logger"
 import User from "../models/User"
 import UserModel from "./User"
+import { getUsersByUsername } from './userMethods'
 
 /**
  * Allows a user to send a friend request to another user
@@ -15,11 +16,11 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
     const requested = await UserModel.findOne({ username: requestedUsername })
 
     if (asker && requested) {
-      if (!asker.sentFriendReqs.includes(requested._id) && !requested.receivedFriendReqs.includes(asker._id)) {
-        asker.sentFriendReqs.push(requested._id)
-        requested.receivedFriendReqs.push(asker._id)
-        asker.update()
-        requested.update()
+      if (!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username)) {
+        asker.sentFriendReqs.push(requested.username)
+        requested.receivedFriendReqs.push(asker.username)
+        asker.updateOne()
+        requested.updateOne()
         return true
       }
     }
@@ -42,10 +43,10 @@ export async function respondFriendRequest(hasAccepted: boolean, askerUsername: 
     const requested = await UserModel.findOne({ username: requestedUsername })
 
     if (asker && requested) {
-      asker.sentFriendReqs = asker.sentFriendReqs.filter(id => id === requested._id)
-      requested.receivedFriendReqs = requested.receivedFriendReqs.filter(id => id === asker._id)
-      asker.update()
-      requested.update()
+      asker.sentFriendReqs = asker.sentFriendReqs.filter(username => username === requested.username)
+      requested.receivedFriendReqs = requested.receivedFriendReqs.filter(username => username === asker.username)
+      asker.updateOne()
+      requested.updateOne()
       if (hasAccepted) {
         addFriend(asker, requested)
         return true
@@ -65,11 +66,11 @@ export async function respondFriendRequest(hasAccepted: boolean, askerUsername: 
  */
 async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>): Promise<boolean> {
   try {
-    if (user1.friends.includes(user2._id) && user2.friends.includes(user1._id)) {
-      user1.friends.push(user2._id)
-      user2.friends.push(user1._id)
-      await user1.update()
-      await user2.update()
+    if (user1.friends.includes(user2.username) && user2.friends.includes(user1.username)) {
+      user1.friends.push(user2.username)
+      user2.friends.push(user1.username)
+      await user1.updateOne()
+      await user2.updateOne()
       return true
     }
   } catch (err) {
@@ -90,13 +91,13 @@ export async function deleteFriend(sourceUsername: string, deleteFriendUsername:
     const deletedFriend = await UserModel.findOne({ username: deleteFriendUsername })
 
     if (sourceUser && deletedFriend &&
-      sourceUser.friends.includes(deletedFriend.id) &&
-      deletedFriend.friends.includes(sourceUser.id)) {
+      sourceUser.friends.includes(deletedFriend.username) &&
+      deletedFriend.friends.includes(sourceUser.username)) {
 
-      sourceUser.friends = sourceUser.friends.filter(data => data === deletedFriend.id)
-      deletedFriend.friends = deletedFriend.friends.filter(data => data === sourceUser.id)
-      await sourceUser.update()
-      await deletedFriend.update()
+      sourceUser.friends = sourceUser.friends.filter(data => data === deletedFriend.username)
+      deletedFriend.friends = deletedFriend.friends.filter(data => data === sourceUser.username)
+      await sourceUser.updateOne()
+      await deletedFriend.updateOne()
       return true
     }
   } catch (err) {
@@ -110,21 +111,29 @@ export async function deleteFriend(sourceUsername: string, deleteFriendUsername:
  * @param uid user id of the user who requested the respective friends list
  * @returns an array containing the usernames of the users referenced in the friends list
  */
-export async function getFriends(uid: string): Promise<string[] | undefined> {
+export async function getFriends(username: string): Promise<string[]> {
   try {
-    const doc = await UserModel.findById(uid)
-    if (doc) {
-      let friends: string[] = []
+    const doc = await UserModel.findOne({ username })
+    if (doc) return doc.friends
+  } catch (err) {
+    logger.error(err)
+  }
+  return []
+}
 
-      for (const friendId of doc.friends) {
-        const doc = await UserModel.findById(friendId)
-        if (doc) friends.push(doc.username)
+export async function getFriendProfile(username: string, friendUsername: string): Promise<any> {
+  try {
+    const user = await getUsersByUsername(username)
+    const friend = await getUsersByUsername(friendUsername)
+    if (friend && user && (user.friends.includes(friend.username) || user.roles.includes('ADMIN') || user.roles.includes('MODERATOR'))) {
+      return {
+        username: friend.username,
+        mmr: friend.mmr,
+        avatar: friend.avatar,
+        matchesPlayed: friend.matchesPlayed
       }
-      
-      return friends
     }
   } catch (err) {
     logger.error(err)
   }
-  return undefined
 }

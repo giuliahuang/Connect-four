@@ -1,19 +1,19 @@
 import { Router } from 'express'
 import passport from 'passport'
 import friendsRouter from './friends'
+import profileRouter from './profile'
 import searchRouter from './search'
-import statsRouter from './stats'
-import userProfileRouter from './userProfile'
+import sudoRouter from './sudo'
 
 const router = Router()
 
 /**
- * Dummy route use for authenticating all requests in the router hierarchy
+ * Dummy route use for authenticating all requests in this router hierarchy
  */
 router.use(passport.authenticate('jwt', { session: false }))
-router.use(friendsRouter)
-router.use(searchRouter)
-router.use(statsRouter)
-router.use(userProfileRouter)
+router.use('/friends', friendsRouter)
+router.use('/search', searchRouter)
+router.use('/sudo', sudoRouter)
+router.use('/profile', profileRouter)
 
 export default router

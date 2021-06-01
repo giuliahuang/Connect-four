@@ -2,6 +2,7 @@
 | ---------------------------- | ---------- | ------ | ------------------------------------------------------------------- |
 | /health                      | -          | GET    | API health check endpoint                                           |
 | /login                       | -          | POST   | Logs an existing user in, returns a JWT                             |
+| /firstlogin                  | -          | POST   | Changes the password                                                |
 | /signup                      | -          | POST   | Creates a new user                                                  |
 | /auth/profile                | -          | GET    | Returns the profile of the logged user                              |
 | /auth/profile/avatar         | -          | GET    | Returns the profile picture of the logged user                      |
@@ -13,3 +14,6 @@
 | /auth/friends/friendrequests | -          | GET    | Returns all received friend requests                                |
 | /auth/friends/friendrequests | -          | POST   | Sends a reply to a received friend request                          |
 | /ranking                     | -          | GET    | Returns top 10 players                                              |
+| /moderators                  | -          | GET    | Returns the list of moderators                                      |
+| /moderators                  | -          | POST   | Creates a new moderator account                                     |
+| /moderators/users            | -          | DELETE | Deletes a common user                                               |

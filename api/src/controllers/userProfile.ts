@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 import path from 'path'
-import UserModel from '../mongo/User'
+import logger from '../logger'
+import User from '../models/User'
 import { setAvatar } from '../mongo/userMethods'
-import extractTokenPayload from '../utils/extractTokenPayload'
 
 /**
  * Sends a response containing the user's information
@@ -10,39 +10,18 @@ import extractTokenPayload from '../utils/extractTokenPayload'
  * @param res 
  */
 export async function getUserProfile(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  if (token) {
-    const user = await UserModel.findById(token.sub)
-    if (user) {
-      res.status(200).json({
-        username: user.username,
-        email: user.email,
-        mmr: user.mmr,
-        friends: user.friends,
-        sentFriendReqs: user.sentFriendReqs,
-        receivedFriendReqs: user.receivedFriendReqs
-      })
-    } else
-      res.status(404).json({ error: true, message: 'User not found' })
-  } else
-    res.status(401).json({ error: true, message: 'Unauthorized' })
-}
+  const user: User = req.body['user']
 
-/**
- * Returns the path to the logged user's avatar
- * @param req Request
- * @param res Response
- */
-export async function getAvatar(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  if (token) {
-    const user = await UserModel.findById(token.sub)
-    if (user)
-      res.status(200).json(user.avatar)
-    else
-      res.status(404).json({ error: true, message: 'User not found' })
-  } else
-    res.status(401).json({ error: true, message: 'Unauthorized' })
+  res.status(200).json({
+    username: user.username,
+    email: user.email,
+    mmr: user.mmr,
+    friends: user.friends,
+    sentFriendReqs: user.sentFriendReqs,
+    receivedFriendReqs: user.receivedFriendReqs,
+    avatar: user.avatar,
+    matchesPlayed: user.matchesPlayed
+  })
 }
 
 /**
@@ -51,16 +30,14 @@ export async function getAvatar(req: Request, res: Response) {
  * @param res Response
  */
 export async function uploadAvatar(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  if (token) {
-    const user = await UserModel.findById(token.sub)
-    if (user) {
-      const remove = path.join(__dirname, '../../public/')
-      const relPath = req.file.path.replace(remove, '')
-      await setAvatar(token.sub, relPath)
-      res.status(200).json({ message: 'Avatar saved' })
-    } else
-      res.status(404).json({ error: true, message: 'User not found' })
-  } else
-    res.status(401).json({ error: true, message: 'Unauthorized' })
+  const user: User = req.body['user']
+  const remove = path.join(__dirname, '../../public/')
+  const relPath = req.file.path.replace(remove, '')
+  try {
+    await setAvatar(user._id, relPath)
+    res.status(200).json({ message: 'Avatar saved' })
+  } catch (err) {
+    logger.error(err)
+    res.status(500).json({ error: true, message: 'Internal server error' })
+  }
 }

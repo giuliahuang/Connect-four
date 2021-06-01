@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { deleteFriend as df, getFriends, respondFriendRequest as rfr, sendFriendRequest } from '../mongo/friendsMethods'
-import UserModel from '../mongo/User'
-import extractTokenPayload from '../utils/extractTokenPayload'
+import logger from '../logger'
+import User from '../models/User'
+import { deleteFriend as df, getFriendProfile, getFriends, respondFriendRequest as rfr, sendFriendRequest } from '../mongo/friendsMethods'
 
 /**
  * Sends a response containing the friends list of the user who originated the request
@@ -9,16 +9,14 @@ import extractTokenPayload from '../utils/extractTokenPayload'
  * @param res Response
  */
 export async function getFriendsList(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
+  const user: User = req.body['user']
 
-  if (token) {
-    const result = await getFriends(token.sub)
-    if (result)
-      res.status(200).json(JSON.parse(JSON.stringify(result)))
-    else
-      res.status(404).json({ error: true, message: 'User not found' })
-  } else
-    res.status(401).json({ error: true, message: 'Unauthorized' })
+  const result = await getFriends(user._id)
+  if (result)
+    res.status(200).json(JSON.parse(JSON.stringify(result)))
+  else
+    res.status(404).json({ error: true, message: 'User not found' })
+
 }
 
 /**
@@ -27,16 +25,8 @@ export async function getFriendsList(req: Request, res: Response) {
  * @param res Response
  */
 export async function getFriendsRequests(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-
-  if (token) {
-    const result = await UserModel.findById(token.sub)
-    if (result)
-      res.status(200).json(JSON.parse(JSON.stringify(result.receivedFriendReqs)))
-    else
-      res.status(404).json({ error: true, message: 'User not found' })
-  } else
-    res.status(500).json({ error: true, message: 'Failed to retrieve friends list' })
+  const user: User = req.body['user']
+  res.status(200).json(JSON.parse(JSON.stringify(user.receivedFriendReqs)))
 }
 
 /**
@@ -46,17 +36,12 @@ export async function getFriendsRequests(req: Request, res: Response) {
  * @param res Response
  */
 export async function addFriend(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  const user = await UserModel.findById(token?.sub)
-
-  if (user) {
-    const result = await sendFriendRequest(user.username, req.body.requestedUsername)
-    if (result)
-      res.status(200).json({ message: 'Friend request sent' })
-    else
-      res.status(500).json({ error: true, message: 'An error has occurred' })
-  } else
-    res.status(404).json({ error: true, message: 'User not found' })
+  const user: User = req.body['user']
+  const result = await sendFriendRequest(user.username, req.body.requestedUsername)
+  if (result)
+    res.status(200).json({ message: 'Friend request sent' })
+  else
+    res.status(500).json({ error: true, message: 'An error has occurred' })
 }
 
 /**
@@ -66,33 +51,35 @@ export async function addFriend(req: Request, res: Response) {
  * @param res Response
  */
 export async function respondFriendRequest(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  const user = await UserModel.findById(token?.sub)
-
-  if (user) {
-    const result = await rfr(req.body.hasAccepted, req.body.askerUsername, user.username)
-    if (result)
-      res.status(200).json({ message: 'Friend request accepted' })
-    else
-      res.status(200).json({ message: 'Friend request rejected' })
-  } else
-    res.status(404).json({ error: true, message: 'User not found' })
+  const user: User = req.body['user']
+  const result = await rfr(req.body.hasAccepted, req.body.askerUsername, user.username)
+  if (result)
+    res.status(200).json({ message: 'Friend request accepted' })
+  else
+    res.status(200).json({ message: 'Friend request rejected' })
 }
 
 /**
- * Removes a friend from the friends list through the 
+ * Removes a friend from the friends list
  * @param req Request
  * @param res Response
  */
 export async function deleteFriend(req: Request, res: Response) {
-  const token = extractTokenPayload(req)
-  const user = await UserModel.findById(token?.sub)
-  if (user) {
-    const result = await df(req.body.sourceEmail, req.body.requestedEmail)
-    if (result)
-      res.status(200).json({ message: 'Successfully deleted friend' })
-    else
-      res.status(500).json({ error: true, message: 'Failed to delete friend' })
-  } else
-    res.status(404).json({ error: true, message: 'User not found' })
+  const user: User = req.body['user']
+  const result = await df(user.email, req.query.username as string)
+  if (result)
+    res.status(200).json({ message: 'Successfully deleted friend' })
+  else
+    res.status(500).json({ error: true, message: 'Failed to delete friend' })
+}
+
+export async function friendProfile(req: Request, res: Response) {
+  const user: User = req.body['user']
+  try {
+    const result = await getFriendProfile(user.username, req.query.username as string)
+    if (result) return res.status(200).json(result)
+  } catch (err) {
+    logger.error(err)
+  }
+  return res.status(500).json({ error: true, message: 'Could retrieve friend\'s profile' })
 }

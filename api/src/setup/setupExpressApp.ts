@@ -11,7 +11,6 @@ import auth from '../routes/auth'
 import ranking from '../routes/ranking'
 import express from 'express'
 import path from 'path'
-import logger from '../logger'
 
 /**
  * Creates a new instance of the Express server with the predefined route list and

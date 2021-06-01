@@ -10,9 +10,9 @@ import { passportConfig } from '../config/passport'
  */
 export default async function setup() {
   setupEnv()
-  await passportConfig()
+  passportConfig()
   const expressApp = setupExpressApp()
   const httpServer = setupHTTP(expressApp)
-  await setupIOServer(httpServer) 
+  setupIOServer(httpServer) 
   await setupDB()
 }

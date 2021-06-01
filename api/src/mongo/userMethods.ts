@@ -1,32 +1,34 @@
 import mongoose from 'mongoose'
 import logger from "../logger"
+import MatchResults from '../models/MatchResults'
 import User from "../models/User"
 import { genPassword } from "../utils/passwordUtils"
 import UserModel from "./User"
 
+const MMR_INCR = 30
+const MMR_DECR = 25
+
 /**
  * Receives the hash + salt and stores them in the user's document
- * @param user user who requested the password change
+ * @param userEmail email of the user who requested the password change
  * @param pwd string containing the password provided by the user
  */
-export async function setPassword(user: User & mongoose.Document<any, any>, pwd: string) {
+export async function setPassword(userEmail: string, pwd: string) {
   const pwdObj = genPassword(pwd)
-  user.hash = pwdObj.hash
-  user.salt = pwdObj.salt
-  await user.update()
+  await UserModel.findOneAndUpdate({ email: userEmail }, { hash: pwdObj.hash, salt: pwdObj.salt })
 }
 
 export async function setAdmin(user: User & mongoose.Document<any, any>) {
   if (!user.roles.includes('ADMIN')) {
     user.roles.push('ADMIN')
-    await user.update()
+    await user.updateOne()
   }
 }
 
 export async function setModerator(user: User & mongoose.Document<any, any>) {
   if (!user.roles.includes('MODERATOR')) {
     user.roles.push('MODERATOR')
-    await user.update()
+    await user.updateOne()
   }
 }
 
@@ -66,19 +68,10 @@ export async function getUsersByUsername(username: string): Promise<User | null>
   return null
 }
 
-export async function increaseMmr(player: User & mongoose.Document<any, any>, points: number) {
+export async function processResults(res: MatchResults) {
   try {
-    player.mmr += points
-    player.update()
-
-  } catch (err) {
-    logger.error(err)
-  }
-}
-
-export async function decreaseMmr(player: string, points: number) {
-  try {
-    await UserModel.findByIdAndUpdate(player, {$inc: {mmr: -points}})
+    await UserModel.findByIdAndUpdate(res.winner, { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } })
+    await UserModel.findByIdAndUpdate(res.loser, { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } })
   } catch (err) {
     logger.error(err)
   }
@@ -100,37 +93,40 @@ export async function globalRanking(): Promise<any> {
   }
 }
 
-/**
- * @param userId of the user who requested the statistics
- * @returns an object containing the number of wins, losses and the winrate | undefined
- * if the user is not found
- */
-export async function userStats(userId: string): Promise<any> {
-  try {
-    const user = await UserModel.findById(userId)
-    if (user) {
-      const matches = user.matchesPlayed
-      let wins = 0, losses = 0
-      matches.forEach(match => {
-        if (match.winner === user._id) ++wins
-        else ++losses
-      })
-      let stats = {
-        matchesWon: wins,
-        matchesLost: losses,
-        winRate: wins / (wins + losses)
-      }
-      return stats
-    }
-  } catch (err) {
-    logger.error(err)
-  }
-}
-
 export async function setAvatar(uid: string, path: string): Promise<boolean> {
   try {
     await UserModel.findByIdAndUpdate(uid, { avatar: path })
     return true
+  } catch (err) {
+    logger.error(err)
+  }
+  return false
+}
+
+export async function getModerators(): Promise<any[]> {
+  const mods = await UserModel.find({ roles: 'MODERATORS' })
+  let modsCleaned: any = []
+  for (const mod of mods) {
+    const modCleaned = {
+      _id: mod._id,
+      username: mod.username,
+      email: mod.email,
+    }
+    modsCleaned.push(modCleaned)
+  }
+  return modsCleaned
+}
+
+export async function deleteUser(staffUsername: string, username: string): Promise<boolean> {
+  try {
+    const staff = await getUserByEmail(staffUsername)
+    if (staff && staff.roles.includes('ADMIN')) {
+      UserModel.findOneAndDelete({ username })
+      return true
+    } else if (staff && staff.roles.includes('MODERATOR')) {
+      UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
+      return true
+    }
   } catch (err) {
     logger.error(err)
   }

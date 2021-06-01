@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema<User>({
     default: 0
   },
   friends: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [mongoose.SchemaTypes.String],
     default: []
   },
   sentFriendReqs: {
@@ -48,6 +48,9 @@ const userSchema = new mongoose.Schema<User>({
   avatar: {
     type: mongoose.SchemaTypes.String,
     default: 'placeholder.jpg'
+  },
+  isFirstLogin: {
+    type: mongoose.SchemaTypes.Boolean
   }
 })
 

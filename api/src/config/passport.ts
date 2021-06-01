@@ -7,7 +7,7 @@ import Payload from './Payload'
 /**
  * Sets up the passport middleware for authentication through JWT
  */
-export async function passportConfig() {
+export function passportConfig() {
   const options = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET,
@@ -20,7 +20,11 @@ export async function passportConfig() {
 export async function jwtCallback(payload: Payload, done) {
   try {
     const user = await UserModel.findById(payload.sub)
-    if (user) return done(null, user)
+    if (user) {
+      if (user.isFirstLogin)
+        
+      return done(null, user)
+    }
     else return done(null, false)
   } catch (err) {
     logger.error(err)

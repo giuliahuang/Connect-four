@@ -12,5 +12,6 @@ export default interface User {
     sentFriendReqs: string[],
     receivedFriendReqs: string[],
     matchesPlayed: Match[],
-    avatar: string
+    avatar: string,
+    isFirstLogin?: boolean
 }

@@ -11,8 +11,12 @@ import { validatePassword } from '../utils/passwordUtils'
 export async function login(req: Request, res: Response) {
   const user = await getUserByEmail(req.body.email)
   if (user && validatePassword(req.body.password, user.hash, user.salt)) {
-    const tokenObject = await issueJWT(user)
-    res.status(200).json({ token: tokenObject.token, expiresIn: tokenObject.expires })
+    if (user.isFirstLogin) {
+      res.status(401).json({ error: true, message: 'User should reset the password before logging in', path: '/login/first', method: 'POST' })
+    } else {
+      const tokenObject = await issueJWT(user)
+      res.status(200).json({ token: tokenObject.token, expiresIn: tokenObject.expires })
+    }
   } else {
     res.status(401).json({ error: true, message: 'Incorrect username or password' })
   }

@@ -13,7 +13,7 @@ const mm_pool = new Map<string, UnmatchedPlayer>()
  * Puts a user into matchmaking throught the Socket.io event
  * @param socket 
  */
-export async function play(socket: Socket) {
+export function play(socket: Socket) {
   const user: User = socket.request['user']
   const player: Player = {
     id: user._id,
