@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
 import User from "../../models/User"
-import { getUsersByUsername } from "../../mongo/userMethods"
+import { getUserByUsername } from "../../mongo/userMethods"
 import { gameStart } from "../gameplay/gameplay"
 import UnmatchedPlayer from "../matchmaking/UnmatchedPlayer"
 import Player from "../Player"
@@ -16,7 +16,7 @@ const THIRTY_SECONDS = 30000
  */
 export async function invitePlayer(socket: Socket, playerUsername: string) {
   const user: User = socket.request['user']
-  const invited = await getUsersByUsername(playerUsername)
+  const invited = await getUserByUsername(playerUsername)
 
   if (invited && user.friends.includes(invited._id)) {
     const player: Player = {

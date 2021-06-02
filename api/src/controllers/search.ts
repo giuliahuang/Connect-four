@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUsersByUsername } from '../mongo/userMethods'
+import { getUserByUsername } from '../mongo/userMethods'
 
 /**
  * Searches for the user through the property username set into
@@ -11,7 +11,7 @@ import { getUsersByUsername } from '../mongo/userMethods'
 export async function search(req: Request, res: Response) {
   const username = req.query.username
   if (username) {
-    const user = await getUsersByUsername(username as string)
+    const user = await getUserByUsername(username as string)
     if (user) {
       return res.status(200).json(JSON.parse(JSON.stringify(user)))
     }

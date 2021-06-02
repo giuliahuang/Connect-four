@@ -13,23 +13,17 @@ const MMR_DECR = 25
  * @param userEmail email of the user who requested the password change
  * @param pwd string containing the password provided by the user
  */
-export async function setPassword(userEmail: string, pwd: string) {
+export async function setPassword(email: string, pwd: string) {
   const pwdObj = genPassword(pwd)
-  await UserModel.findOneAndUpdate({ email: userEmail }, { hash: pwdObj.hash, salt: pwdObj.salt })
+  await UserModel.findOneAndUpdate({ email }, { hash: pwdObj.hash, salt: pwdObj.salt })
 }
 
-export async function setAdmin(user: User & mongoose.Document<any, any>) {
-  if (!user.roles.includes('ADMIN')) {
-    user.roles.push('ADMIN')
-    await user.updateOne()
-  }
+export async function setAdmin(email: string) {
+  await UserModel.findOneAndUpdate({ email, roles: { $ne: 'ADMIN' } }, { $push: { roles: 'ADMIN' } })
 }
 
-export async function setModerator(user: User & mongoose.Document<any, any>) {
-  if (!user.roles.includes('MODERATOR')) {
-    user.roles.push('MODERATOR')
-    await user.updateOne()
-  }
+export async function setModerator(email: string) {
+  await UserModel.findOneAndUpdate({ email, roles: { $ne: 'MODERATOR' } }, { $push: { roles: 'MODERATOR' } })
 }
 
 /**
@@ -50,18 +44,27 @@ export async function newUser(username: string, email: string, password: string)
   return await doc.save()
 }
 
-export async function getUserByEmail(email: string): Promise<User | null> {
+export async function getUserById(uid: string): Promise<User | null> {
   try {
-    return await UserModel.findOne({ email: email })
+    return await UserModel.findById(uid)
   } catch (err) {
     logger.error(err)
-    return null
   }
+  return null
 }
 
-export async function getUsersByUsername(username: string): Promise<User | null> {
+export async function getUserByEmail(email: string): Promise<User | null> {
   try {
-    return await UserModel.findOne({ username: username })
+    return await UserModel.findOne({ email })
+  } catch (err) {
+    logger.error(err)
+  }
+  return null
+}
+
+export async function getUserByUsername(username: string): Promise<User | null> {
+  try {
+    return await UserModel.findOne({ username })
   } catch (err) {
     logger.error(err)
   }
@@ -104,7 +107,7 @@ export async function setAvatar(uid: string, path: string): Promise<boolean> {
 }
 
 export async function getModerators(): Promise<any[]> {
-  const mods = await UserModel.find({ roles: 'MODERATORS' })
+  const mods = await UserModel.find({ roles: 'MODERATOR' })
   let modsCleaned: any = []
   for (const mod of mods) {
     const modCleaned = {
@@ -119,13 +122,15 @@ export async function getModerators(): Promise<any[]> {
 
 export async function deleteUser(staffUsername: string, username: string): Promise<boolean> {
   try {
-    const staff = await getUserByEmail(staffUsername)
-    if (staff && staff.roles.includes('ADMIN')) {
-      UserModel.findOneAndDelete({ username })
-      return true
-    } else if (staff && staff.roles.includes('MODERATOR')) {
-      UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
-      return true
+    if (staffUsername !== username) {
+      const staff = await getUserByUsername(staffUsername)
+      if (staff && staff.roles.includes('ADMIN')) {
+        UserModel.findOneAndDelete({ username })
+        return true
+      } else if (staff && staff.roles.includes('MODERATOR')) {
+        UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
+        return true
+      }
     }
   } catch (err) {
     logger.error(err)

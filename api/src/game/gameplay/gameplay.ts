@@ -1,8 +1,5 @@
-import { exit } from 'process'
-import { Server as IOServer } from 'socket.io'
-import jwtAuth from 'socketio-jwt-auth'
-import { jwtCallback } from '../../config/passport'
 import logger from '../../logger/'
+import { createIOServer } from '../../setup/setupIOServer'
 import freePortFinder from '../../utils/freePortFinder'
 import UnmatchedPlayer from '../matchmaking/UnmatchedPlayer'
 import Player from '../Player'
@@ -17,16 +14,7 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
   const port = await freePortFinder()
 
   if (port) {
-    const io = new IOServer(port, { cors: { origin: "*" } })
-    if (process.env.JWT_SECRET) {
-      io.use(jwtAuth.authenticate({
-        secret: process.env.JWT_SECRET,
-        algorithm: 'HS256'
-      }, jwtCallback))
-    } else {
-      logger.info('JWT Secret not found in .env file')
-      exit(1)
-    }
+    const io = createIOServer(port)
 
     p1.ws.emit('matched', port)
     p2.ws.emit('matched', port)

@@ -17,7 +17,7 @@ export async function setupDB() {
       if (!doc) {
         logger.info("Creating admin user")
         const admin = await newUser('admin', 'admin@connectfour.it', 'admin')
-        await setAdmin(admin)
+        await setAdmin(admin.email)
       }
       return db
     } catch (err) {

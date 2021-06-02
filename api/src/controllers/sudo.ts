@@ -11,7 +11,7 @@ export async function getModeratorsList(req: Request, res: Response) {
 export async function addModerator(req: Request, res: Response) {
   try {
     const newMod = await newUser(req.body.username, req.body.email, req.body.password)
-    await setModerator(newMod)
+    await setModerator(newMod.email)
     res.status(200).json({ message: 'New moderator account create successfully' })
   } catch (err) {
     logger.error(err)

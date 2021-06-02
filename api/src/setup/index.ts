@@ -1,6 +1,6 @@
 import { setupExpressApp } from './setupExpressApp'
 import { setupHTTP } from './setupHTTP'
-import { setupIOServer } from './setupIOServer'
+import { setupGlobalIOServer } from './setupIOServer'
 import { setupDB } from './setupMongo'
 import { setupEnv } from './setupEnv'
 import { passportConfig } from '../config/passport'
@@ -13,6 +13,6 @@ export default async function setup() {
   passportConfig()
   const expressApp = setupExpressApp()
   const httpServer = setupHTTP(expressApp)
-  setupIOServer(httpServer) 
+  setupGlobalIOServer(httpServer)
   await setupDB()
 }
