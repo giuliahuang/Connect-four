@@ -11,7 +11,8 @@
     "build": "rm -rf build/ && tsc",
     "start": "node build/index",
     "go": "npm run build && npm run start",
-    "lint": "prettier --ext=.ts,.js ./src"
+    "lint": "prettier --ext=.ts,.js ./src",
+    "dev": "nodemon index"
   },
   "dependencies": {
     "cors": "^2.8.5",

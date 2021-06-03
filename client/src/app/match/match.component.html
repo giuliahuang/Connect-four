@@ -7,6 +7,7 @@
         <title>Forza 4</title>
         <script src="match.component.ts"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
     </head>
 
     <body>
@@ -23,18 +24,18 @@
               <h1 class="title">Connect 4</h1>
               <div class="grid">
           
-                  <div class="cell col0" id="50" (click)="change('col0',5);"></div>
-                  <div class="cell col1" id="51" (click)="change('col1',5);"></div>
-                  <div class="cell col2" id="52" (click)="change('col2',5);"></div>
+                  <div class="cell col0" id="50" (click)="change('col0',1);"></div>
+                  <div class="cell col1" id="51" (click)="change('col1',1);"></div>
+                  <div class="cell col2" id="52" (click)="change('col2',1);"></div>
                   <div class="cell col3" id="53" (click)="change('col3',5);"></div>
                   <div class="cell col4" id="54" (click)="change('col4',5);"></div>
                   <div class="cell col5" id="55" (click)="change('col5',5);"></div>
                   <div class="cell col6" id="56" (click)="change('col6',5);"></div>
           
           
-                  <div class="cell col0" id="40" (click)="change('col0',4);"></div>
-                  <div class="cell col1" id="41" (click)="change('col1',4);"></div>
-                  <div class="cell col2" id="42" (click)="change('col2',4);"></div>
+                  <div class="cell col0" id="40" (click)="change('col0',1);"></div>
+                  <div class="cell col1" id="41" (click)="change('col1',1);"></div>
+                  <div class="cell col2" id="42" (click)="change('col2',1);"></div>
                   <div class="cell col3" id="43" (click)="change('col3',4);"></div>
                   <div class="cell col4" id="44" (click)="change('col4',4);"></div>
                   <div class="cell col5" id="45" (click)="change('col5',4);"></div>

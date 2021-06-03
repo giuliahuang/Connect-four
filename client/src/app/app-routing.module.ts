@@ -6,7 +6,7 @@ import { MatchComponent } from './match/match.component'
 
 const routes: Routes = [
   { path: 'user', component: UserComponent},
-  { path: 'match', component: MatchComponent}
+  { path: 'match', component: MatchComponent},
 ];
 
 @NgModule({
