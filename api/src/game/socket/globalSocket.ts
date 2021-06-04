@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from "socket.io"
 import logger from '../../logger'
 import Message from "../../models/Message"
-import MessageModel from "../../mongo/Message"
+import { MessageModel } from "../../mongo/Message"
 import UserModel from "../../mongo/User"
 import { disconnectClient, getOnlineFriends, sendMessage } from "../friends/friendList"
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
