@@ -1,6 +1,6 @@
 import { Server as IOServer, Socket } from "socket.io"
 import logger from '../../logger'
-import { getOnlineFriends } from "../friends/friendsList"
+import { disconnectClient, getOnlineFriends, sendMessage } from "../friends/friendsList"
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
 import { play } from "../matchmaking/matchmaking"
 
@@ -23,13 +23,10 @@ export function globalCallback(io: IOServer, socket: Socket) {
   })
 
   socket.on('dm', (message: string, destUsername: string) => {
-    const user = socket.request['user']
-    if (user.friends.includes(destUsername))
-      io.to(destUsername).emit('dm', message)
+    sendMessage(socket.request['user'], message, destUsername, io)
   })
 
   socket.on('disconnect', reason => {
-    logger.info(`Clieant ${socket.id} disconnected because: ${reason}`)
-    io.emit('disconnected', socket.request['user.username'])
+    disconnectClient(socket, reason, io)
   })
 }
