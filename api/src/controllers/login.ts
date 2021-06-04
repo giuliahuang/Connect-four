@@ -11,7 +11,7 @@ import { validatePassword } from '../utils/passwordUtils'
 export async function login(req: Request, res: Response) {
   const user = await getUserByEmail(req.body.email)
   if (user && validatePassword(req.body.password, user.hash, user.salt)) {
-    if (user.isFirstLogin) {
+    if (!user.lastSeen) {
       res.status(401).json({ error: true, message: 'User should reset the password before logging in', path: '/login/first', method: 'POST' })
     } else {
       const tokenObject = await issueJWT(user)

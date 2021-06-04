@@ -73,7 +73,7 @@ export async function respondFriendRequest(hasAccepted: boolean, askerUsername: 
  * @param user2 
  * @returns true if the operation was processed properly, false otherwise
  */
-async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>): Promise<boolean> {
+async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>) {
   try {
     const session = await UserModel.startSession()
 
@@ -138,7 +138,7 @@ export async function getFriends(username: string): Promise<string[]> {
     const doc = await UserModel.findOne({ username })
     if (doc) return doc.friends
   } catch (err) {
-    logger.error(err)
+    logger.info(err)
   }
   return []
 }

@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import User from '../models/User'
 import { matchSchema } from './Match'
 
-const userSchema = new mongoose.Schema<User>({
+export const UserSchema = new mongoose.Schema<User>({
   username: {
     type: mongoose.SchemaTypes.String,
     required: true,
@@ -49,10 +49,11 @@ const userSchema = new mongoose.Schema<User>({
     type: mongoose.SchemaTypes.String,
     default: 'placeholder.jpg'
   },
-  isFirstLogin: {
-    type: mongoose.SchemaTypes.Boolean
+  lastSeen: {
+    type: mongoose.SchemaTypes.Number,
+    default: null
   }
 })
 
-const UserModel = mongoose.model<User>('User', userSchema)
+const UserModel = mongoose.model<User>('User', UserSchema)
 export default UserModel
