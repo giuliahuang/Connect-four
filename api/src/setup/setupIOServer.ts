@@ -4,7 +4,7 @@ import jwtAuth from 'socketio-jwt-auth'
 import { jwtCallback } from '../config/passport'
 import { globalCallback } from '../game/socket/globalSocket'
 import logger from '../logger/'
-
+import UserModel from '../mongo/User'
 /**
  * Creates a new Socket.io instance through either a webserver or a port and applies the auth middleware
  * @param httpServer required for binding the global Socket.io server
@@ -20,7 +20,17 @@ export function createIOServer(param: any): IOServer {
   io.use(jwtAuth.authenticate({
     secret: process.env.JWT_SECRET!,
     algorithm: 'HS256'
-  }, jwtCallback))
+  }, function (payload, done) {
+    UserModel.findOne({ _id: payload.sub }, function (err, user) {
+      if (err) {
+        return done(err)
+      }
+      if (!user) {
+        return done(null, false, 'Not authorized')
+      }
+      return done(null, user)
+    })
+  }))
   return io
 }
 

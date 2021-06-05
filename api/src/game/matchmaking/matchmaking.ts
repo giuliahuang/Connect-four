@@ -28,13 +28,11 @@ export function play(socket: Socket) {
       ws: socket
     }
 
-    if (!mm_pool.has(unmatchedPlayer.player.id))
+    if (!mm_pool.has(unmatchedPlayer.player.id)) {
       mm_pool.set(unmatchedPlayer.player.id, unmatchedPlayer)
-    else
-      socket.disconnect()
+      setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
+    }
   }
-
-  setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
 }
 
 /**

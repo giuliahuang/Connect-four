@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+    connectfour:
+        image: connectfour
+        build:
+            context: client
+            dockerfile: ./Dockerfile
+        environment:
+            NODE_ENV: development
+        ports:
+            - 3000:3000
+        volumes:
+            - .:/usr/src/app/client
+    connectfourapi:
+        image: connectfourapi
+        build:
+            context: api
+            dockerfile: ./Dockerfile
+        environment:
+            NODE_ENV: development
+        ports:
+            - 5000:5000
+        volumes:
+            - .:/usr/src/app/api
+    mongodb:
+        image: mongo:latest
+        ports:
+            - 27017:27017
+        volumes:
+            - data:/data/db
+    redis:
+        image: redis:latest
+        ports:
+            - 6739:6739
+        volumes:
+            - data:/data/redis
+
+volumes:
+    data:

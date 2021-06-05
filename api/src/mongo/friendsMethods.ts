@@ -138,7 +138,7 @@ export async function getFriends(username: string): Promise<string[]> {
     const doc = await UserModel.findOne({ username })
     if (doc) return doc.friends
   } catch (err) {
-    logger.info(err)
+    logger.prettyError(err)
   }
   return []
 }

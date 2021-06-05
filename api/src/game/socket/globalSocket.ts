@@ -9,7 +9,7 @@ import { play } from "../matchmaking/matchmaking"
 
 export function globalCallback(io: IOServer, socket: Socket) {
   logger.info(`A new socket connection has been established by ${socket.id}`)
-  clientInit(socket)
+  // clientInit(socket)
 
   socket.on('play', () => {
     play(socket)

@@ -28,10 +28,5 @@ export function sendMessage(user: User, message: string, destUsername: string, s
 }
 
 export async function disconnectClient(socket: Socket, reason: string, io: IOServer) {
-  const user = socket.request['user']
-  logger.info(`User ${user.username} disconnected because: ${reason}`)
-  const onlineFriends = await getOnlineFriends(socket.request['user.username'])
-  onlineFriends.forEach(friend => {
-    io.to(friend).emit('friendDisconnected', user.username)
-  })
+
 }
