@@ -1,7 +1,6 @@
 import passport from 'passport'
 import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
-import logger from '../logger'
-import { getUserById } from '../mongo/userMethods'
+import UserModel from '../mongo/User'
 import Payload from './Payload'
 
 /**
@@ -18,12 +17,13 @@ export function passportConfig() {
 }
 
 export async function jwtCallback(payload: Payload, done) {
-  try {
-    const user = await getUserById(payload.sub)
-    if (user) return done(null, user)
-    else return done(null, false)
-  } catch (err) {
-    logger.error(err)
-    done(err)
-  }
+  UserModel.findById((payload.sub), function (err, user) {
+    if (err) {
+      return done(err)
+    }
+    if (!user) {
+      return done(null, false, 'Not authorized')
+    }
+    return done(null, user)
+  })
 }
