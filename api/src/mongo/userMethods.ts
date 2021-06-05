@@ -39,7 +39,8 @@ export async function newUser(username: string, email: string, password: string)
     username: username,
     email: email,
     salt: pwdObj.salt,
-    hash: pwdObj.hash
+    hash: pwdObj.hash,
+    lastSeen: Date.now()
   })
   return await doc.save()
 }
