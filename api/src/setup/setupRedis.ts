@@ -1,7 +1,6 @@
 import redis from 'redis'
 
-const client = redis.createClient({
-  host: 'localhost',
-  port: 5000,
-  password: 'memes'
+export const client = redis.createClient({
+  host: 'redis',
+  port: 6379
 })

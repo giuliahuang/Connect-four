@@ -11,7 +11,7 @@ services:
         ports:
             - 3000:3000
         volumes:
-            - .:/usr/src/app/client
+            - .:/usr/src/app/
     connectfourapi:
         image: connectfourapi
         build:
@@ -22,7 +22,7 @@ services:
         ports:
             - 5000:5000
         volumes:
-            - .:/usr/src/app/api
+            - .:/usr/src/app/
     mongodb:
         image: mongo:latest
         ports:
@@ -32,7 +32,7 @@ services:
     redis:
         image: redis:latest
         ports:
-            - 6739:6739
+            - 6379:6379
         volumes:
             - data:/data/redis
 
