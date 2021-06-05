@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
     connectfour:
+        container_name: client
         image: connectfourclient
         build:
             context: client
@@ -15,6 +16,7 @@ services:
             - '/app/node_modules'
             - .:/usr/src/app/
     connectfourapi:
+        container_name: api
         image: connectfourapi
         build:
             context: api
@@ -26,6 +28,7 @@ services:
         volumes:
             - .:/usr/src/app/
     mongodb:
+        container_name: mongodb
         image: mongo:latest
         ports:
             - 27017:27017
@@ -33,11 +36,10 @@ services:
             - '/app/node_modules'
             - data:/data/db
     redis:
+        container_name: redis
         image: redis:latest
         ports:
             - 6379:6379
-        volumes:
-            - data:/data/redis
 
 volumes:
     data:

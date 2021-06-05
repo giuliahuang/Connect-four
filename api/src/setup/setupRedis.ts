@@ -1,6 +1,10 @@
 import redis from 'redis'
+import logger from '../logger'
 
-export const client = redis.createClient({
+export const redisClient = redis.createClient({
   host: 'redis',
-  port: 6379
+  port: parseInt(process.env.REDIS_PORT!)
 })
+
+redisClient.on('connect', () => logger.info('Connected to Redis'))
+redisClient.on("error", error => logger.prettyError(error))
