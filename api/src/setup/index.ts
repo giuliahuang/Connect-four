@@ -1,4 +1,3 @@
-import { RedisClient } from 'redis'
 import { passportConfig } from '../config/passport'
 import { setupEnv } from './setupEnv'
 import { setupExpressApp } from './setupExpressApp'

@@ -9,7 +9,7 @@ export function globalCallback(io: IOServer, socket: Socket) {
   clientInit(socket)
 
   socket.on('play', () => {
-    play(socket)
+    play(socket, io)
   })
 
   socket.on('invite', (username: string) => {
