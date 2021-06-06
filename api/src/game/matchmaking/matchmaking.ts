@@ -69,3 +69,7 @@ async function matchmakingSuccess(p1: any, p2: any) {
     gameStart(player1, player2)
   }
 }
+
+export function cancelPlay(userid: string) {
+  childProcess.send({ cancel: userid })
+}

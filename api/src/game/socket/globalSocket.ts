@@ -1,8 +1,9 @@
 import { Server as IOServer, Socket } from "socket.io"
 import logger from '../../logger'
+import User from "../../models/User"
 import { clientConnected, clientDisconnected, getNewMessages, sendMessage } from "../friends/friendList"
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
-import { play } from "../matchmaking/matchmaking"
+import { cancelPlay, play } from "../matchmaking/matchmaking"
 
 export function globalCallback(io: IOServer, socket: Socket) {
   logger.info(`A new socket connection has been established by ${socket.id}`)
@@ -10,6 +11,11 @@ export function globalCallback(io: IOServer, socket: Socket) {
 
   socket.on('play', () => {
     play(socket, io)
+  })
+
+  socket.on('cancelPlay', () => {
+    const user: User = socket.request['user']
+    cancelPlay(user._id)
   })
 
   socket.on('invite', (username: string) => {

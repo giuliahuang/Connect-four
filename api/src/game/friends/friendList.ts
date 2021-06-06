@@ -8,6 +8,7 @@ import { dm } from "../../mongo/messageMethods"
 import UserModel from "../../mongo/User"
 import { getUserByUsername } from "../../mongo/userMethods"
 import { redisClient as redis } from '../../setup/setupRedis'
+import { cancelPlay } from "../matchmaking/matchmaking"
 
 const hgetAsync = promisify(redis.hget).bind(redis)
 const hsetAsync = promisify(redis.hset).bind(redis)
@@ -43,6 +44,7 @@ export async function clientDisconnected(socket: Socket, reason: string) {
       logger.info(`Client ${username} disconnected: ${reason}`)
       const user = await getUserByUsername(username)
       if (user) {
+        cancelPlay(user._id)
         user.friends.forEach(friend => {
           logger.info('sending disconnection event to ' + friend)
           socket.to(friend).emit('disconnected', username)

@@ -6,14 +6,22 @@ setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
 
 // Ideally this should be implemented through a microservice instead of a child process
 process.on('message', (message) => {
-  const player = {
-    id: message.id,
-    mmr: message.mmr,
-    ws: message.ws,
-    timeJoined: Date.now()
+  if (message.id) {
+    const player = {
+      id: message.id,
+      mmr: message.mmr,
+      ws: message.ws,
+      timeJoined: Date.now()
+    }
+    if (!mm_pool.has(player.id)) {
+      mm_pool.set(player.id, player)
+      console.log(`${player.id} added to pool`)
+
+    }
   }
-  if (!mm_pool.has(player.id))
-    mm_pool.set(player.id, player)
+
+  if (message.cancel)
+    mm_pool.delete(message.cancel)
 })
 
 /**
