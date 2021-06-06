@@ -1,4 +1,4 @@
-import { ChildProcess, fork } from 'child_process'
+import { fork } from 'child_process'
 import path from 'path'
 import { Server, Socket } from 'socket.io'
 import logger from '../../logger/'
@@ -8,7 +8,11 @@ import { gameStart } from '../gameplay/gameplay'
 import Player from '../Player'
 import UnmatchedPlayer from "./UnmatchedPlayer"
 
-let childProcess = fork(path.join(__dirname, 'child.js'))
+const childProcess = fork(path.join(__dirname, 'child.js'))
+childProcess.on('message', message => {
+  const res: any = message.valueOf()
+  matchmakingSuccess(res.player1, res.player2)
+})
 let io: Server
 
 /**
@@ -30,11 +34,6 @@ export function play(socket: Socket, server: Server) {
   }
 }
 
-childProcess.on('message', message => {
-  const res: any = message.valueOf()
-  matchmakingSuccess(res.player1, res.player2)
-})
-
 /**
  * Starts the game between player 1 and player 2
  * @param p1 player 1
@@ -45,26 +44,28 @@ async function matchmakingSuccess(p1: any, p2: any) {
   const user2 = await getUserById(p2.id)
   const socket1 = io.sockets.sockets.get(p1.ws)
   const socket2 = io.sockets.sockets.get(p2.ws)
-  const player1: UnmatchedPlayer = {
-    player: {
-      id: user1!._id,
-      username: user1!.username,
-      mmr: user1!.mmr
-    },
-    timeJoined: p1.timeJoined,
-    ws: socket1!
+  if (user1 && user2 && socket1 && socket2) {
+    const player1: UnmatchedPlayer = {
+      player: {
+        id: user1._id,
+        username: user1.username,
+        mmr: user1.mmr
+      },
+      timeJoined: p1.timeJoined,
+      ws: socket1
+    }
+    const player2: UnmatchedPlayer = {
+      player: {
+        id: user2._id,
+        username: user2.username,
+        mmr: user2.mmr
+      },
+      timeJoined: p2.timeJoined,
+      ws: socket2
+    }
+    logger.info(`Player: ${player1.player.username} was matched with Player: ${player1.player.username}`)
+    player1.ws.send(`You've been matched with ${player2.player.id}`)
+    player2.ws.send(`You've been matched with ${player1.player.id}`)
+    gameStart(player1, player2)
   }
-  const player2: UnmatchedPlayer = {
-    player: {
-      id: user2!._id,
-      username: user2!.username,
-      mmr: user2!.mmr
-    },
-    timeJoined: p2.timeJoined,
-    ws: socket2!
-  }
-  logger.info(`Player: ${player1.player.username} was matched with Player: ${player1.player.username}`)
-  player1.ws.send(`You've been matched with ${player2.player.id}`)
-  player2.ws.send(`You've been matched with ${player1.player.id}`)
-  gameStart(player1, player2)
 }

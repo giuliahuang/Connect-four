@@ -23,21 +23,15 @@ process.on('message', (message) => {
 function matchmake(mm_pool: Map<string, any>) {
   if (mm_pool.size < 1) return
 
-  //enabled down level iteration, look for better alternative
-  for (const [A, p1] of mm_pool) {
-    for (const [B, p2] of mm_pool) {
+  mm_pool.forEach((p1: any, player1id: string) => {
+    mm_pool.forEach((p2: any, player2id: string) => {
       if (isMatch(p1, p2)) {
-        const a = mm_pool.get(A)
-        const b = mm_pool.get(B)
-        if (a && b) {
-          mm_pool.delete(A)
-          mm_pool.delete(B)
-          process.send!({ player1: { ...a }, player2: { ...b } })
-          // process.exit()
-        }
+        mm_pool.delete(player1id)
+        mm_pool.delete(player2id)
+        process.send!({ player1: p1, player2: p2 })
       }
-    }
-  }
+    })
+  })
 }
 
 /**
