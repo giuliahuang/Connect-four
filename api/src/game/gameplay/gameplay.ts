@@ -1,4 +1,6 @@
+import { isObject } from 'util'
 import logger from '../../logger/'
+import User from '../../models/User'
 import { createIOServer } from '../../setup/setupIOServer'
 import freePortFinder from '../../utils/freePortFinder'
 import UnmatchedPlayer from '../matchmaking/UnmatchedPlayer'
@@ -29,8 +31,8 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
     }
 
     const match = new Match(player1, player2)
-    p1.ws.broadcast.emit('playing', port)
-    p2.ws.broadcast.emit('playing', port)
+    p1.ws.broadcast.emit('playing', p1.player.username, port)
+    p2.ws.broadcast.emit('playing', p2.player.username, port)
 
     logger.info(`Started a new match between ${player1.id} and ${player2.id}`)
     io.on('connection', (socket) => {
@@ -47,22 +49,22 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
       })
 
       socket.on('dot', (column: number) => {
-        const playerId: string = socket.request['user._id']
-        const moveResult = match.addDot(column, playerId)
-        if (moveResult && moveResult.accepted) {
+        const user: User = socket.request['user']
+        const moveResult = match.addDot(column, user._id)
+        if (moveResult.accepted) {
           socket.broadcast.emit('dot', column)
           if (moveResult.matchResult) {
-            io.emit(`Player ${socket.request['user.username']} has won the match!`)
-            p1.ws.broadcast.emit('stoppedPlaying')
-            p2.ws.broadcast.emit('stoppedPlaying')
+            io.emit('winner', `Player ${socket.request['user.username']} has won the match!`)
+            p1.ws.broadcast.emit('stoppedPlaying', p1.player.username)
+            p2.ws.broadcast.emit('stoppedPlaying', p2.player.username)
             io.disconnectSockets()
           }
+        } else {
+          io.emit('playerMoveRejection', column, user.username)
         }
       })
     })
   } else {
     logger.error("Couldn't find a free port")
-    p1.ws.disconnect()
-    p2.ws.disconnect()
   }
 }

@@ -72,7 +72,7 @@ export class Match {
    * @returns a MoveResult object that specifies whether the move has been accepted and whether the move
    * was a winning move through matchResult. If the property is set it contains the IDs of the winner and the loser
    */
-  public addDot(col: number, playerId: string): MoveResult | undefined {
+  public addDot(col: number, playerId: string): MoveResult {
     let res: MoveResult = {
       accepted: false,
       matchResult: undefined
@@ -80,7 +80,7 @@ export class Match {
     let player: Player
     if (this.player1.id === playerId) player = this.player1
     else if (this.player2.id === playerId) player = this.player2
-    else return undefined
+    else return res
 
     if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
       this.game_board[this.heights[col]][col] = player.id
