@@ -1,11 +1,17 @@
-import { isObject } from 'util'
+import { promisify } from 'util'
 import logger from '../../logger/'
+import MatchResults from '../../models/MatchResults'
 import User from '../../models/User'
+import { endMatch } from '../../mongo/matchMethods'
 import { createIOServer } from '../../setup/setupIOServer'
+import { redisClient as redis } from '../../setup/setupRedis'
 import freePortFinder from '../../utils/freePortFinder'
 import UnmatchedPlayer from '../matchmaking/UnmatchedPlayer'
 import Player from '../Player'
 import { Match } from './Match'
+import MoveResult from './MoveResult'
+
+const hgetAsync = promisify(redis.hget).bind(redis)
 
 /**
  * Creates a new Socket.io server and starts the game
@@ -34,8 +40,8 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
     p1.ws.broadcast.emit('playing', p1.player.username, port)
     p2.ws.broadcast.emit('playing', p2.player.username, port)
 
-    logger.info(`Started a new match between ${player1.id} and ${player2.id}`)
-    io.on('connection', (socket) => {
+    logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
+    io.on('connection', socket => {
       if (socket.request['user._id'] == player1.id || socket.request['user._id'] == player2.id)
         socket.join('playersChat')
       else
@@ -61,6 +67,21 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
           }
         } else {
           io.emit('playerMoveRejection', column, user.username)
+        }
+      })
+
+      socket.on('disconnect', async (reason) => {
+        try {
+          const username = await hgetAsync('users', socket.id)
+          if (username === player1.username) {
+            endMatch({ winner: player2.username, loser: username })
+            io.emit('playerDisconnected', username, reason)
+          } else if (username === player2.username) {
+            endMatch({ winner: player1.username, loser: username })
+            io.emit('playerDisconnected', username, reason)
+          }
+        } catch (err) {
+          logger.prettyError(err)
         }
       })
     })
