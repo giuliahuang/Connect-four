@@ -1,6 +1,9 @@
 import logger from "../logger"
 import MatchResults from "../models/MatchResults"
-import { processResults } from "./userMethods"
+import UserModel from "./User"
+
+const MMR_INCR = 30
+const MMR_DECR = 25
 
 /**
  * Processes the results of the match and updates the users' mmr
@@ -9,6 +12,15 @@ import { processResults } from "./userMethods"
 export async function endMatch(res: MatchResults) {
   try {
     await processResults(res)
+  } catch (err) {
+    logger.error(err)
+  }
+}
+
+export async function processResults(res: MatchResults) {
+  try {
+    await UserModel.findByIdAndUpdate(res.winner, { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } })
+    await UserModel.findByIdAndUpdate(res.loser, { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } })
   } catch (err) {
     logger.error(err)
   }

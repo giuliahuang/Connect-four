@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import path from 'path'
 import logger from '../logger'
 import User from '../models/User'
@@ -9,8 +9,8 @@ import { setAvatar } from '../mongo/userMethods'
  * @param req 
  * @param res 
  */
-export async function getUserProfile(req: Request, res: Response) {
-  const user: User = req.body['user']
+export async function getUserProfile(req, res: Response) {
+  const user: User = req.user
 
   res.status(200).json({
     username: user.username,
@@ -29,8 +29,8 @@ export async function getUserProfile(req: Request, res: Response) {
  * @param req Request
  * @param res Response
  */
-export async function uploadAvatar(req: Request, res: Response) {
-  const user: User = req.body['user']
+export async function uploadAvatar(req, res: Response) {
+  const user: User = req.user
   const remove = path.join(__dirname, '../../public/')
   const relPath = req.file.path.replace(remove, '')
   try {

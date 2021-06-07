@@ -19,9 +19,9 @@ export async function addModerator(req: Request, res: Response) {
   }
 }
 
-export async function removeUser(req: Request, res: Response) {
+export async function removeUser(req, res: Response) {
   try {
-    const staff: User = req.body['user']
+    const staff: User = req.user
     const result = await deleteUser(staff.username, req.params.username)
     if (result) return res.status(200).json({ message: 'User deletion completed' })
   } catch (err) {

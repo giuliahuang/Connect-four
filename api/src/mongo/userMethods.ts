@@ -1,12 +1,8 @@
 import mongoose from 'mongoose'
 import logger from "../logger"
-import MatchResults from '../models/MatchResults'
 import User from "../models/User"
 import { genPassword } from "../utils/passwordUtils"
 import UserModel from "./User"
-
-const MMR_INCR = 30
-const MMR_DECR = 25
 
 /**
  * Receives the hash + salt and stores them in the user's document
@@ -47,7 +43,7 @@ export async function newUser(username: string, email: string, password: string)
 
 export async function getUserById(uid: string): Promise<User | null> {
   try {
-    return await UserModel.findById(uid)
+    return await UserModel.findById(uid).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
   } catch (err) {
     logger.error(err)
   }
@@ -65,20 +61,11 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 
 export async function getUserByUsername(username: string): Promise<User | null> {
   try {
-    return await UserModel.findOne({ username })
+    return await UserModel.findOne({ username }).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
   } catch (err) {
     logger.error(err)
   }
   return null
-}
-
-export async function processResults(res: MatchResults) {
-  try {
-    await UserModel.findByIdAndUpdate(res.winner, { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } })
-    await UserModel.findByIdAndUpdate(res.loser, { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } })
-  } catch (err) {
-    logger.error(err)
-  }
 }
 
 /**
@@ -108,17 +95,12 @@ export async function setAvatar(uid: string, path: string): Promise<boolean> {
 }
 
 export async function getModerators(): Promise<any[]> {
-  const mods = await UserModel.find({ roles: 'MODERATOR' })
-  let modsCleaned: any = []
-  for (const mod of mods) {
-    const modCleaned = {
-      _id: mod._id,
-      username: mod.username,
-      email: mod.email,
-    }
-    modsCleaned.push(modCleaned)
+  try {
+    return await UserModel.find({ roles: 'MODERATOR' }).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
+  } catch (err) {
+    logger.prettyError(err)
+    return []
   }
-  return modsCleaned
 }
 
 export async function deleteUser(staffUsername: string, username: string): Promise<boolean> {
