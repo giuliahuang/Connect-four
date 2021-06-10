@@ -9,18 +9,20 @@ import logger from '../logger/'
  * Creates a new Socket.io instance through either a webserver or a port and applies the auth middleware
  * @param httpServer required for binding the global Socket.io server
  */
-export function createIOServer(httpServer: WebServer): IOServer
-export function createIOServer(port: number): IOServer
-export function createIOServer(param: any): IOServer {
+export function createIOServer(param: WebServer | number): IOServer {
   logger.info('Bootstrapping IO server')
   const io = new IOServer(param, { cors: { origin: '*' } })
 
   // Socket.io middleware that provides authentication through the JWT token set into
   // the websocket request's auth headers
-  io.use(jwtAuth.authenticate({
-    secret: process.env.JWT_SECRET!,
-    algorithm: 'HS256'
-  }, jwtCallback))
+  if (process.env.JWT_SECRET) {
+    io.use(jwtAuth.authenticate({
+      secret: process.env.JWT_SECRET,
+      algorithm: 'HS256'
+    }, jwtCallback))
+  } else {
+    logger.error(new Error('JWT secret not found in process environment'))
+  }
   return io
 }
 

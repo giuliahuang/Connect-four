@@ -5,6 +5,6 @@ import { Request, Response } from 'express'
  * @param req Request
  * @param res Response
  */
-export function healthCheck(req: Request, res: Response) {
+export function healthCheck(_req: Request, res: Response): void {
   res.status(200).json({ message: 'API is up and running' })
 }

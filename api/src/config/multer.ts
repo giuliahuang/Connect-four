@@ -3,12 +3,12 @@ import path from 'path'
 import fs from 'fs'
 
 const storage = multer.diskStorage({
-  destination: function (request, file, callback) {
+  destination: function (_request, _file, callback) {
     const uploadsDir = path.join(__dirname, '../../public/uploads', `${Date.now()}`)
     fs.mkdirSync(uploadsDir)
     callback(null, uploadsDir)
   },
-  filename: function (request, file, callback) {
+  filename: function (_request, file, callback) {
     callback(null, file.originalname)
   }
 })

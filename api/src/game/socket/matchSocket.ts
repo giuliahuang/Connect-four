@@ -10,7 +10,7 @@ import Player from '../Player'
 
 const hgetAsync = promisify(redis.hget).bind(redis)
 
-export function matchCallback(match: Match, p1: UnmatchedPlayer, p2: UnmatchedPlayer, io: IOServer, socket: Socket) {
+export function matchCallback(match: Match, p1: UnmatchedPlayer, p2: UnmatchedPlayer, io: IOServer, socket: Socket): void {
   const player1 = match.player1
   const player2 = match.player2
 
@@ -46,8 +46,8 @@ function play(column: number, socket: Socket, match: Match, p1: UnmatchedPlayer,
     socket.broadcast.emit('dot', column)
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user.username']} has won the match!`)
-      p1.ws.broadcast.emit('stoppedPlaying', p1.player.username)
-      p2.ws.broadcast.emit('stoppedPlaying', p2.player.username)
+        ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
+        ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
       io.disconnectSockets()
     }
   } else {

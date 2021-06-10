@@ -8,7 +8,7 @@ import { validatePassword } from '../utils/passwordUtils'
  * @param req Request
  * @param res Response
  */
-export async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response): Promise<void> {
   const user = await getUserByEmail(req.body.email)
   if (user && validatePassword(req.body.password, user.hash, user.salt)) {
     if (!user.lastSeen) {

@@ -9,7 +9,7 @@ import { Request, Response } from 'express'
  * @param req 
  * @param res 
  */
-export async function signup(req: Request, res: Response) {
+export async function signup(req: Request, res: Response): Promise<void> {
   try {
     const user = await newUser(req.body?.username, req.body?.email, req.body?.password)
     const jwt = await issueJWT(user)

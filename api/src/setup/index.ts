@@ -8,7 +8,7 @@ import { setupDB } from './setupMongo'
 /**
  * Launches the app's initial setup phase  
  */
-export default async function setup() {
+export default async function setup(): Promise<void> {
   setupEnv()
   passportConfig()
   const expressApp = setupExpressApp()

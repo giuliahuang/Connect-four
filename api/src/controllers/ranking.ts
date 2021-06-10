@@ -6,7 +6,7 @@ import { globalRanking } from '../mongo/userMethods'
  * @param req Request
  * @param res Response
  */
-export async function getRanking(req: Request, res: Response) {
+export async function getRanking(_req: Request, res: Response): Promise<void> {
   const topTen = await globalRanking()
   if (topTen)
     res.status(200).json(JSON.parse(JSON.stringify(topTen)))

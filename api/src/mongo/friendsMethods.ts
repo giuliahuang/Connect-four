@@ -42,7 +42,7 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
  * @param askerUsername username of the user who sent the friend request
  * @param requestedUsername username of the user who received the friend request
  */
-export async function respondFriendRequest(hasAccepted: boolean, askerUsername: string, requestedUsername: string) {
+export async function respondFriendRequest(hasAccepted: boolean, askerUsername: string, requestedUsername: string): Promise<void> {
   try {
     const session = await UserModel.startSession()
 
@@ -73,7 +73,7 @@ export async function respondFriendRequest(hasAccepted: boolean, askerUsername: 
  * @param user2 
  * @returns true if the operation was processed properly, false otherwise
  */
-async function addFriend(user1: User & mongoose.Document<any, any>, user2: User & mongoose.Document<any, any>) {
+async function addFriend(user1: User & mongoose.Document<User>, user2: User & mongoose.Document<User>) {
   try {
     const session = await UserModel.startSession()
 
@@ -143,17 +143,12 @@ export async function getFriends(username: string): Promise<string[]> {
   return []
 }
 
-export async function getFriendProfile(username: string, friendUsername: string): Promise<any> {
+export async function getFriendProfile(username: string, friendUsername: string): Promise<User | undefined> {
   try {
     const user = await getUserByUsername(username)
     const friend = await getUserByUsername(friendUsername)
     if (friend && user && (user.friends.includes(friend.username) || user.roles.includes('ADMIN') || user.roles.includes('MODERATOR'))) {
-      return {
-        username: friend.username,
-        mmr: friend.mmr,
-        avatar: friend.avatar,
-        matchesPlayed: friend.matchesPlayed
-      }
+      return friend
     }
   } catch (err) {
     logger.error(err)

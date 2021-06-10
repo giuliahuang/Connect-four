@@ -14,6 +14,6 @@ export function genPassword(password: string): HashAndSalt {
   }
 }
 
-export function validatePassword(password: string, hash: string, salt: string) {
+export function validatePassword(password: string, hash: string, salt: string): boolean {
   return hash === crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex')
 }

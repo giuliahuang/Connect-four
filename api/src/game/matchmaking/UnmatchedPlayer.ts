@@ -4,5 +4,5 @@ import Player from "../Player"
 export default interface UnmatchedPlayer {
   player: Player
   timeJoined: number
-  ws: Socket
+  ws: Socket | string
 }

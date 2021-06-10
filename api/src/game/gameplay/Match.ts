@@ -9,7 +9,7 @@ export class Match {
   public readonly player2: Player
   private readonly rows = 6
   private readonly columns = 7
-  public readonly game_board = Array.from(Array(this.rows), _ => Array(this.columns).fill(0))
+  public readonly game_board = Array.from(Array(this.rows), () => Array(this.columns).fill(0))
   private heights = Array(this.columns).fill(0) //height of columns
   private p1Turn = true
 
@@ -73,7 +73,7 @@ export class Match {
    * was a winning move through matchResult. If the property is set it contains the IDs of the winner and the loser
    */
   public addDot(col: number, playerId: string): MoveResult {
-    let res: MoveResult = {
+    const res: MoveResult = {
       accepted: false,
       matchResult: undefined
     }

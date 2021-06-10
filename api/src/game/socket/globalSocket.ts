@@ -5,7 +5,7 @@ import { clientConnected, clientDisconnected, getNewMessages, sendMessage } from
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
 import { cancelPlay, play } from "../matchmaking/matchmaking"
 
-export function globalCallback(io: IOServer, socket: Socket) {
+export function globalCallback(io: IOServer, socket: Socket): void {
   logger.info(`A new socket connection has been established by ${socket.id}`)
   clientInit(socket)
 

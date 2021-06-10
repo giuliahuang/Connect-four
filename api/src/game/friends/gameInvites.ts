@@ -6,7 +6,7 @@ import UnmatchedPlayer from "../matchmaking/UnmatchedPlayer"
 import Player from "../Player"
 import Invite from "./Invite"
 
-let inviteMap = new Map<string, Invite>()
+const inviteMap = new Map<string, Invite>()
 const THIRTY_SECONDS = 30000
 
 /**
@@ -14,7 +14,7 @@ const THIRTY_SECONDS = 30000
  * @param socket Socket.io instance, used for emitting the event
  * @param playerUsername username of the player invited to the game
  */
-export async function invitePlayer(socket: Socket, playerUsername: string) {
+export async function invitePlayer(socket: Socket, playerUsername: string): Promise<void> {
   const user: User = socket.request['user']
   const invited = await getUserByUsername(playerUsername)
 
@@ -42,7 +42,7 @@ export async function invitePlayer(socket: Socket, playerUsername: string) {
 }
 
 // Asynchronously deletes the specified invite from the hashmap
-async function clearInvite(invite: Invite) {
+function clearInvite(invite: Invite) {
   inviteMap.delete(invite.inviter.player.username)
 }
 
@@ -52,7 +52,7 @@ async function clearInvite(invite: Invite) {
  * @param hasAccepted indicates whether the user accepted the invite or otherwise
  * @param inviterUsername username of the user who sent the invite, used to retrieve the object from the hashmap
  */
-export async function inviteResponse(socket: Socket, hasAccepted: boolean, inviterUsername: string) {
+export function inviteResponse(socket: Socket, hasAccepted: boolean, inviterUsername: string): void {
   const invite = inviteMap.get(inviterUsername)
 
   if (invite) {

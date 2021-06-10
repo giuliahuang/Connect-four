@@ -1,5 +1,5 @@
 import passport from 'passport'
-import { ExtractJwt, Strategy as JWTStrategy } from 'passport-jwt'
+import { ExtractJwt, Strategy as JWTStrategy, VerifiedCallback } from 'passport-jwt'
 import logger from '../logger'
 import { getUserById } from '../mongo/userMethods'
 import Payload from './Payload'
@@ -7,7 +7,7 @@ import Payload from './Payload'
 /**
  * Sets up the passport middleware for authentication through JWT
  */
-export function passportConfig() {
+export function passportConfig(): void {
   const options = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET,
@@ -17,12 +17,12 @@ export function passportConfig() {
   passport.use(strategy)
 }
 
-export async function jwtCallback(payload: Payload, done) {
+export async function jwtCallback(payload: Payload, done: VerifiedCallback): Promise<void> {
   try {
     const user = await getUserById(payload.sub)
     if (!user) return done(null, false, 'Not authorized')
     return done(null, user)
-  } catch(err) {
+  } catch (err) {
     logger.prettyError(err)
     return done(err)
   }

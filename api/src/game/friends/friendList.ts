@@ -13,7 +13,7 @@ import { cancelPlay } from "../matchmaking/matchmaking"
 const hgetAsync = promisify(redis.hget).bind(redis)
 const hsetAsync = promisify(redis.hset).bind(redis)
 
-export function sendMessage(user: User, message: string, destUsername: string, socket: Socket) {
+export function sendMessage(user: User, message: string, destUsername: string, socket: Socket): void {
   if (user.friends.includes(destUsername)) {
     socket.to(destUsername).emit('dm', message)
     dm(message, user.username, destUsername)
@@ -22,7 +22,7 @@ export function sendMessage(user: User, message: string, destUsername: string, s
     socket.to(user.username).emit('dm', `${destUsername} is not a valid friend`)
 }
 
-export async function clientConnected(socket: Socket) {
+export async function clientConnected(socket: Socket): Promise<void> {
   const user: User = socket.request['user']
   try {
     await hsetAsync(['users', socket.id, user.username])
@@ -37,7 +37,7 @@ export async function clientConnected(socket: Socket) {
   }
 }
 
-export async function clientDisconnected(socket: Socket, reason: string) {
+export async function clientDisconnected(socket: Socket, reason: string): Promise<void> {
   try {
     const username = await hgetAsync('users', socket.id)
     if (username) {

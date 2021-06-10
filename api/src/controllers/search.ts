@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../logger'
 import { getUserByUsername } from '../mongo/userMethods'
 
 /**
@@ -8,13 +9,14 @@ import { getUserByUsername } from '../mongo/userMethods'
  * @param req Request
  * @param res Response
  */
-export async function search(req: Request, res: Response) {
+export function search(req: Request, res: Response): void {
   const username = req.query.username
   if (username) {
-    const user = await getUserByUsername(username as string)
-    if (user) {
-      return res.status(200).json(JSON.parse(JSON.stringify(user)))
-    }
+    getUserByUsername(username as string).then(user => {
+      res.status(200).json(JSON.parse(JSON.stringify(user)))
+    }).catch(err => {
+      logger.error(err)
+      res.status(404).json({ error: true, message: 'User not found' })
+    })
   }
-  return res.status(404).json({ error: true, message: 'User not found' })
 }

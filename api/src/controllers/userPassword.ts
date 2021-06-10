@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import logger from '../logger'
 import { setPassword } from '../mongo/userMethods'
 
-export async function newPassword(req: Request, res: Response) {
+export async function newPassword(req: Request, res: Response): Promise<void> {
   try {
     await setPassword(req.body.email, req.body.password)
     res.status(200).json({ message: 'Password set correctly' })

@@ -3,7 +3,7 @@ import { exit } from 'process'
 import logger from '../logger/'
 import { getUserByEmail, newUser, setAdmin } from '../mongo/userMethods'
 
-export async function setupDB() {
+export async function setupDB(): Promise<typeof mongoose> {
   if (process.env.DB_CONNECTION_STRING) {
     try {
       const db = await mongoose.connect(process.env.DB_CONNECTION_STRING, {
@@ -22,7 +22,8 @@ export async function setupDB() {
       return db
     } catch (err) {
       logger.error(`Error occurred during DB initialization: ${err}`)
-      exit(1)
     }
   }
+  logger.error(new Error('No db connection string found in process environment'))
+  exit(1)
 }

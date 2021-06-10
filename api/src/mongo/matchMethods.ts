@@ -9,7 +9,7 @@ const MMR_DECR = 25
  * Processes the results of the match and updates the users' mmr
  * @param res results of the match
  */
-export async function endMatch(res: MatchResults) {
+export async function endMatch(res: MatchResults): Promise<void> {
   try {
     await processResults(res)
   } catch (err) {
@@ -17,7 +17,7 @@ export async function endMatch(res: MatchResults) {
   }
 }
 
-export async function processResults(res: MatchResults) {
+export async function processResults(res: MatchResults): Promise<void> {
   try {
     await UserModel.findByIdAndUpdate(res.winner, { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } })
     await UserModel.findByIdAndUpdate(res.loser, { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } })
