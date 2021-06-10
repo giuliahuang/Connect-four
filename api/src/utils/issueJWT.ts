@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { exit } from 'process'
 import Payload from '../config/Payload'
-import logger from '../logger'
 import User from '../models/User'
 
 interface JsonWebTokenResponse {
@@ -22,14 +20,9 @@ export async function issueJWT(user: User): Promise<JsonWebTokenResponse> {
     iat: Date.now()
   }
 
-  if (process.env.JWT_SECRET) {
-    const signedToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expiresIn, algorithm: 'HS256' })
-    return {
-      token: `Bearer ${signedToken}`,
-      expires: expiresIn
-    }
-  } else {
-    logger.info('JWT secret not found in .env file')
-    exit(1)
+  const signedToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expiresIn, algorithm: 'HS256' })
+  return {
+    token: `Bearer ${signedToken}`,
+    expires: expiresIn
   }
 }

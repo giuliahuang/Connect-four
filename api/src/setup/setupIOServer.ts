@@ -15,14 +15,11 @@ export function createIOServer(param: WebServer | number): IOServer {
 
   // Socket.io middleware that provides authentication through the JWT token set into
   // the websocket request's auth headers
-  if (process.env.JWT_SECRET) {
-    io.use(jwtAuth.authenticate({
-      secret: process.env.JWT_SECRET,
-      algorithm: 'HS256'
-    }, jwtCallback))
-  } else {
-    logger.error(new Error('JWT secret not found in process environment'))
-  }
+  io.use(jwtAuth.authenticate({
+    secret: process.env.JWT_SECRET,
+    algorithm: 'HS256'
+  }, jwtCallback))
+
   return io
 }
 
