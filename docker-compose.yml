@@ -35,9 +35,9 @@ services:
             - data:/data/db
     redis:
         container_name: redis
-        image: redis:latest
-        ports:
-            - 6379:6379
+        build:
+            context: redis
+            dockerfile: ./Dockerfile
 
 volumes:
     data:
