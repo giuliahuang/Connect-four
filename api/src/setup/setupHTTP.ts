@@ -1,14 +1,16 @@
 import { ExpressServer } from '../server/ExpressServer'
 import http from 'http'
-import { Logger } from 'tslog'
-import config from '../config'
+import logger from '../logger/'
 
-const logger = new Logger()
-
+/**
+ * Creates a new HTTP server and binds it to the express app
+ * @param expressApp 
+ * @returns http.Server
+ */
 export function setupHTTP(expressApp: ExpressServer): http.Server {
   logger.info('Bootstrapping Express server')
   const httpServer = http.createServer(expressApp.app)
-  return httpServer.listen(config.server.port, () => {
-    logger.info(`HTTP server listening on ${config.server.hostname}:${config.server.port}`)
+  return httpServer.listen(process.env.SERVER_PORT, () => {
+    logger.info(`HTTP server listening on ${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}`)
   })
 }

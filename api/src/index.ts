@@ -1,9 +1,7 @@
-import { Logger } from "tslog"
-import { setup } from "./setup/setup"
+import logger from './logger/'
+import setup from "./setup"
 
-const logger = new Logger()
-
-export async function main() {
+async function main() {
   logger.info('App start')
   await setup()
 }

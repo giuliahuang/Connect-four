@@ -1,21 +1,31 @@
 import { Server as WebServer } from 'http'
 import { Server as IOServer } from 'socket.io'
-import { Logger } from 'tslog'
-import { play } from '../game/matchmaking/matchmaking'
+import jwtAuth from 'socketio-jwt-auth'
+import { jwtCallback } from '../config/passport'
+import { globalCallback } from '../game/socket/globalSocket'
+import logger from '../logger/'
 
-const logger = new Logger()
-
-export function setupIOServer(httpServer: WebServer): IOServer {
+/**
+ * Creates a new Socket.io instance through either a webserver or a port and applies the auth middleware
+ * @param httpServer required for binding the global Socket.io server
+ */
+export function createIOServer(param: WebServer | number): IOServer {
   logger.info('Bootstrapping IO server')
-  const io = new IOServer(httpServer, { cors: { origin: "*" } })
+  const io = new IOServer(param, { cors: { origin: '*' } })
 
-  io.on('connection', (socket) => {
-    logger.info(`A new socket connection has been established by ${socket.id}`)
+  // Socket.io middleware that provides authentication through the JWT token set into
+  // the websocket request's auth headers
+  io.use(jwtAuth.authenticate({
+    secret: process.env.JWT_SECRET,
+    algorithm: 'HS256'
+  }, jwtCallback))
 
-    socket.on('play', (message) => {
-      play(socket, message)
-    })
-  })
+  return io
+}
 
+
+export function setupGlobalIOServer(httpServer: WebServer): IOServer {
+  const io = createIOServer(httpServer)
+  io.on('connection', socket => globalCallback(io, socket))
   return io
 }

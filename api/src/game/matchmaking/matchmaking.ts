@@ -1,69 +1,82 @@
-import { Logger } from 'tslog'
-import { Socket } from 'socket.io'
+import { fork } from 'child_process'
+import path from 'path'
+import { Server, Socket } from 'socket.io'
+import logger from '../../logger/'
+import User from '../../models/User'
+import { getUserById } from '../../mongo/userMethods'
 import { gameStart } from '../gameplay/gameplay'
-import { UnmatchedPlayer } from "./UnmatchedPlayer"
-import { MatchingPlayer } from "./MatchingPlayer"
+import Player from '../Player'
+import UnmatchedPlayer from "./UnmatchedPlayer"
 
-const logger = new Logger()
-const MAX_TIME_IN_QUEUE = 20000
-const POOL_POLL_INTERVAL = 1000
-const mm_pool = new Map<number, MatchingPlayer>()
-
-// playerdata should be provided by database
-export const play = (socket: Socket, playerData: any) => {
-  logger.info(`Client ${playerData.id} with ${playerData.mmr} mmr has requested to play`)
-
-  const player: UnmatchedPlayer = {
-    id: playerData.id,
-    timeJoined: Date.now(),
-    mmr: playerData.mmr
-  }
-
-  if (!mm_pool.has(player.id))
-    mm_pool.set(player.id, { player: player, ws: socket })
-  else
-    socket.disconnect()
-
-  setInterval(() => matchmake(mm_pool), POOL_POLL_INTERVAL)
+interface MatchmakingResponse {
+  player1: UnmatchedPlayer,
+  player2: UnmatchedPlayer
 }
 
-function matchmake(mm_pool: Map<number, MatchingPlayer>) {
-  if (mm_pool.size < 1) return
+const childProcess = fork(path.join(__dirname, 'child.js'))
+childProcess.on('message', message => {
+  const res: MatchmakingResponse = message.valueOf() as MatchmakingResponse
+  matchmakingSuccess(res.player1, res.player2)
+})
+let io: Server
 
-  //enabled down level iteration, look for better alternative
-  for (const [A, p1] of mm_pool) {
-    for (const [B, p2] of mm_pool) {
-      if (isMatch(p1, p2)) {
-        const a = mm_pool.get(A)
-        const b = mm_pool.get(B)
-        if (a && b) {
-          matchmakingSuccess({ ...a }, { ...b })
-          mm_pool.delete(A)
-          mm_pool.delete(B)
-        }
-      } else {
-        const b = mm_pool.get(B)
-        if (b && Date.now() - b.player.timeJoined > MAX_TIME_IN_QUEUE) {
-          b.ws.send(`${b.player.id} didn't find a match`)
-          b.ws.disconnect()
-          mm_pool.delete(B)
-        }
-      }
+/**
+ * Puts a user into matchmaking throught the Socket.io event
+ * @param socket 
+ */
+export function play(socket: Socket, server: Server): void {
+  const user: User = socket.request['user']
+  const player: Player = {
+    id: user._id,
+    username: user.username,
+    mmr: user.mmr
+  }
+  if (player) {
+    logger.info(`Player: ${player.username} with ${player.mmr} mmr requested to play`)
+    if (!io) io = server
+
+    childProcess.send({ id: player.id, mmr: player.mmr, ws: socket.id })
+  }
+}
+
+/**
+ * Starts the game between player 1 and player 2
+ * @param p1 player 1
+ * @param p2 player 2
+ */
+async function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
+  const user1 = await getUserById(p1.player.id)
+  const user2 = await getUserById(p2.player.id)
+  const socket1 = io.sockets.sockets.get(p1.ws as string)
+  const socket2 = io.sockets.sockets.get(p2.ws as string)
+  if (user1 && user2 && socket1 && socket2) {
+    const player1: UnmatchedPlayer = {
+      player: {
+        id: user1._id,
+        username: user1.username,
+        mmr: user1.mmr
+      },
+      timeJoined: p1.timeJoined,
+      ws: socket1
     }
+    const player2: UnmatchedPlayer = {
+      player: {
+        id: user2._id,
+        username: user2.username,
+        mmr: user2.mmr
+      },
+      timeJoined: p2.timeJoined,
+      ws: socket2
+    }
+    logger.info(`Player: ${player1.player.username} was matched with Player: ${player1.player.username}`)
+      ; (player1.ws as Socket).send(`You've been matched with ${player2.player.id}`)
+      ; (player2.ws as Socket).send(`You've been matched with ${player1.player.id}`)
+    gameStart(player1, player2)
+  } else {
+    logger.prettyError(new Error('Matchmaking failure'))
   }
 }
 
-function isMatch(p1: MatchingPlayer, p2: MatchingPlayer): boolean {
-  if (p1 !== p2 && Math.abs(p1.player.mmr - p2.player.mmr) < 500)
-    if (Math.abs(p1.player.mmr - p2.player.mmr) < (10 * p1.player.timeJoined * 1000))
-      return true
-
-  return false
-}
-
-function matchmakingSuccess(p1: MatchingPlayer, p2: MatchingPlayer) {
-  console.log(`${p1.player.id} was matched with ${p2.player.id}`)
-  p1.ws.send(`${p1.player.id} you were matched with ${p2.player.id}`)
-  p2.ws.send(`${p2.player.id} you were matched with ${p1.player.id}`)
-  gameStart({ id: p1.player.id, mmr: p1.player.mmr, ws: p1.ws }, { id: p2.player.id, mmr: p2.player.mmr, ws: p2.ws })
+export function cancelPlay(userid: string): void {
+  childProcess.send({ cancel: userid })
 }

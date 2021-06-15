@@ -1,7 +1,10 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 
-const healthCheck = (req: Request, res: Response, next: NextFunction) => {
-  return res.status(200).json({ message: 'API is up and running' })
+/**
+ * API health check function, used to verify the running state of the server
+ * @param req Request
+ * @param res Response
+ */
+export function healthCheck(_req: Request, res: Response): void {
+  res.status(200).json({ message: 'API is up and running' })
 }
-
-export default { healthCheck }

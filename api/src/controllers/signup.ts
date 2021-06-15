@@ -1,23 +1,21 @@
-import { Request, Response, NextFunction } from 'express'
-import * as user from '../mongo/User';
+import logger from '../logger/'
+import { newUser } from '../mongo/userMethods'
+import { issueJWT } from '../utils/issueJWT'
+import { Request, Response } from 'express'
 
-//signup
-const signup = (req: Request, res: Response, next: NextFunction) => {
-
-    var u = user.newUser( req.body );
-    if( !req.body.password ) {
-      return next({ statusCode:404, error: true, errormessage: "Password field missing"} );
-    }
-    u.setPassword( req.body.password );
-  
-    u.save().then( (data) => {
-      return res.status(200).json({ error: false, errormessage: "", id: data._id });
-    }).catch( (reason) => {
-      if( reason.code === 11000 )
-        return next({statusCode:404, error:true, errormessage: "User already exists"} );
-      return next({ statusCode:404, error: true, errormessage: "DB error: "+reason.errmsg });
-    })
-  
-  };
-
-export default { signup }
+/**
+ * Signup function, it requires the properties username, email and password set
+ * into the request's body
+ * @param req 
+ * @param res 
+ */
+export async function signup(req: Request, res: Response): Promise<void> {
+  try {
+    const user = await newUser(req.body?.username, req.body?.email, req.body?.password)
+    const jwt = await issueJWT(user)
+    res.status(200).json({ message: 'User successfully created', token: jwt.token, expiresIn: jwt.expires })
+  } catch (err) {
+    logger.error(err)
+    res.send({ error: true, message: 'An error has occurred' })
+  }
+}
