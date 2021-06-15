@@ -1,4 +1,6 @@
+import { ObserversModule } from '@angular/cdk/observers';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { observable, Observable } from 'rxjs';
 import { io,Socket } from 'socket.io-client';
 import { environment } from 'src/environments/environment';
@@ -13,7 +15,7 @@ export class SocketioService {
   gamesocket: Socket | undefined
   
 
-  constructor() { }
+  constructor(private router:Router) { }
 
   connect(){
     this.socket = io(environment.SOCKET_ENDPOINT)
@@ -78,6 +80,15 @@ export class SocketioService {
 
   }
 
+  receivePlayer(){
+    return new Observable((observer)=>{
+      this.socket?.on('player', (message)=>{
+        console.log("player received")
+        observer.unsubscribe()
+      })
+    })
+  }
+
   receiveGameUpdateMSG(){
     return new Observable((observer)=>{
       this.socket?.on('gameUpdateMSG', (message) =>{
@@ -86,7 +97,7 @@ export class SocketioService {
     });
   }
 
-  //接收server说玩家加了一个点
+  //receive add dots message
   receiveChanges(){
     return new Observable((observer)=>{
       this.socket?.on('addDot', (message) =>{

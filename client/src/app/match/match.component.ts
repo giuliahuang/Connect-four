@@ -22,6 +22,7 @@ export class MatchComponent implements OnInit {
   p2:number = 2;
   newPlayer:any;
   playerTurn;
+  ioConnection:any;
 
   constructor(
     private socketIoService: SocketioService, 
@@ -39,11 +40,10 @@ export class MatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.socketIoService.connectMatch();
-    this.socketIoService.receiveGameSocket();
+    this.receivePlayer()
+    this.receiveGameUpdateMSG();
     this.receiveGameUpdate();
     this.receiveJoinedPlayers();
-    this.receiveGameUpdateMSG();
   }
 
 /*
@@ -77,6 +77,12 @@ export class MatchComponent implements OnInit {
     }
   }
 */
+
+  receivePlayer(){
+    this.socketIoService.receivePlayer().subscribe((player)=>{
+      this.newPlayer=player;
+    })
+  }
 
   receiveGameUpdateMSG(){
     this.socketIoService.receiveGameUpdateMSG().subscribe((message)=>{
@@ -121,6 +127,7 @@ export class MatchComponent implements OnInit {
     if(cell?.classList.contains('cell')){
       cell.classList.replace('cell',this.colors[turn]+'cell')
       this.heights[parseInt(col)]++;
+      console.log("a disk has been added")
     }
 
     else{
