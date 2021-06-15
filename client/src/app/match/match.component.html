@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="match.component.scss" />
+        <title>Forza 4</title>
+        <script src="match.component.ts"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Forza 4!</h1>
+            <hr />
+
+              <span id="header">
+                <h4>Giocatore 1: <span id="player1header" class="text-danger"></span></h4>
+                <h4>Giocatore 2: <span id="player2header" class="text-warning"></span></h4>
+              </span>
+              <table id="table"></table>
+              <button (click)="receiveGameUpdate()">StartReceiving</button>
+              <h1 class="title">Connect 4</h1>
+              <div class="grid">
+          
+                  <div class="cell col0" id="50" (click)="change('col0',1);"></div>
+                  <div class="cell col1" id="51" (click)="change('col1',1);"></div>
+                  <div class="cell col2" id="52" (click)="change('col2',1);"></div>
+                  <div class="cell col3" id="53" (click)="change('col3',5);"></div>
+                  <div class="cell col4" id="54" (click)="change('col4',5);"></div>
+                  <div class="cell col5" id="55" (click)="change('col5',5);"></div>
+                  <div class="cell col6" id="56" (click)="change('col6',5);"></div>
+          
+          
+                  <div class="cell col0" id="40" (click)="change('col0',1);"></div>
+                  <div class="cell col1" id="41" (click)="change('col1',1);"></div>
+                  <div class="cell col2" id="42" (click)="change('col2',1);"></div>
+                  <div class="cell col3" id="43" (click)="change('col3',4);"></div>
+                  <div class="cell col4" id="44" (click)="change('col4',4);"></div>
+                  <div class="cell col5" id="45" (click)="change('col5',4);"></div>
+                  <div class="cell col6" id="46" (click)="change('col6',4);"></div>
+          
+                  <div class="cell col0" id="30" (click)="change('col0',3);"></div>
+                  <div class="cell col1" id="31" (click)="change('col1',3);"></div>
+                  <div class="cell col2" id="32" (click)="change('col2',3);"></div>
+                  <div class="cell col3" id="33" (click)="change('col3',3);"></div>
+                  <div class="cell col4" id="34" (click)="change('col4',3);"></div>
+                  <div class="cell col5" id="35" (click)="change('col5',3);"></div>
+                  <div class="cell col6" id="36" (click)="change('col6',3);"></div>
+          
+                  <div class="cell col0" id="20" (click)="change('col0',2);"></div>
+                  <div class="cell col1" id="21" (click)="change('col1',2);"></div>
+                  <div class="cell col2" id="22" (click)="change('col2',2);"></div>
+                  <div class="cell col3" id="23" (click)="change('col3',2);"></div>
+                  <div class="cell col4" id="24" (click)="change('col4',2);"></div>
+                  <div class="cell col5" id="25" (click)="change('col5',2);"></div>
+                  <div class="cell col6" id="26" (click)="change('col6',2);"></div>
+          
+                  <div class="cell col0" id="10" (click)="change('col0',1);"></div>
+                  <div class="cell col1" id="11" (click)="change('col1',1);"></div>
+                  <div class="cell col2" id="12" (click)="change('col2',1);"></div>
+                  <div class="cell col3" id="13" (click)="change('col3',1);"></div>
+                  <div class="cell col4" id="14" (click)="change('col4',1);"></div>
+                  <div class="cell col5" id="15" (click)="change('col5',1);"></div>
+                  <div class="cell col6" id="16" (click)="change('col6',1);"></div>
+          
+                  <div class="cell col0" id="00" (click)="change('col0',0);"></div>
+                  <div class="cell col1" id="01" (click)="change('col1',0);"></div>
+                  <div class="cell col2" id="02" (click)="change('col2',0);"></div>
+                  <div class="cell col3" id="03" (click)="change('col3',0);"></div>
+                  <div class="cell col4" id="04" (click)="change('col4',0);"></div>
+                  <div class="cell col5" id="05" (click)="change('col5',0);"></div>
+                  <div class="cell col6" id="06" (click)="change('col6',0);"></div>
+          
+          
+              </div>
+
+        </div>
+    </body>
+
+</html>

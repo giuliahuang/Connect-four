@@ -23,7 +23,6 @@ export function createIOServer(param: WebServer | number): IOServer {
   return io
 }
 
-
 export function setupGlobalIOServer(httpServer: WebServer): IOServer {
   const io = createIOServer(httpServer)
   io.on('connection', socket => globalCallback(io, socket))
