@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "ngcc"
   },
   "private": true,
   "dependencies": {
@@ -23,11 +24,14 @@
     "@angular/platform-browser-dynamic": "~11.2.12",
     "@angular/router": "~11.2.12",
     "@types/socket.io-client": "^3.0.0",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
     "rxjs": "^6.6.7",
     "socket.io-client": "^4.1.2",
     "@types/jwt-decode": "^2.2.1",
     "jwt-decode": "^2.2.0",
     "tslib": "^2.0.0",
+    "util": "^0.12.4",
     "zone.js": "~0.11.3"
   },
   "devDependencies": {
