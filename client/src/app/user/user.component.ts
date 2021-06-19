@@ -1,31 +1,52 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
+import { UserHttpService } from '../user-http.service';
+import * as jwtdecode from 'jwt-decode';
+
+
+interface TokenData {
+  username:string,
+  mail:string,
+  roles:string[],
+  id:string
+}
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit {
 
-  id = Math.random()*200;
-  mmr = Math.random()*50
+
+export class UserComponent implements OnInit {
 
   constructor(
     private router:Router,
-    private socketIoService:SocketioService
+    private socketIoService:SocketioService,
+    private us:UserHttpService
     ) { }
 
   ngOnInit(): void {
-    this.socketIoService.connect();
+  }
+  
+
+  //an user can invite another user (in his friends' list)
+  invite(){
+
+  }
+
+  //an user can watch a match of other users
+  observe(){
+
   }
 
 
   startGame(){
-    this.socketIoService.startGame(this.id,this.mmr)
-    this.socketIoService.connectMatch()
-    this.router.navigate(['/match']);
+    this.socketIoService.startGame()
+    //call a function that waits for match and then navigate to /match
+    console.log(jwtdecode(this.us.get_token())as TokenData)
+    this.socketIoService.receiveMatchPort(this.us.get_token().replace("Bearer ",""))
   }
 
 }

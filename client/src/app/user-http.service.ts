@@ -17,7 +17,7 @@ interface TokenData {
 export class UserHttpService {
 
   private token = '';
-  public url = 'http://localhost:8080';
+  public url = 'http://localhost:5000';
 
   constructor( private http: HttpClient ) {
     console.log('User service instantiated');
@@ -31,22 +31,22 @@ export class UserHttpService {
     }
   }
 
-  login( mail: string, password: string, remember: boolean ): Observable<any> {
+  login( user: any ): Observable<any> {
 
-    console.log('Login: ' + mail + ' ' + password );
+    console.log('Login: ' + user.email + ' ' + user.password );
     const options = {
       headers: new HttpHeaders({
-        authorization: 'Basic ' + btoa( mail + ':' + password),
+        authorization: 'Basic ' + btoa( user.email + ':' + user.password),
         'cache-control': 'no-cache',
-        'Content-Type':  'application/x-www-form-urlencoded',
+        'Content-Type':  'application/json',
       })
     };
 
-    return this.http.get( this.url + '/login',  options, ).pipe(
+    return this.http.post( this.url + '/login', user ,options ).pipe(
       tap( (data: any) => {
         console.log(JSON.stringify(data));
         this.token = data.token;
-        if ( remember ) {
+        if ( user.remember ) {
           localStorage.setItem('postmessages_token', this.token );
         }
       }));
@@ -66,7 +66,7 @@ export class UserHttpService {
       })
     };
 
-    return this.http.post( this.url + '/users', user, options ).pipe(
+    return this.http.post( this.url + '/signup', user, options ).pipe(
       tap( (data) => {
         console.log(JSON.stringify(data) );
       })
