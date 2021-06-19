@@ -1,10 +1,8 @@
 import { AssertNotNull, tokenName } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Match } from '../../../../api/src/game/gameplay/Match'
 import { SocketioService } from '../socketio.service';
 import { MatSnackBar } from '@angular/material/snack-bar'
-import { Player } from '../../../../api/src/game/gameplay/Player';
 
 @Component({
   selector: 'app-match',
@@ -14,19 +12,14 @@ import { Player } from '../../../../api/src/game/gameplay/Player';
 
 
 export class MatchComponent implements OnInit {
-  gameId:string|any="";
+
   colors:string[]=[];
-  player = 1;
   heights:number[]=[]
-  p1:number = 1;
-  p2:number = 2;
-  newPlayer:any;
   playerTurn;
-  ioConnection:any;
 
   constructor(
     private socketIoService: SocketioService, 
-    private snackbar: MatSnackBar,
+    // private snackbar: MatSnackBar,
     private router:Router
     ){
 
@@ -40,80 +33,79 @@ export class MatchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.receivePlayer()
+    console.log("Match page")
     this.receiveGameUpdateMSG();
     this.receiveGameUpdate();
-    this.receiveJoinedPlayers();
+    this.receiveEndMatch();
+    this.receiveWinnerMessage();
+    this.receivePlayerMoveRejection();
+    this.receivePlayerDisconnetedMessage()
   }
 
-/*
-  addDot(colclass:string, id:number){
-
-    const colList = document.getElementsByClassName('name');
-    const col = colclass.substr(colclass.length-1);
-    const cell = document.getElementById(''+this.heights[parseInt(col)]+col);
-
-    if(this.match.addDot(parseInt(col),this.p1)){
-      if(cell?.classList.contains('cell')){
-        cell.classList.replace('cell',this.colors[this.p1]+'cell') 
-        if(this.match.isWinner(parseInt(col))){
-          alert("Player: "+this.p1+"has won !!");
-        }
-      }
-      else{
-        alert("Col Full")
-      }
-    }
-    else if(this.match.addDot(parseInt(col),this.p2)){
-      if(cell?.classList.contains('cell')){
-        cell.classList.replace('cell',this.colors[this.p2]+'cell')
-        if(this.match.isWinner(parseInt(col))){
-          alert("Player: "+this.p2+"has won !!");
-        }
-      }
-      else{
-        alert("Col Full")
-      }
-    }
+  receivePlayerDisconnetedMessage(){
+    this.socketIoService.receivePlayerMoveRejection().subscribe((message:any)=>{
+      //TODO
+      console.log(`player ${message.username} has disconnected for ${message.reason}`)
+    })
   }
-*/
 
-  receivePlayer(){
-    this.socketIoService.receivePlayer().subscribe((player)=>{
-      this.newPlayer=player;
+  receivePlayerMoveRejection(){
+    this.socketIoService.receivePlayerMoveRejection().subscribe((message:any)=>{
+      //TODO
+      console.log(`player ${message.username} cannot add dot at column ${message.column}`)
+    })
+  }
+
+
+  receiveWinnerMessage(){
+    this.socketIoService.receiveWinnerMessage().subscribe((message)=>{
+      //TODO: print it on the screen
+      console.log(message)
     })
   }
 
   receiveGameUpdateMSG(){
     this.socketIoService.receiveGameUpdateMSG().subscribe((message)=>{
-      this.snackbar.open(String(message),'',{
-        duration: 3000,
-      });
+      // this.snackbar.open(String(message),'',{
+      //   duration: 3000,
+      // });
+      console.log(message)
     })
   }
 
+  //receive game update data
   receiveGameUpdate(){
-    this.socketIoService.receiveGameUpdate().subscribe((message:any) => {
-      this.snackbar.open(String(message),'',{
-        duration: 3000,
-      });
-      var className = "col" + (message.col)
+    console.log('start receiving game update')
+    this.socketIoService.receiveGameUpdate().subscribe((col:any) => {
+      // this.snackbar.open(String(message),'',{
+      //   duration: 3000,
+      // });
+      console.log(col)
+      var className = "col" + (col)
       console.log(className);
       //TODO player id 换成 player.turn(新的)
-      this.receiveChange(className,message.turn)
+      this.addDot(className)
      });
   }
 
-  setPlayer(){
-    this.socketIoService.socket?.on('setPlayer', (player)=>{
-      this.newPlayer=player;
-      console.log("player set")
+  //after clicking on one of the column, an addDotRequest will be sent
+  addDotRequest(colclass:string){
+    const col = parseInt(colclass.substr(colclass.length-1));
+    console.log('add dot request at col ' + col)
+    this.socketIoService.addDotRequest(col);
+  }
+
+  //end of match
+  receiveEndMatch(){
+    this.socketIoService.receiveEndMatch().subscribe((username)=>{
+      console.log('End Match of ' + username)
+      this.router.navigate(['/user'])
+      this.socketIoService.gamesocket?.disconnect()
     })
   }
 
-  receiveChange(colclass:string,turn:number){
-
-    //if addDot == true allora cambia colore altrimenti no 
+  //add an dot
+  private addDot(colclass:string){
 
     //ottengo tutte tutte le righe di una colonna
     const colList = document.getElementsByClassName('name');
@@ -125,16 +117,17 @@ export class MatchComponent implements OnInit {
     const cell = document.getElementById(''+this.heights[parseInt(col)]+col);
 
     if(cell?.classList.contains('cell')){
-      cell.classList.replace('cell',this.colors[turn]+'cell')
+      //TODO: gestire i colori 
+      cell.classList.replace('cell',this.colors[this.playerTurn]+'cell')
       this.heights[parseInt(col)]++;
       console.log("a disk has been added")
     }
-
     else{
       alert("Col Full")
     }
   }
   
+  /*
 
   change(colclass:string,turn:number){
     //if addDot == true allora cambia colore altrimenti no 
@@ -153,22 +146,23 @@ export class MatchComponent implements OnInit {
       cell.classList.replace('cell',this.colors[this.playerTurn]+'cell')
       this.heights[parseInt(col)]++;
       console.log(this.playerTurn)
-      this.socketIoService.sendGameUpdate(parseInt(col),this.playerTurn)
+      // this.socketIoService.sendGameUpdate(parseInt(col),this.playerTurn)
       this.playerTurn*=-1;
     }
     else{
       alert("Col Full")
     }
-
   } 
+  */
 
 
   //从client socketservice里接收msg并发送webbrowser
   receiveJoinedPlayers(){
      this.socketIoService.receiveJoinedPlayers().subscribe((message) => {
-      this.snackbar.open(String(message),'',{
-        duration: 3000,
-      });
+      // this.snackbar.open(String(message),'',{
+      //   duration: 3000,
+      // });
+      console.log(message)
      });
   }
 
