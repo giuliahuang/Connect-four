@@ -108,6 +108,7 @@ export async function deleteUser(staffUsername: string, username: string): Promi
   try {
     if (staffUsername !== username) {
       const staff = await getUserByUsername(staffUsername)
+      // TODO
       if (staff && staff.roles.includes('ADMIN')) {
         UserModel.findOneAndDelete({ username })
         return true

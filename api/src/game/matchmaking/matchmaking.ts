@@ -31,12 +31,12 @@ export function play(socket: Socket, server: Server): void {
     username: user.username,
     mmr: user.mmr
   }
-  if (player) {
-    logger.info(`Player: ${player.username} with ${player.mmr} mmr requested to play`)
-    if (!io) io = server
 
-    childProcess.send({ id: player.id, mmr: player.mmr, ws: socket.id })
-  }
+  logger.info(`Player: ${player.username} with ${player.mmr} mmr requested to play`)
+  if (!io) io = server
+
+  childProcess.send({ id: player.id, mmr: player.mmr, ws: socket.id })
+
 }
 
 /**

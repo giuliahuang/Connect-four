@@ -24,6 +24,7 @@ services:
             NODE_ENV: development
         ports:
             - 5000:5000
+            - "8000-8100:8000-8100"
         volumes:
             - .:/usr/src/app/
     mongodb:
