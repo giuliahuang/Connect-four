@@ -48,7 +48,7 @@ function play(column: number, socket: Socket, match: Match, p1: UnmatchedPlayer,
       io.emit('winner', `Player ${socket.request['user.username']} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
-      io.disconnectSockets()
+      closeServer(io)
     }
   } else {
     io.emit('playerMoveRejection', column, user.username)
@@ -61,11 +61,18 @@ async function disconnect(reason: string, socket: Socket, player1: Player, playe
     if (username === player1.username) {
       endMatch({ winner: player2.username, loser: username })
       io.emit('playerDisconnected', username, reason)
+      closeServer(io)
     } else if (username === player2.username) {
       endMatch({ winner: player1.username, loser: username })
       io.emit('playerDisconnected', username, reason)
+      closeServer(io)
     }
   } catch (err) {
     logger.prettyError(err)
   }
+}
+
+function closeServer(io: IOServer) {
+  io.disconnectSockets()
+  io.close()
 }

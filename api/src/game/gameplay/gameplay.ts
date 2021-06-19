@@ -1,4 +1,4 @@
-import { Socket, Server as IOServer } from 'socket.io'
+import { Socket } from 'socket.io'
 import logger from '../../logger/'
 import { createIOServer } from '../../setup/setupIOServer'
 import freePortFinder from '../../utils/freePortFinder'
