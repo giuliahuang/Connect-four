@@ -35,8 +35,7 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer): Promi
       ; (p2.ws as Socket).broadcast.emit('playing', p2.player.username, port)
 
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
-    io.on('connection', socket => { 
-      matchCallback(match, p1, p2, io, socket) })
+    io.on('connection', socket => matchCallback(match, p1, p2, io, socket))
   } else {
     logger.error("Couldn't find a free port")
   }

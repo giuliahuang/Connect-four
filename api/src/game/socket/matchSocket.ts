@@ -29,7 +29,9 @@ export function matchCallback(match: Match, p1: UnmatchedPlayer, p2: UnmatchedPl
 }
 
 function joinChat(socket: Socket, player1: Player, player2: Player) {
+
   if ((socket.request['user']._id).toString() === (player1.id).toString() || (socket.request['user']._id).toString() === (player2.id).toString()){
+
     socket.join('playersChat')
   }
   else{
