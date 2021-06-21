@@ -26,17 +26,17 @@ export function matchCallback(match: Match, p1: UnmatchedPlayer, p2: UnmatchedPl
 }
 
 function joinChat(socket: Socket, player1: Player, player2: Player) {
-  if (socket.request['user._id'] == player1.id || socket.request['user._id'] == player2.id)
+  if (socket.request['user']._id !== player1.id || socket.request['user']._id !== player2.id)
     socket.join('playersChat')
   else
     socket.join('observersChat')
 }
 
 function chat(message: string, socket: Socket, player1: Player, player2: Player) {
-  if (socket.request['user._id'] == player1.id || socket.request['user._id'] == player2.id)
-    socket.to('playersChat').to('observersChat').emit('message', message)
+  if (socket.request['user']._id == player1.id || socket.request['user']._id == player2.id)
+    socket.to('playersChat').to('observersChat').emit('message', { message, player: socket.request['user.username'] })
   else
-    socket.to('observersChat').emit('message', message)
+    socket.to('observersChat').emit('message', { message, player: socket.request['user.username'] })
 }
 
 function play(column: number, socket: Socket, match: Match, p1: UnmatchedPlayer, p2: UnmatchedPlayer, io: IOServer) {
