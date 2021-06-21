@@ -11,8 +11,13 @@ const MMR_DECR = 25
  */
 export async function endMatch(res: MatchResults): Promise<void> {
   try {
-    await UserModel.findOneAndUpdate({ username: res.winner }, { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } })
-    await UserModel.findOneAndUpdate({ username: res.loser }, { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } })
+    const filterWinner = { username: res.winner }
+    const updateWinner = { $inc: { mmr: MMR_INCR }, $push: { matchesPlayed: res } }
+    await UserModel.findOneAndUpdate(filterWinner, updateWinner)
+
+    const filterLoser = { username: res.loser, mmr: { $gte: MMR_DECR } }
+    const updateLoser = { $inc: { mmr: -MMR_DECR }, $push: { matchesPlayed: res } }
+    await UserModel.findOneAndUpdate(filterLoser, updateLoser)
   } catch (err) {
     logger.error(err)
   }
