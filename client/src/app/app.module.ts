@@ -19,7 +19,8 @@ import { MatchComponent } from './match/match.component'
 import { SignupComponent } from './signup/signup.component'
 //Services
 import { UserHttpService } from './user-http.service'
-import { UserComponent } from './user/user.component'
+import { UserComponent } from './user/user.component';
+import { ChatComponent } from './chat/chat.component'
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import { UserComponent } from './user/user.component'
     MatchComponent,
     LoginComponent,
     SignupComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

@@ -12,16 +12,16 @@
 
     <body>
         <div class="container">
-            <h1>Forza 4!</h1>
+            <h1>Connect Four!</h1>
             <hr />
 
               <span id="header">
-                <h4>Giocatore 1: <span id="player1header" class="text-danger"></span></h4>
-                <h4>Giocatore 2: <span id="player2header" class="text-warning"></span></h4>
+                <h4>Player 1: <span id="player1header" class="text-danger"></span></h4>
+                <h4>Plyaer 2: <span id="player2header" class="text-warning"></span></h4>
               </span>
               <table id="table"></table>
               <!--<button (click)="receiveGameUpdate()">StartReceiving</button>-->
-              <h1 class="title">Connect 4</h1>
+              <!--<h1 class="title">Connect 4</h1>-->
               <div class="grid">
           
                   <div class="cell col0" id="50" (click)="addDotRequest('col0');"></div>
@@ -73,10 +73,10 @@
                   <div class="cell col5" id="05" (click)="addDotRequest('col5');"></div>
                   <div class="cell col6" id="06" (click)="addDotRequest('col6');"></div>
           
-          
+                
               </div>
 
+              <app-chat></app-chat>
         </div>
     </body>
-
 </html>

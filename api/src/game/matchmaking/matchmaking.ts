@@ -32,7 +32,7 @@ export function play(socket: Socket, server: Server): void {
     mmr: user.mmr
   }
 
-  logger.info(`Player: ${player.username} with ${player.mmr} mmr requested to play`)
+  logger.info(`Player: ${player.username} with ${player.mmr} mmr with id ${player.id}requested to play`)
   if (!io) io = server
 
   childProcess.send({ id: player.id, mmr: player.mmr, ws: socket.id })

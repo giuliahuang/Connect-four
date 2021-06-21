@@ -37,20 +37,4 @@ export class LoginComponent implements OnInit {
 
   }
 
-
-  loginMatch() {
-    this.us.login( this.user ).subscribe( (d) => {
-      console.log('Login granted: ' + JSON.stringify(d) );
-      console.log('User service token: ' + this.us.get_token() );
-      this.errmessage = undefined;
-      var token = this.us.get_token()
-      this.socketIoService.receiveMatchPort(token.replace("Bearer ",""));
-    }, (err) => {
-      console.log('Login error: ' + JSON.stringify(err) );
-      this.errmessage = err.message;
-
-    });
-
-  }
-
 }
