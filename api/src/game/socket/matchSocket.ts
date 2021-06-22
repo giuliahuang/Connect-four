@@ -26,30 +26,20 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
-<<<<<<< HEAD
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
-=======
-  socket.on('message', (message: string) => {
-    chat(message, socket, player1, player2,io)
-  })
-
-  socket.on('dot', (column: number) => {
-    play(column, socket, match, p1, p2, io) })
->>>>>>> 9c217744f2339505d9f15c4a305c633d29ddd956
 
   socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
   })
 }
 
-<<<<<<< HEAD
 /**
  * Self explanatory, joins the appropriate chat through a Socket.io
  * @param socket Socket client of the user who connected
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if (socket.request['user']._id !== match.player1.id || socket.request['user']._id !== match.player2.id)
+  if (socket.request['user']._id === match.player1.id || socket.request['user']._id === match.player2.id)
     socket.join(`${match.uuid}.player`)
   else
     socket.join(`${match.uuid}.observers`)
@@ -71,29 +61,6 @@ function chat(message: string, socket: Socket, match: Match) {
     socket
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user.username'] })
-=======
-function joinChat(socket: Socket, player1: Player, player2: Player) {
-
-  if ((socket.request['user']._id).toString() === (player1.id).toString() || (socket.request['user']._id).toString() === (player2.id).toString()){
-
-    socket.join('playersChat')
-  }
-  else{
-    socket.join('observersChat')
-  }
-}
-
-function chat(message: string, socket: Socket, player1: Player, player2: Player, io: IOServer) {
-  logger.info("sender is " + socket.request['user']._id)
-  if ((socket.request['user']._id).toString() === (player1.id).toString() || (socket.request['user']._id).toString() === (player2.id).toString()){
-    io.to('playersChat').to('observersChat').emit('message', { message, user: socket.request['user'].username })
-  }
-
-  else{
-    io.to('observersChat').emit('message', { message, user: socket.request['user'].username })
-    logger.info("sent to observerschat")
-  }
->>>>>>> 9c217744f2339505d9f15c4a305c633d29ddd956
 }
 
 /**
