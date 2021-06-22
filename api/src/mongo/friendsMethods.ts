@@ -42,7 +42,7 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
  * @param askerUsername username of the user who sent the friend request
  * @param requestedUsername username of the user who received the friend request
  */
-export async function respondFriendRequest(hasAccepted: boolean, askerUsername: string, requestedUsername: string): Promise<void> {
+export async function processFriendRequest(hasAccepted: boolean, askerUsername: string, requestedUsername: string): Promise<void> {
   try {
     const session = await UserModel.startSession()
 
@@ -78,7 +78,7 @@ async function addFriend(user1: User & mongoose.Document<User>, user2: User & mo
     const session = await UserModel.startSession()
 
     await session.withTransaction(async () => {
-      if (user1.friends.includes(user2.username) && user2.friends.includes(user1.username)) {
+      if (!user1.friends.includes(user2.username) && !user2.friends.includes(user1.username)) {
         user1.friends.push(user2.username)
         user2.friends.push(user1.username)
         await user1.save()
@@ -100,7 +100,7 @@ async function addFriend(user1: User & mongoose.Document<User>, user2: User & mo
  * @param deleteFriendUsername username of the user to remove from the friends list
  * @returns true if the request was processed properly, false otherwise
  */
-export async function deleteFriend(sourceUsername: string, deleteFriendUsername: string): Promise<boolean> {
+export async function removeFromFriendList(sourceUsername: string, deleteFriendUsername: string): Promise<boolean> {
   try {
     const session = await UserModel.startSession()
 
@@ -126,21 +126,6 @@ export async function deleteFriend(sourceUsername: string, deleteFriendUsername:
     logger.error(err)
   }
   return false
-}
-
-/**
- * Returns the friends list of the user who originated the
- * @param uid user id of the user who requested the respective friends list
- * @returns an array containing the usernames of the users referenced in the friends list
- */
-export async function getFriends(username: string): Promise<string[]> {
-  try {
-    const doc = await UserModel.findOne({ username })
-    if (doc) return doc.friends
-  } catch (err) {
-    logger.prettyError(err)
-  }
-  return []
 }
 
 export async function getFriendProfile(username: string, friendUsername: string): Promise<User | undefined> {

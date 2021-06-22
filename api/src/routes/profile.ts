@@ -1,6 +1,6 @@
 import cors from 'cors'
 import express, { json, urlencoded } from 'express'
-import { corsImages } from '../config/cors'
+import corsOptions from '../config/cors'
 import upload from '../config/multer'
 import { friendProfile } from '../controllers/friends'
 import { getUserProfile, uploadAvatar } from '../controllers/userProfile'
@@ -11,6 +11,6 @@ router.get('/', getUserProfile)
 
 router.get('/:username', friendProfile)
 
-router.put('/avatar', cors(corsImages), urlencoded({ extended: true }), json(), upload.single('data'), uploadAvatar)
+router.put('/avatar', cors(corsOptions), urlencoded({ extended: true }), json(), upload.single('data'), uploadAvatar)
 
 export default router

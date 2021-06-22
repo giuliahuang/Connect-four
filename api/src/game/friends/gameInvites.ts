@@ -2,7 +2,7 @@ import { Socket } from "socket.io"
 import User from "../../models/User"
 import { getUserByUsername } from "../../mongo/userMethods"
 import { gameStart } from "../gameplay/gameplay"
-import UnmatchedPlayer from "../matchmaking/UnmatchedPlayer"
+import PlayerWithWS from "../matchmaking/UnmatchedPlayer"
 import Player from "../Player"
 import Invite from "./Invite"
 
@@ -24,7 +24,7 @@ export async function invitePlayer(socket: Socket, playerUsername: string): Prom
       username: user.username,
       mmr: user.mmr
     }
-    const unmatchedPlayer: UnmatchedPlayer = {
+    const unmatchedPlayer: PlayerWithWS = {
       player: player,
       timeJoined: 0,
       ws: socket
@@ -41,7 +41,7 @@ export async function invitePlayer(socket: Socket, playerUsername: string): Prom
   }
 }
 
-// Asynchronously deletes the specified invite from the hashmap
+// Deletes the specified invite from the hashmap
 function clearInvite(invite: Invite) {
   inviteMap.delete(invite.inviter.player.username)
 }
@@ -65,7 +65,7 @@ export function inviteResponse(socket: Socket, hasAccepted: boolean, inviterUser
         username: user.username,
         mmr: user.mmr
       }
-      const unmatchedPlayer: UnmatchedPlayer = {
+      const unmatchedPlayer: PlayerWithWS = {
         player: player,
         timeJoined: 0,
         ws: socket

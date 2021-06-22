@@ -23,6 +23,12 @@ export function createIOServer(param: WebServer | number): IOServer {
   return io
 }
 
+/**
+ * Creates a new Socket.io server instance and sets up the callback for
+ * the connection event
+ * @param httpServer 
+ * @returns the configured Socket.io server instance
+ */
 export function setupGlobalIOServer(httpServer: WebServer): IOServer {
   const io = createIOServer(httpServer)
   io.on('connection', socket => globalCallback(io, socket))

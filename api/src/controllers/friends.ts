@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
-import logger from '../logger'
 import User from '../models/User'
-import { deleteFriend as df, getFriendProfile, getFriends, respondFriendRequest as rfr, sendFriendRequest } from '../mongo/friendsMethods'
-
+import { getFriendProfile, processFriendRequest, removeFromFriendList, sendFriendRequest } from '../mongo/friendsMethods'
 /**
  * Sends a response containing the friends list of the user who originated the request
  * @param req Request
@@ -10,14 +8,7 @@ import { deleteFriend as df, getFriendProfile, getFriends, respondFriendRequest 
  */
 export async function getFriendsList(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  logger.info(user)
-
-  const result = await getFriends(user._id)
-  if (result)
-    res.status(200).json(JSON.parse(JSON.stringify(result)))
-  else
-    res.status(404).json({ error: true, message: 'User not found' })
-
+  res.status(200).json(user.friends)
 }
 
 /**
@@ -27,7 +18,7 @@ export async function getFriendsList(req: Request, res: Response): Promise<void>
  */
 export async function getFriendsRequests(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  res.status(200).json(JSON.parse(JSON.stringify(user.receivedFriendReqs)))
+  res.status(200).json(user.receivedFriendReqs)
 }
 
 /**
@@ -53,7 +44,7 @@ export async function addFriend(req: Request, res: Response): Promise<void> {
  */
 export async function respondFriendRequest(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  await rfr(req.body.hasAccepted, req.body.askerUsername, user.username)
+  await processFriendRequest(req.body.hasAccepted, req.body.askerUsername, user.username)
   res.status(200).json({ message: 'Friend request response received' })
 }
 
@@ -64,21 +55,21 @@ export async function respondFriendRequest(req: Request, res: Response): Promise
  */
 export async function deleteFriend(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  const result = await df(user.email, req.query.username as string)
+  const result = await removeFromFriendList(user.email, req.query.username as string)
   if (result)
     res.status(200).json({ message: 'Successfully deleted friend' })
   else
     res.status(500).json({ error: true, message: 'Failed to delete friend' })
 }
 
+/**
+ * Returns a friend's profile's information
+ * @param req Request
+ * @param res Response
+ */
 export async function friendProfile(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  try {
-    const result = await getFriendProfile(user.username, req.query.username as string)
-    if (result) res.status(200).json(result)
-    res.status(500).json({ error: true, message: 'Could retrieve friend\'s profile' })
-  } catch (err) {
-    logger.error(err)
-    res.status(500).json({ error: true, message: 'Could retrieve friend\'s profile' })
-  }
+  const result = await getFriendProfile(user.username, req.query.username as string)
+  if (result) res.status(200).json(result)
+  else res.status(500).json({ error: true, message: 'Could retrieve friend\'s profile' })
 }

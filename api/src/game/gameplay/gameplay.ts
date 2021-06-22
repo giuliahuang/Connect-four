@@ -2,7 +2,7 @@ import { Socket } from 'socket.io'
 import logger from '../../logger/'
 import { createIOServer } from '../../setup/setupIOServer'
 import freePortFinder from '../../utils/freePortFinder'
-import UnmatchedPlayer from '../matchmaking/UnmatchedPlayer'
+import PlayerWithWS from '../matchmaking/UnmatchedPlayer'
 import Player from '../Player'
 import { matchCallback } from '../socket/matchSocket'
 import { Match } from './Match'
@@ -12,7 +12,7 @@ import { Match } from './Match'
  * @param p1 player 1
  * @param p2 player 2
  */
-export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer): Promise<void> {
+export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<void> {
   const port = await freePortFinder()
 
   if (port) {
@@ -38,5 +38,7 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer): Promi
     io.on('connection', socket => matchCallback(match, p1, p2, io, socket))
   } else {
     logger.error("Couldn't find a free port")
+      ; (p1.ws as Socket).emit('notMatched', 'An error occured while the match was starting')
+      ; (p2.ws as Socket).emit('notMatched', 'An error occured while the match was starting')
   }
 }

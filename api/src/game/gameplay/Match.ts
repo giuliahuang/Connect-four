@@ -3,10 +3,12 @@ import MatchResults from '../../models/MatchResults'
 import { endMatch } from '../../mongo/matchMethods'
 import Player from '../Player'
 import MoveResult from './MoveResult'
+import { v4 as uuidv4 } from 'uuid'
 
 export class Match {
   public readonly player1: Player
   public readonly player2: Player
+  public readonly uuid = uuidv4()
   private readonly rows = 6
   private readonly columns = 7
   public readonly game_board = Array.from(Array(this.rows), () => Array(this.columns).fill(0))

@@ -8,7 +8,7 @@ import sudoRouter from './sudo'
 const router = Router()
 
 /**
- * Dummy route use for authenticating all requests in this router hierarchy
+ * Dummy route used for authenticating all requests in this router hierarchy
  */
 router.use(passport.authenticate('jwt', { session: false }))
 router.use('/friends', friendsRouter)
