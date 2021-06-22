@@ -80,10 +80,13 @@ export class Match {
       matchResult: undefined
     }
     let player: Player
-    if (this.player1.id === playerId) player = this.player1
-    else if (this.player2.id === playerId) player = this.player2
+    
+    if (this.player1.id.toString() === playerId.toString()) player = this.player1
+    else if (this.player2.id.toString() === playerId.toString()) player = this.player2
     else return res
 
+
+    logger.info("actual player " + player)
     if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
       this.game_board[this.heights[col]][col] = player.id
       this.heights[col]++
@@ -97,7 +100,6 @@ export class Match {
           winner: player.username,
           loser: loser.username
         }
-
         this.endGame(res.matchResult)
       }
       this.p1Turn = !this.p1Turn

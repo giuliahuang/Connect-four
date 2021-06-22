@@ -26,13 +26,23 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
+<<<<<<< HEAD
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
+=======
+  socket.on('message', (message: string) => {
+    chat(message, socket, player1, player2,io)
+  })
+
+  socket.on('dot', (column: number) => {
+    play(column, socket, match, p1, p2, io) })
+>>>>>>> 9c217744f2339505d9f15c4a305c633d29ddd956
 
   socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
   })
 }
 
+<<<<<<< HEAD
 /**
  * Self explanatory, joins the appropriate chat through a Socket.io
  * @param socket Socket client of the user who connected
@@ -61,6 +71,29 @@ function chat(message: string, socket: Socket, match: Match) {
     socket
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user.username'] })
+=======
+function joinChat(socket: Socket, player1: Player, player2: Player) {
+
+  if ((socket.request['user']._id).toString() === (player1.id).toString() || (socket.request['user']._id).toString() === (player2.id).toString()){
+
+    socket.join('playersChat')
+  }
+  else{
+    socket.join('observersChat')
+  }
+}
+
+function chat(message: string, socket: Socket, player1: Player, player2: Player, io: IOServer) {
+  logger.info("sender is " + socket.request['user']._id)
+  if ((socket.request['user']._id).toString() === (player1.id).toString() || (socket.request['user']._id).toString() === (player2.id).toString()){
+    io.to('playersChat').to('observersChat').emit('message', { message, user: socket.request['user'].username })
+  }
+
+  else{
+    io.to('observersChat').emit('message', { message, user: socket.request['user'].username })
+    logger.info("sent to observerschat")
+  }
+>>>>>>> 9c217744f2339505d9f15c4a305c633d29ddd956
 }
 
 /**
@@ -77,9 +110,9 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
   if (moveResult.accepted) {
-    socket.broadcast.emit('dot', column)
+    io.emit('dot', column)
     if (moveResult.matchResult) {
-      io.emit('winner', `Player ${socket.request['user.username']} has won the match!`)
+      io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
       closeServer(io, p1, p2)

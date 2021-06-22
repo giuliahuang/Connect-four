@@ -45,6 +45,7 @@ export class SocketioService {
     this.socket?.on('matched',(port)=>{
       console.log('token: ' + token)
       this.gamesocket = io('http://localhost:' + port, {
+        'forceNew':true,
         extraHeaders: {
           'x-auth-token': token
         },
@@ -67,10 +68,9 @@ export class SocketioService {
   }
 
   receiveWinnerMessage(){
-    return new Observable((observer)=>{
-      this.gamesocket?.on('winner', (message)=>{
-        observer.unsubscribe();
-      })
+    this.gamesocket?.on('winner',message=>{
+      console.log("Winner message: "+ message)
+      setTimeout(()=>this.router.navigate(['/user']),1000)
     })
   }
 
@@ -103,8 +103,8 @@ export class SocketioService {
 
   receiveEndMatch(){
     return new Observable((observer)=>{
-      this.gamesocket?.on('stopped', (message) =>{
-        console.log("received add dot")
+      this.gamesocket?.on('stoppedPlaying', (message) =>{
+        console.log("stoppedPlaying")
         observer.unsubscribe();
       });
     });
@@ -123,18 +123,7 @@ export class SocketioService {
       });
     });
   }
-/*
-  sendGameUpdate(col:number, turn:number){
-    const message = {
-      turn: turn,
-      col: col,
-    }
-    console.log(message.turn);
-    console.log(this.gamesocket+'ok')
-    this.gamesocket?.emit('gameUpdate',message)
-
-  }
-  */
+  
 
   receivePlayer(){
     return new Observable((observer)=>{
@@ -161,4 +150,19 @@ export class SocketioService {
       });
     });
   }
+
+  sendMessage(message:String){
+    this.gamesocket?.emit('message',message)
+    console.log("message emitted")
+  }
+
+  receiveMessage(){
+    return new Observable((observer)=>{
+      this.gamesocket?.on('message', (message)=>{
+        console.log("收到信息")
+        observer.next(message)
+      })
+    })
+  }
+ 
 }

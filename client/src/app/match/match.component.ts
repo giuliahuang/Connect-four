@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { MatSnackBar } from '@angular/material/snack-bar'
+import { UserHttpService } from '../user-http.service';
 
 @Component({
   selector: 'app-match',
@@ -20,7 +21,8 @@ export class MatchComponent implements OnInit {
   constructor(
     private socketIoService: SocketioService, 
     // private snackbar: MatSnackBar,
-    private router:Router
+    private router:Router,
+    private us:UserHttpService
     ){
 
     //this.match = new Match(this.p1, this.p2);
@@ -58,10 +60,7 @@ export class MatchComponent implements OnInit {
 
 
   receiveWinnerMessage(){
-    this.socketIoService.receiveWinnerMessage().subscribe((message)=>{
-      //TODO: print it on the screen
-      console.log(message)
-    })
+    this.socketIoService.receiveWinnerMessage()
   }
 
   receiveGameUpdateMSG(){
@@ -80,6 +79,7 @@ export class MatchComponent implements OnInit {
       // this.snackbar.open(String(message),'',{
       //   duration: 3000,
       // });
+      console.log("received")
       console.log(col)
       var className = "col" + (col)
       console.log(className);
@@ -100,7 +100,6 @@ export class MatchComponent implements OnInit {
     this.socketIoService.receiveEndMatch().subscribe((username)=>{
       console.log('End Match of ' + username)
       this.router.navigate(['/user'])
-      this.socketIoService.gamesocket?.disconnect()
     })
   }
 
@@ -119,6 +118,7 @@ export class MatchComponent implements OnInit {
     if(cell?.classList.contains('cell')){
       //TODO: gestire i colori 
       cell.classList.replace('cell',this.colors[this.playerTurn]+'cell')
+      this.playerTurn*=-1
       this.heights[parseInt(col)]++;
       console.log("a disk has been added")
     }
