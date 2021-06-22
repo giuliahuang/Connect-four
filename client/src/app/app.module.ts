@@ -23,12 +23,14 @@ import { UserHttpService } from './user-http.service';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SignupComponent } from './signup/signup.component';
+import { HomepageComponent } from './homepage/homepage.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     SignupComponent,
+    HomepageComponent,
   ],
   imports: [
     BrowserModule,

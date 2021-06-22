@@ -8,7 +8,7 @@ import * as jwtdecode from 'jwt-decode';
 
 interface TokenData {
   username:string,
-  mail:string,
+  email:string,
   roles:string[],
   id:string
 }
@@ -17,7 +17,7 @@ interface TokenData {
 export class UserHttpService {
 
   private token = '';
-  public url = 'http://localhost:8080';
+  public url = 'http://localhost:5000';
 
   constructor( private http: HttpClient ) {
     console.log('User service instantiated');
@@ -31,26 +31,48 @@ export class UserHttpService {
     }
   }
 
-  login( mail: string, password: string, remember: boolean ): Observable<any> {
-
-    console.log('Login: ' + mail + ' ' + password );
+  /*login( email: string, password: string, remember: boolean ): Observable<any> {
+    console.log("Sono qua?"+ email + ':' + password);
     const options = {
       headers: new HttpHeaders({
-        authorization: 'Basic ' + btoa( mail + ':' + password),
+        authorization: 'Basic ' + btoa( email + ':' + password),
         'cache-control': 'no-cache',
         'Content-Type':  'application/x-www-form-urlencoded',
       })
     };
 
-    return this.http.get( this.url + '/login',  options, ).pipe(
+    return this.http.post<any>( this.url + '/login', {email, password} ,options ).pipe(
       tap( (data: any) => {
         console.log(JSON.stringify(data));
         this.token = data.token;
-        if ( remember ) {
+        if ( user.remember ) {
+          localStorage.setItem('postmessages_token', this.token );
+        }
+      }));
+
+  }*/
+
+  login( user: any ): Observable<any> {
+
+    console.log('Login: ' + user.email + ' ' + user.password );
+    const options = {
+      headers: new HttpHeaders({
+        authorization: 'Basic ' + btoa( user.email + ':' + user.password),
+        'cache-control': 'no-cache',
+        'Content-Type':  'application/json',
+      })
+    };
+
+    return this.http.post( this.url + '/login', user ,options ).pipe(
+      tap( (data: any) => {
+        console.log(JSON.stringify(data));
+        this.token = data.token;
+        if ( user.remember ) {
           localStorage.setItem('postmessages_token', this.token );
         }
       }));
   }
+
 
   logout() {
     console.log('Logging out');
@@ -66,7 +88,8 @@ export class UserHttpService {
       })
     };
 
-    return this.http.post( this.url + '/users', user, options ).pipe(
+    console.log(user)
+    return this.http.post( this.url + '/signup', user, options ).pipe(
       tap( (data) => {
         console.log(JSON.stringify(data) );
       })
@@ -82,8 +105,8 @@ export class UserHttpService {
     return (jwtdecode(this.token) as TokenData).username;
   }
 
-  get_mail() {
-    return (jwtdecode(this.token) as TokenData).mail;
+  get_email() {
+    return (jwtdecode(this.token) as TokenData).email;
   }
 
   get_id() {

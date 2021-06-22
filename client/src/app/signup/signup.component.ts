@@ -10,7 +10,7 @@ import { UserHttpService } from '../user-http.service';
 export class SignupComponent implements OnInit {
 
   public errmessage = undefined;
-  public user = { mail: '', password: '', username: '', roles: [] };
+  public user = { email: '', password: '', username: '', roles: [] };
 
   constructor( public us: UserHttpService, public router: Router ) { }
 

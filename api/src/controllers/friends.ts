@@ -53,7 +53,7 @@ export async function addFriend(req: Request, res: Response) {
 export async function respondFriendRequest(req: Request, res: Response) {
   const user: User = req.body['user']
   const result = await rfr(req.body.hasAccepted, req.body.askerUsername, user.username)
-  if (result)
+  if (result != null)
     res.status(200).json({ message: 'Friend request accepted' })
   else
     res.status(200).json({ message: 'Friend request rejected' })

@@ -9,6 +9,7 @@ import { validatePassword } from '../utils/passwordUtils'
  * @param res Response
  */
 export async function login(req: Request, res: Response) {
+  console.log("sono qua mail: "+req.body.email);
   const user = await getUserByEmail(req.body.email)
   if (user && validatePassword(req.body.password, user.hash, user.salt)) {
     if (user.isFirstLogin) {
