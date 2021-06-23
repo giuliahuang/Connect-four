@@ -86,7 +86,6 @@ export class Match {
     else return res
 
 
-    logger.info("actual player " + player)
     if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
       this.game_board[this.heights[col]][col] = player.id
       this.heights[col]++

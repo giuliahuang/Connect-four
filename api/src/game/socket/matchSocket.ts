@@ -26,7 +26,10 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
+  io.emit('order',({player1:player1.username,player2:player2.username,random:Math.round(Math.random())}));
+
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
+
 
   socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
@@ -82,7 +85,8 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
-      closeServer(io, p1, p2)
+      
+        setTimeout=>(closeServer(io, p1, p2),1000)
     }
   } else {
     socket.emit('moveRejection', column)

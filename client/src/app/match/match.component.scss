@@ -1,4 +1,9 @@
-.grid{
+
+.title{
+    text-align: center;
+}
+
+main{
     display: grid;
     grid-template-columns: repeat(7, 75px);
     grid-template-rows: repeat(6, 75px);
@@ -11,32 +16,9 @@
     margin-left: 50px;
 }
 
-.cell{
+app-cell{
     border:5px solid black;
     background-color: white;
     border-radius: 50%;
     outline:  5px solid black;
-}
-
-.cell:hover{
-    background-color: rgb(75, 204, 255);
-}
-
-.redcell{
-    border:5px solid black;
-    border-radius: 50%;
-    outline:  5px solid black;
-    background-color: red;
-}
-
-.yellowcell{
-
-    border:5px solid black;
-    border-radius: 50%;
-    outline:  5px solid black;
-    background-color: yellow;
-}
-
-.title{
-    text-align: center;
 }

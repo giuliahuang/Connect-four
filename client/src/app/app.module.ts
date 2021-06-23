@@ -17,10 +17,17 @@ import { AppComponent } from './app.component'
 import { LoginComponent } from './login/login.component'
 import { MatchComponent } from './match/match.component'
 import { SignupComponent } from './signup/signup.component'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatDialogModule } from '@angular/material/dialog'
+
+
 //Services
 import { UserHttpService } from './user-http.service'
 import { UserComponent } from './user/user.component';
-import { ChatComponent } from './chat/chat.component'
+import { ChatComponent } from './chat/chat.component';
+import { LobbyDialogComponent } from './lobby-dialog/lobby-dialog.component';
+import { EndgameDialogComponent } from './endgame-dialog/endgame-dialog.component';
+import { CellComponent } from './cell/cell.component';
 
 
 @NgModule({
@@ -31,7 +38,11 @@ import { ChatComponent } from './chat/chat.component'
     LoginComponent,
     SignupComponent,
     ChatComponent,
+    LobbyDialogComponent,
+    EndgameDialogComponent,
+    CellComponent,
   ],
+  entryComponents: [LobbyDialogComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -44,7 +55,9 @@ import { ChatComponent } from './chat/chat.component'
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

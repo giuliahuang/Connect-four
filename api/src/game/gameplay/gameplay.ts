@@ -22,7 +22,7 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
       ; (p2.ws as Socket).emit('matched', port)
 
     let player1: Player, player2: Player
-    if (Math.random()) {
+    if (Math.round(Math.random())) {
       player1 = p1.player
       player2 = p2.player
     } else {
