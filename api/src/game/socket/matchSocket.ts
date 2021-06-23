@@ -26,7 +26,7 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
-  io.emit('order',({player1:player1.username,player2:player2.username,random:Math.round(Math.random())}));
+  io.emit('order',({player1:match.player1.username,player2:match.player2.username,random:Math.round(Math.random())}));
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 

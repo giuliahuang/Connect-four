@@ -23,7 +23,7 @@ export class GamesocketService {
 
     addDotRequest(col:number){
       console.log('add dot request emitted')
-      this.gamesocket?.emit('dot',col);
+      this.gamesocket?.emit('insertDisc',col);
     }
   
     receivePlayerMoveRejection(){
