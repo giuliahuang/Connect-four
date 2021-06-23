@@ -35,7 +35,7 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
       ; (p2.ws as Socket).broadcast.emit('playing', p2.player.username, port)
 
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
-    io.on('connection', socket => matchCallback(match, p1, p2, io, socket))
+    io.on('connection', socket => matchCallback(match, p1, p2, io, socket, port))
   } else {
     logger.error("Couldn't find a free port")
       ; (p1.ws as Socket).emit('notMatched', 'An error occured while the match was starting')

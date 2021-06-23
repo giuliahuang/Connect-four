@@ -35,7 +35,7 @@ Server Events:
   -Receives a player's move, checks it and consumes it. If it's accepted it is relayed to everyone else connected to the websocket server. If it's a winning move the game ends, the winner is declared and the MMR is updated
 
 Client Events:
--startedPlaying(string)
+-startedPlaying(username: string, port: number)
   Notifies the friends list of the user who started playing to update their status
 
 -stoppedPlaying(string)

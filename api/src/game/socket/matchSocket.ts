@@ -19,10 +19,10 @@ const hgetAsync = promisify(redis.hget).bind(redis)
  * @param io match Socket.io server instance
  * @param socket Socket client of the user
  */
-export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer, socket: Socket): void {
+export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer, socket: Socket, port: number): void {
   joinChat(socket, match)
-  notifyStartedPlaying(p1)
-  notifyStartedPlaying(p2)
+  notifyStartedPlaying(p1, port)
+  notifyStartedPlaying(p2, port)
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
@@ -125,10 +125,10 @@ function closeServer(io: IOServer, p1: PlayerWithWS, p2: PlayerWithWS) {
   io.close()
 }
 
-async function notifyStartedPlaying(p: PlayerWithWS) {
+async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
   const user = await getUserById(p.player.id)
   user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', user.username)
+    ; (p.ws as Socket).to(friend).emit('startedPlaying', {username: user.username, port})
   })
 }
 
