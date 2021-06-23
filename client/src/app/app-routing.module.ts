@@ -5,6 +5,7 @@ import { SignupComponent } from './signup/signup.component'
 
 import { UserComponent } from './user/user.component'
 import { MatchComponent } from './match/match.component'
+import { RankingComponent } from './ranking/ranking.component'
 
 const routes: Routes = [
   { path: 'user', component: UserComponent },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
+  { path: 'ranking' , component: RankingComponent}
 
 ]
 

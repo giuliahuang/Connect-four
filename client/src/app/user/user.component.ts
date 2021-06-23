@@ -23,6 +23,8 @@ interface TokenData {
 
 export class UserComponent implements OnInit {
 
+  errorMsg = ""
+
   constructor(
     private router:Router,
     private socketIoService:SocketioService,
@@ -43,15 +45,18 @@ export class UserComponent implements OnInit {
 
   }
 
-  //an user can watch a match of other users
-  observe(){
-
+  //receives not matched error
+  receiveNotMatchedError(){
+    this.socketIoService.socket?.on('notMatched',(message)=>{
+      this.errorMsg = message;
+    })
   }
 
-
+  //adds the user in the lobby to find a match
   startGame(){
     this.socketIoService.startGame()
     this.openDialog();
+    this.receiveNotMatchedError();
     this.socketIoService.receiveMatchPort(this.us.get_token().replace("Bearer ",""))
   }
 

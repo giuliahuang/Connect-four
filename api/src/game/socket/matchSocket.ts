@@ -24,9 +24,10 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   notifyStartedPlaying(p1, port)
   notifyStartedPlaying(p2, port)
 
+  io.emit('order',({player1:match.player1.username,player2:match.player2.username,random:Math.round(Math.random())}));
+
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
-  io.emit('order',({player1:match.player1.username,player2:match.player2.username,random:Math.round(Math.random())}));
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
@@ -42,7 +43,7 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if (socket.request['user']._id === match.player1.id || socket.request['user']._id === match.player2.id)
+  if ((socket.request['user']._id).toString() === (match.player1.id) .toString()|| (socket.request['user']._id).toString() === (match.player2.id).toString())
     socket.join(`${match.uuid}.player`)
   else
     socket.join(`${match.uuid}.observers`)
@@ -55,15 +56,15 @@ function joinChat(socket: Socket, match: Match) {
  * @param match Match object containing the relative info
  */
 function chat(message: string, socket: Socket, match: Match) {
-  if (socket.request['user']._id == match.player1.id || socket.request['user']._id == match.player2.id)
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
     socket
       .to(`${match.uuid}.player`)
       .to(`${match.uuid}.observers`)
-      .emit('message', { message, player: socket.request['user.username'] })
+      .emit('message', { message, player: socket.request['user'].username })
   else
     socket
       .to(`${match.uuid}.observers`)
-      .emit('message', { message, player: socket.request['user.username'] })
+      .emit('message', { message, player: socket.request['user'].username })
 }
 
 /**
