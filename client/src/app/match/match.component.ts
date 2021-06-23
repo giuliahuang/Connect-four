@@ -1,9 +1,12 @@
 import { AssertNotNull, tokenName } from '@angular/compiler';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
-import { MatSnackBar } from '@angular/material/snack-bar'
 import { UserHttpService } from '../user-http.service';
+import { GamesocketService } from '../gamesocket.service';
+import { MatDialog } from '@angular/material/dialog';
+import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.component';
+import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
 
 @Component({
   selector: 'app-match',
@@ -14,157 +17,129 @@ import { UserHttpService } from '../user-http.service';
 
 export class MatchComponent implements OnInit {
 
-  colors:string[]=[];
+  cell: any[]=[]
+  nextColor!: boolean;
   heights:number[]=[]
-  playerTurn;
-
-  constructor(
-    private socketIoService: SocketioService, 
-    // private snackbar: MatSnackBar,
-    private router:Router,
-    private us:UserHttpService
-    ){
-
-    //this.match = new Match(this.p1, this.p2);
-    this.playerTurn=1;
-    this.colors[1] = "yellow";
-    this.colors[-1] = "red";
-    for(var i=0;i<7;i++){
-      this.heights[i]=0;
-    }
+  player1={
+    username:"",
+    color:""
+  }
+  player2={
+    username:"",
+    color:""
   }
 
+  constructor(
+    private gamesocketService: GamesocketService, 
+    private router:Router,
+    private dialog:MatDialog,
+    ){
+  }
+
+
   ngOnInit(): void {
-    console.log("Match page")
-    this.receiveGameUpdateMSG();
+    this.newGame()
     this.receiveGameUpdate();
     this.receiveEndMatch();
     this.receiveWinnerMessage();
     this.receivePlayerMoveRejection();
     this.receivePlayerDisconnetedMessage()
+    this.receivePlayers()
   }
 
+  //initialization of the game
+  newGame(){
+    this.heights = Array(7).fill(0)
+    this.cell = Array(42).fill(null);
+    this.player1.username="";
+    this.player2.username="";
+    this.player1.color="";
+    this.player2.color="";
+
+    if(this.nextColor){
+      this.player1.color="yellow"
+      this.player2.color="red"
+    }
+    else{
+      this.player2.color="yellow"
+      this.player1.color="red"
+    }
+  }
+  
+  get color(){
+    return this.nextColor ? "yellow" : "red"
+  }
+  
+  //opens a dialog with the winner message and an exit button
+  openDialog(message:String){
+    let dialogRef = this.dialog.open(EndgameDialogComponent,{data: {message: message}})
+  }
+
+  //receives a disconnection message with the user and its reason
   receivePlayerDisconnetedMessage(){
-    this.socketIoService.receivePlayerMoveRejection().subscribe((message:any)=>{
+    this.gamesocketService.receivePlayerMoveRejection().subscribe((message:any)=>{
       //TODO
       console.log(`player ${message.username} has disconnected for ${message.reason}`)
     })
   }
 
+  //receive a rejection when it is not the right player move
   receivePlayerMoveRejection(){
-    this.socketIoService.receivePlayerMoveRejection().subscribe((message:any)=>{
-      //TODO
+    this.gamesocketService.receivePlayerMoveRejection().subscribe((message:any)=>{
       console.log(`player ${message.username} cannot add dot at column ${message.column}`)
     })
   }
 
-
+  //receives a message when player wins the game
   receiveWinnerMessage(){
-    this.socketIoService.receiveWinnerMessage()
-  }
-
-  receiveGameUpdateMSG(){
-    this.socketIoService.receiveGameUpdateMSG().subscribe((message)=>{
-      // this.snackbar.open(String(message),'',{
-      //   duration: 3000,
-      // });
-      console.log(message)
+    this.gamesocketService.gamesocket?.on('winner',(message)=>{
+      this.openDialog(message);
     })
   }
 
-  //receive game update data
+  //updates the gameboard if allowed by the server
   receiveGameUpdate(){
     console.log('start receiving game update')
-    this.socketIoService.receiveGameUpdate().subscribe((col:any) => {
-      // this.snackbar.open(String(message),'',{
-      //   duration: 3000,
-      // });
-      console.log("received")
-      console.log(col)
-      var className = "col" + (col)
-      console.log(className);
-      //TODO player id 换成 player.turn(新的)
-      this.addDot(className)
+    this.gamesocketService.receiveGameUpdate().subscribe((col:any) => {
+      this.addDot(col)
      });
   }
 
-  //after clicking on one of the column, an addDotRequest will be sent
-  addDotRequest(colclass:string){
-    const col = parseInt(colclass.substr(colclass.length-1));
+
+  //sends a request to the server to add a dot
+  addDotRequest(index:number){
+    var col=index%7;
     console.log('add dot request at col ' + col)
-    this.socketIoService.addDotRequest(col);
+    this.gamesocketService.addDotRequest(col);
   }
 
   //end of match
   receiveEndMatch(){
-    this.socketIoService.receiveEndMatch().subscribe((username)=>{
+    this.gamesocketService.receiveEndMatch().subscribe((username)=>{
       console.log('End Match of ' + username)
       this.router.navigate(['/user'])
     })
   }
 
-  //add an dot
-  private addDot(colclass:string){
-
-    //ottengo tutte tutte le righe di una colonna
-    const colList = document.getElementsByClassName('name');
-
-    //ottengo la colonna dal name 
-    const col = colclass.substr(colclass.length-1);
-
-    //identifico la cella
-    const cell = document.getElementById(''+this.heights[parseInt(col)]+col);
-
-    if(cell?.classList.contains('cell')){
-      //TODO: gestire i colori 
-      cell.classList.replace('cell',this.colors[this.playerTurn]+'cell')
-      this.playerTurn*=-1
-      this.heights[parseInt(col)]++;
-      console.log("a disk has been added")
-    }
-    else{
-      alert("Col Full")
+  //adds a dot to the gameboard
+  private addDot(col:number){
+    if(this.heights[col]<7){
+      this.cell.splice(col+(7*(5-this.heights[col])),1,this.color)
+      this.heights[col]++
+      this.nextColor = !this.nextColor
     }
   }
   
-  /*
-
-  change(colclass:string,turn:number){
-    //if addDot == true allora cambia colore altrimenti no 
-
-    //ottengo tutte tutte le righe di una colonna
-    const colList = document.getElementsByClassName('name');
-
-    //ottengo la colonna dal name 
-    const col = colclass.substr(colclass.length-1);
-
-    //identifico la cella
-    const cell = document.getElementById(''+this.heights[parseInt(col)]+col);
-
-
-    if(cell?.classList.contains('cell')){
-      cell.classList.replace('cell',this.colors[this.playerTurn]+'cell')
-      this.heights[parseInt(col)]++;
-      console.log(this.playerTurn)
-      // this.socketIoService.sendGameUpdate(parseInt(col),this.playerTurn)
-      this.playerTurn*=-1;
-    }
-    else{
-      alert("Col Full")
-    }
-  } 
-  */
-
-
-  //从client socketservice里接收msg并发送webbrowser
-  receiveJoinedPlayers(){
-     this.socketIoService.receiveJoinedPlayers().subscribe((message) => {
-      // this.snackbar.open(String(message),'',{
-      //   duration: 3000,
-      // });
-      console.log(message)
-     });
+  //receives the order of the player and sets the starting color
+  receivePlayers(){
+     this.gamesocketService.gamesocket?.on('order', (message)=>{
+       console.log("player received")
+        this.player1.username = message.player1;
+        this.player2.username = message.player2;
+        this.nextColor=message.random;
+     })
   }
 
 
 }
+

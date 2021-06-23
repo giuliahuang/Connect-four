@@ -16,6 +16,8 @@ export function matchCallback(match: Match, p1: UnmatchedPlayer, p2: UnmatchedPl
 
   joinChat(socket, player1, player2)
 
+  io.emit('order',({player1:player1.username,player2:player2.username,random:Math.round(Math.random())}));
+
   socket.on('message', (message: string) => { 
     chat(message, socket, player1, player2,io) 
   })
@@ -61,7 +63,7 @@ function play(column: number, socket: Socket, match: Match, p1: UnmatchedPlayer,
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
         
-        closeServer(io)
+        setTimeout=>(closeServer(io),1000)
     }
   } else {
     io.emit('playerMoveRejection', column, user.username)

@@ -16,66 +16,23 @@
             <hr />
 
               <span id="header">
+                  <h4>Player1: {{player1.username}}    Color: {{ player1.color }}</h4>
+                  <h4>Player2: {{player2.username}}    Color: {{ player2.color }}</h4>
+                  <!--
                 <h4>Player 1: <span id="player1header" class="text-danger"></span></h4>
                 <h4>Plyaer 2: <span id="player2header" class="text-warning"></span></h4>
+                  -->
               </span>
-              <table id="table"></table>
-              <!--<button (click)="receiveGameUpdate()">StartReceiving</button>-->
-              <!--<h1 class="title">Connect 4</h1>-->
-              <div class="grid">
-          
-                  <div class="cell col0" id="50" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="51" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="52" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="53" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="54" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="55" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="56" (click)="addDotRequest('col6');"></div>
-          
-          
-                  <div class="cell col0" id="40" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="41" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="42" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="43" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="44" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="45" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="46" (click)="addDotRequest('col6');"></div>
-          
-                  <div class="cell col0" id="30" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="31" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="32" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="33" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="34" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="35" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="36" (click)="addDotRequest('col6');"></div>
-          
-                  <div class="cell col0" id="20" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="21" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="22" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="23" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="24" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="25" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="26" (click)="addDotRequest('col6');"></div>
-          
-                  <div class="cell col0" id="10" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="11" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="12" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="13" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="14" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="15" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="16" (click)="addDotRequest('col6');"></div>
-          
-                  <div class="cell col0" id="00" (click)="addDotRequest('col0');"></div>
-                  <div class="cell col1" id="01" (click)="addDotRequest('col1');"></div>
-                  <div class="cell col2" id="02" (click)="addDotRequest('col2');"></div>
-                  <div class="cell col3" id="03" (click)="addDotRequest('col3');"></div>
-                  <div class="cell col4" id="04" (click)="addDotRequest('col4');"></div>
-                  <div class="cell col5" id="05" (click)="addDotRequest('col5');"></div>
-                  <div class="cell col6" id="06" (click)="addDotRequest('col6');"></div>
-          
-                
-              </div>
-
+              
+            <main>
+                <app-cell
+                    *ngFor="let val of cell; let i = index"
+                    [ngStyle]=" {'background-color': val}"
+                    (click)="addDotRequest(i)"
+                    >
+                </app-cell>
+            </main>
+            
               <app-chat></app-chat>
         </div>
     </body>

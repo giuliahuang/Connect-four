@@ -22,7 +22,7 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer): Promi
       ; (p2.ws as Socket).emit('matched', port)
 
     let player1: Player, player2: Player
-    if (Math.random()) {
+    if (Math.round(Math.random())) {
       player1 = p1.player
       player2 = p2.player
     } else {
@@ -31,8 +31,6 @@ export async function gameStart(p1: UnmatchedPlayer, p2: UnmatchedPlayer): Promi
     }
 
     const match = new Match(player1, player2)
-      ; (p1.ws as Socket).broadcast.emit('playing', p1.player.username, port)
-      ; (p2.ws as Socket).broadcast.emit('playing', p2.player.username, port)
 
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
     io.on('connection', socket => matchCallback(match, p1, p2, io, socket))

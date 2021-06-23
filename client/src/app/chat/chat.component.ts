@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SocketioService } from '../socketio.service';
+import { GamesocketService } from '../gamesocket.service';
 
 @Component({
   selector: 'app-chat',
@@ -12,7 +12,9 @@ export class ChatComponent implements OnInit {
   messageArray:Array<{user:String,message:String}> = [];
   
 
-  constructor(private socketIoService: SocketioService,) {
+  constructor(
+    private gamesocketService: GamesocketService,
+    ) {
   }
 
   
@@ -23,13 +25,12 @@ export class ChatComponent implements OnInit {
   sendMessage(){
     console.log(this.messageText)
     if(this.messageText.length!=0){
-      this.socketIoService.sendMessage(this.messageText)
+      this.gamesocketService.sendMessage(this.messageText)
     }
   }
 
   receiveMessage(){
-    console.log("start receiving message")
-    this.socketIoService.receiveMessage().subscribe( (data:any)=>{
+    this.gamesocketService.receiveMessage().subscribe( (data:any)=>{
       this.messageArray.push(data)
       this.messageText='';
     })

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 import { UserHttpService } from '../user-http.service';
 import * as jwtdecode from 'jwt-decode';
+import { LobbyDialogComponent } from '../lobby-dialog/lobby-dialog.component';
+import { MatDialog } from '@angular/material/dialog'
 
 
 interface TokenData {
@@ -24,10 +26,15 @@ export class UserComponent implements OnInit {
   constructor(
     private router:Router,
     private socketIoService:SocketioService,
-    private us:UserHttpService
+    private us:UserHttpService,
+    private dialog: MatDialog,
     ) { }
 
   ngOnInit(): void {
+  }
+
+  openDialog(){
+    this.dialog.open(LobbyDialogComponent, { disableClose: true })
   }
   
 
@@ -44,8 +51,7 @@ export class UserComponent implements OnInit {
 
   startGame(){
     this.socketIoService.startGame()
-    //call a function that waits for match and then navigate to /match
-    console.log(jwtdecode(this.us.get_token())as TokenData)
+    this.openDialog();
     this.socketIoService.receiveMatchPort(this.us.get_token().replace("Bearer ",""))
   }
 
