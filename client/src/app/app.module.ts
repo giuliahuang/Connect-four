@@ -24,10 +24,13 @@ import { MatDialogModule } from '@angular/material/dialog'
 //Services
 import { UserHttpService } from './user-http.service'
 import { UserComponent } from './user/user.component';
-import { ChatComponent } from './chat/chat.component';
+import { GamechatComponent } from './gamechat/gamechat.component';
 import { LobbyDialogComponent } from './lobby-dialog/lobby-dialog.component';
 import { EndgameDialogComponent } from './endgame-dialog/endgame-dialog.component';
 import { CellComponent } from './cell/cell.component';
+import { FriendtmpComponent } from './friendtmp/friendtmp.component';
+import { RankingComponent } from './ranking/ranking.component';
+import { HttpClientJsonpModule } from '@angular/common/http'
 
 
 @NgModule({
@@ -37,10 +40,12 @@ import { CellComponent } from './cell/cell.component';
     MatchComponent,
     LoginComponent,
     SignupComponent,
-    ChatComponent,
+    GamechatComponent,
     LobbyDialogComponent,
     EndgameDialogComponent,
     CellComponent,
+    FriendtmpComponent,
+    RankingComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -58,6 +63,7 @@ import { CellComponent } from './cell/cell.component';
     MatToolbarModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    HttpClientJsonpModule,
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

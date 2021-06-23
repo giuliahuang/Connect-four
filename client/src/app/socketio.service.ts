@@ -75,4 +75,34 @@ export class SocketioService {
     this.socket?.emit('cancelPlay');
   }
 
+  receiveStartedPlaying(){
+    return new Observable((observer)=>{
+      this.socket?.on('startedPlaying',(message)=>{
+        observer.next(message);
+      })
+    })
+  }
+
+  receiveStoppedPlaying(){
+    return new Observable((observer)=>{
+      this.socket?.on('stoppedPlaying',(message)=>{
+        observer.next(message);
+      })
+    })
+  }
+
+  sendInviteRequest(username:string){
+    this.socket?.emit('invite',username);
+  }
+
+  sendInviteResponse(hasAccepted:boolean,username:string){
+    var message = {
+      hasAccepted: hasAccepted,
+      inviterUsername: username,
+    }
+    this.socket?.emit('inviteResponse', message)
+  }
+  
+
+
 }
