@@ -31,9 +31,6 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
     }
 
     const match = new Match(player1, player2)
-      ; (p1.ws as Socket).broadcast.emit('playing', p1.player.username, port)
-      ; (p2.ws as Socket).broadcast.emit('playing', p2.player.username, port)
-
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
     io.on('connection', socket => matchCallback(match, p1, p2, io, socket, port))
   } else {

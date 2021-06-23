@@ -3,6 +3,7 @@
 | /health                      | -          | GET    | API health check endpoint                                                               |
 | /login                       | -          | POST   | Logs an existing user in, returns a JWT                                                 |
 | /login/first                 | -          | POST   | Lets a moderator replace the temp password with a new one                               |
+| /login/reset                 | -          | POST   | Lets a user reset the password                                                          |
 | /signup                      | -          | POST   | Creates a new user                                                                      |
 | /auth/profile                | -          | GET    | Returns the profile of the logged user                                                  |
 | /auth/profile/avatar         | -          | PUT    | Uploads a new avatar for the logged user                                                |
