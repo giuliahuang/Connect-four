@@ -4,6 +4,10 @@ import { Route } from '../routes/Route'
 import type { Middleware } from './middleware/Middleware'
 import { notFoundCatcher } from './middleware/notFoundCatcher'
 
+/**
+ * Abstraction of the express server that processes all middlewares and routes during
+ * construction
+ */
 export class ExpressServer {
   public app: Express.Express
 
@@ -19,6 +23,7 @@ export class ExpressServer {
     routeList.forEach(route => {
       this.app.use(route.path, route.router)
     })
+    
     this.app.use(notFoundCatcher)
   }
 }

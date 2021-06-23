@@ -2,6 +2,9 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 
+/**
+ * Multer storage configuration storage, defines how to persist user uploads
+ */
 const storage = multer.diskStorage({
   destination: function (_request, _file, callback) {
     const uploadsDir = path.join(__dirname, '../../public/uploads', `${Date.now()}`)
@@ -13,6 +16,9 @@ const storage = multer.diskStorage({
   }
 })
 
+/**
+ * multer upload object, used to actually store files after user uploads
+ */
 const upload = multer({
   storage,
   limits: {

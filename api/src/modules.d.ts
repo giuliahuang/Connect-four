@@ -1,3 +1,9 @@
+/**
+ * This types definition is needed so that Node won't complain about
+ * checking whether the variables exist in the process.env
+ * This just disables the lint error, actual verification
+ * is needed and provided by envalid in the setupEnv module
+ */
 declare namespace NodeJS {
   export interface ProcessEnv {
     SERVER_HOSTNAME: string

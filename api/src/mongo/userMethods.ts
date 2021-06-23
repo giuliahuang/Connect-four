@@ -10,15 +10,29 @@ import UserModel from "./User"
  * @param userEmail email of the user who requested the password change
  * @param pwd string containing the password provided by the user
  */
-export async function setPassword(email: string, pwd: string): Promise<void> {
-  const pwdObj = genPassword(pwd)
-  await UserModel.findOneAndUpdate({ email }, { hash: pwdObj.hash, salt: pwdObj.salt })
+export async function setPassword(email: string, pwd: string): Promise<boolean> {
+  try {
+    const pwdObj = genPassword(pwd)
+    await UserModel.findOneAndUpdate({ email }, { hash: pwdObj.hash, salt: pwdObj.salt })
+    return true
+  } catch (err) {
+    logger.prettyError(err)
+    return false
+  }
 }
 
+/**
+ * If user is not admin it becomes one
+ * @param email 
+ */
 export async function setAdmin(email: string): Promise<void> {
   await UserModel.findOneAndUpdate({ email, roles: { $ne: 'ADMIN' } }, { $push: { roles: 'ADMIN' } })
 }
 
+/**
+ * If user is not moderator it becomes one
+ * @param email 
+ */
 export async function setModerator(email: string): Promise<void> {
   await UserModel.findOneAndUpdate({ email, roles: { $ne: 'MODERATOR' } }, { $push: { roles: 'MODERATOR' } })
 }
@@ -30,27 +44,45 @@ export async function setModerator(email: string): Promise<void> {
  * @param password 
  * @returns the mongodb document after it got stored in the DB
  */
-export async function newUser(username: string, email: string, password: string): Promise<User & mongoose.Document<User>> {
-  const pwdObj = genPassword(password)
-  const doc = new UserModel({
-    username: username,
-    email: email,
-    salt: pwdObj.salt,
-    hash: pwdObj.hash,
-    lastSeen: Date.now()
-  })
-  return await doc.save()
+export async function newUser(username: string, email: string, password: string): Promise<User & mongoose.Document<User> | null> {
+  try {
+    const pwdObj = genPassword(password)
+    const doc = new UserModel({
+      username: username,
+      email: email,
+      salt: pwdObj.salt,
+      hash: pwdObj.hash,
+      lastSeen: Date.now()
+    })
+    return await doc.save()
+  } catch (err) {
+    logger.prettyError(err)
+    return null
+  }
 }
 
+const strippedUserQuery = 'username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen'
+
+/**
+ * If the user is found, it is returned with the specified properties, as to avoid retrieving sensitive data such as
+ * hash, salt and email
+ * @param uid User ID
+ * @returns either the user object or null
+ */
 export async function getUserById(uid: string): Promise<User | null> {
   try {
-    return await UserModel.findById(uid).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
+    return await UserModel.findById(uid).select(strippedUserQuery)
   } catch (err) {
     logger.error(err)
   }
   return null
 }
 
+/**
+ * Returns the full user object if it is found in the database, used for authentication
+ * @param email 
+ * @returns either the user of null
+ */
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     return await UserModel.findOne({ email })
@@ -60,9 +92,15 @@ export async function getUserByEmail(email: string): Promise<User | null> {
   return null
 }
 
+/**
+ * If the user is found, it is returned with the specified properties, as to avoid retrieving sensitive data such as
+ * hash, salt and email
+ * @param username
+ * @returns either the user object or null
+ */
 export async function getUserByUsername(username: string): Promise<User | null> {
   try {
-    return await UserModel.findOne({ username }).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
+    return await UserModel.findOne({ username }).select(strippedUserQuery)
   } catch (err) {
     logger.error(err)
   }
@@ -85,6 +123,12 @@ export async function globalRanking(): Promise<Player[]> {
   return topTen
 }
 
+/**
+ * Store into the user document the path to the avatar that was just uploaded
+ * @param uid User ID
+ * @param path Image path on storage
+ * @returns true if successful, false otherwise
+ */
 export async function setAvatar(uid: string, path: string): Promise<boolean> {
   try {
     await UserModel.findByIdAndUpdate(uid, { avatar: path })
@@ -95,16 +139,25 @@ export async function setAvatar(uid: string, path: string): Promise<boolean> {
   return false
 }
 
+/**
+ * @returns a list containing all the moderators
+ */
 export async function getModerators(): Promise<User[]> {
   try {
-    return await UserModel.find({ roles: 'MODERATOR' }).select('username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen')
+    return await UserModel.find({ roles: 'MODERATOR' }).select(strippedUserQuery)
   } catch (err) {
     logger.prettyError(err)
     return []
   }
 }
 
-export async function deleteUser(staffUsername: string, username: string): Promise<boolean> {
+/**
+ * Deletes a user from the database, after checking for the required privileges
+ * @param staffUsername Username of the staff member who asked for the deletion 
+ * @param username Username of the user to delete
+ * @returns true if successful, false otherwise
+ */
+export async function deleteUserSudo(staffUsername: string, username: string): Promise<boolean> {
   try {
     if (staffUsername !== username) {
       const staff = await getUserByUsername(staffUsername)
@@ -121,4 +174,19 @@ export async function deleteUser(staffUsername: string, username: string): Promi
     logger.error(err)
   }
   return false
+}
+
+/**
+ * Lets a user ask for their own account to be deleted from the database
+ * @param username Username of the user who wants to be deleted
+ * @returns true if successful, false otherwise
+ */
+export async function deleteUser(username: string): Promise<boolean> {
+  try {
+    await UserModel.findOneAndDelete({username})
+    return true
+  } catch (err) {
+    logger.prettyError(err)
+    return false
+  }
 }

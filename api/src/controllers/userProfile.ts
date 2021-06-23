@@ -5,9 +5,9 @@ import User from '../models/User'
 import { setAvatar } from '../mongo/userMethods'
 
 /**
- * Sends a response containing the user's information
- * @param req 
- * @param res 
+ * Sends a response containing the user's profile information
+ * @param req Request
+ * @param res Response
  */
 export async function getUserProfile(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User

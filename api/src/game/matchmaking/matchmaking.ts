@@ -6,11 +6,11 @@ import User from '../../models/User'
 import { getUserById } from '../../mongo/userMethods'
 import { gameStart } from '../gameplay/gameplay'
 import Player from '../Player'
-import UnmatchedPlayer from "./UnmatchedPlayer"
+import PlayerWithWS from "./UnmatchedPlayer"
 
 interface MatchmakingResponse {
-  player1: UnmatchedPlayer,
-  player2: UnmatchedPlayer
+  player1: PlayerWithWS,
+  player2: PlayerWithWS
 }
 
 const childProcess = fork(path.join(__dirname, 'child.js'))
@@ -44,13 +44,13 @@ export function play(socket: Socket, server: Server): void {
  * @param p1 player 1
  * @param p2 player 2
  */
-async function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
+async function matchmakingSuccess(p1: PlayerWithWS, p2: PlayerWithWS) {
   const user1 = await getUserById(p1.player.id)
   const user2 = await getUserById(p2.player.id)
   const socket1 = io.sockets.sockets.get(p1.ws as string)
   const socket2 = io.sockets.sockets.get(p2.ws as string)
   if (user1 && user2 && socket1 && socket2) {
-    const player1: UnmatchedPlayer = {
+    const player1: PlayerWithWS = {
       player: {
         id: user1._id,
         username: user1.username,
@@ -59,7 +59,7 @@ async function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
       timeJoined: p1.timeJoined,
       ws: socket1
     }
-    const player2: UnmatchedPlayer = {
+    const player2: PlayerWithWS = {
       player: {
         id: user2._id,
         username: user2.username,
@@ -77,6 +77,6 @@ async function matchmakingSuccess(p1: UnmatchedPlayer, p2: UnmatchedPlayer) {
   }
 }
 
-export function cancelPlay(userid: string): void {
+export function cancelMatchmaking(userid: string): void {
   childProcess.send({ cancel: userid })
 }

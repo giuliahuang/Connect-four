@@ -17,6 +17,12 @@ export function passportConfig(): void {
   passport.use(strategy)
 }
 
+/**
+ * Callback that verifies user authentication
+ * @param payload JWT payload extracted from the request
+ * @param done callback that receives the output and processes it
+ * @returns whatever the done callback returns
+ */
 export async function jwtCallback(payload: Payload, done: VerifiedCallback): Promise<void> {
   try {
     const user = await getUserById(payload.sub)
