@@ -34,11 +34,11 @@ export const UserSchema = new mongoose.Schema<User>({
     default: []
   },
   sentFriendReqs: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [mongoose.SchemaTypes.String],
     default: []
   },
   receivedFriendReqs: {
-    type: [mongoose.SchemaTypes.ObjectId],
+    type: [mongoose.SchemaTypes.String],
     default: []
   },
   matchesPlayed: {

@@ -18,7 +18,7 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
       const asker = await UserModel.findOne({ username: askerUsername })
       const requested = await UserModel.findOne({ username: requestedUsername })
 
-      if (asker && requested) {
+      if (asker && requested && asker !== requested) {
         if (!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username)) {
           asker.sentFriendReqs.push(requested.username)
           requested.receivedFriendReqs.push(asker.username)
@@ -133,6 +133,8 @@ export async function getFriendProfile(username: string, friendUsername: string)
     const user = await getUserByUsername(username)
     const friend = await getUserByUsername(friendUsername)
     if (friend && user && (user.friends.includes(friend.username) || user.roles.includes('ADMIN') || user.roles.includes('MODERATOR'))) {
+      friend.sentFriendReqs = []
+      friend.receivedFriendReqs = []
       return friend
     }
   } catch (err) {

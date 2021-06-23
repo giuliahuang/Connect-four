@@ -14,6 +14,6 @@ export async function signup(req: Request, res: Response): Promise<void> {
     const jwt = await issueJWT(user)
     res.status(200).json({ message: 'User successfully created', token: jwt.token, expiresIn: jwt.expires })
   } else {
-    res.send({ error: true, message: 'An error has occurred' })
+    res.status(500).send({ error: true, message: 'An error has occurred' })
   }
 }

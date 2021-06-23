@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { v4 as uuidv4 } from 'uuid'
 import User from '../models/User'
 import { getUserByEmail, setPassword } from '../mongo/userMethods'
 import { validatePassword } from '../utils/passwordUtils'
@@ -21,18 +20,17 @@ export async function newPassword(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * Resets a user's password, provided that the current one is valid
+ * Lets a user set a new password is the current one is valid
  * @param req Request
  * @param res Response
  */
-export async function resetPassword(req: Request, res: Response): Promise<void> {
+export async function changePassword(req: Request, res: Response): Promise<void> {
   const user = req.user as User
-  if (validatePassword(req.body.password, user.hash, user.salt)) {
-    const newPlainPassword = uuidv4()
-    const result = await setPassword(user.email, newPlainPassword)
-    if (result) res.status(200).json({ message: 'Password reset correctly', password: newPlainPassword })
-    else res.status(500).json({ error: true, message: 'Something went wrong while resetting the password' })
-  } else {
-    res.status(401).json({ error: true, message: 'Old password isn\'t valid' })
-  }
+  const currentPass = req.body.currentPass
+  const newPass = req.body.newPass
+  if (validatePassword(currentPass, user.hash, user.salt)) {
+    const result = await setPassword(user.email, newPass)
+    if (result) res.status(200).json({ message: 'Password reset correctly' })
+    else res.status(500).json({ error: true, message: 'Something went wrong while changing the password' })
+  } else res.status(401).json({ error: true, message: 'Old password isn\'t valid' })
 }
