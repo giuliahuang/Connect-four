@@ -30,7 +30,11 @@ import { EndgameDialogComponent } from './endgame-dialog/endgame-dialog.componen
 import { CellComponent } from './cell/cell.component';
 import { FriendtmpComponent } from './friendtmp/friendtmp.component';
 import { RankingComponent } from './ranking/ranking.component';
-import { HttpClientJsonpModule } from '@angular/common/http'
+import { HttpClientJsonpModule } from '@angular/common/http';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { RankTableComponent } from './rank-table/rank-table.component'
 
 
 @NgModule({
@@ -46,6 +50,7 @@ import { HttpClientJsonpModule } from '@angular/common/http'
     CellComponent,
     FriendtmpComponent,
     RankingComponent,
+    RankTableComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -64,6 +69,9 @@ import { HttpClientJsonpModule } from '@angular/common/http'
     MatProgressSpinnerModule,
     MatDialogModule,
     HttpClientJsonpModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
