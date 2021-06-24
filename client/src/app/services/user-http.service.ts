@@ -151,4 +151,10 @@ export class UserHttpService {
     const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
     return this.http.delete(`${this.url}/auth/friends/${user}`)
   }
+
+  newPassword(current: string, newPass: string) {
+    const data = { 'currentPass': current, 'newPass': newPass }
+    const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+    return this.http.post(`${this.url}/auth/profile/newpassword`, data, config)
+  }
 }

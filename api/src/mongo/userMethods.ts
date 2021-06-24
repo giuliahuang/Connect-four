@@ -64,14 +64,13 @@ export async function newUser(username: string, email: string, password: string)
 const strippedUserQuery = 'username mmr friends roles sentFriendReqs receivedFriendReqs matchesPlayed avatar lastSeen'
 
 /**
- * If the user is found, it is returned with the specified properties, as to avoid retrieving sensitive data such as
- * hash, salt and email
+ * If the user is found, it is returned
  * @param uid User ID
  * @returns either the user object or null
  */
 export async function getUserById(uid: string): Promise<User | null> {
   try {
-    return await UserModel.findById(uid).select(strippedUserQuery)
+    return await UserModel.findById(uid)
   } catch (err) {
     logger.error(err)
   }
