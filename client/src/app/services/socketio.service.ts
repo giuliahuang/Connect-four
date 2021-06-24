@@ -6,7 +6,7 @@ import { observable, Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
 import { GamesocketService } from './gamesocket.service'
-import { LobbyDialogComponent } from '../components/lobby-dialog/lobby-dialog.component'
+import { LobbyDialogComponent } from '../components/game-components/lobby-dialog/lobby-dialog.component'
 import { UserHttpService } from './user-http.service'
 
 @Injectable({

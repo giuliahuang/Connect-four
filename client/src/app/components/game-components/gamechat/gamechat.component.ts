@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core'
-import { GamesocketService } from '../../services/gamesocket.service'
-import { UserHttpService } from '../../services/user-http.service'
+import { GamesocketService } from 'src/app/services/gamesocket.service'
+import { UserHttpService } from 'src/app/services/user-http.service'
 
 @Component({
   selector: 'app-gamechat',

@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { LoginComponent } from './components/login/login.component'
-import { SignupComponent } from './components/signup/signup.component'
+import { LoginComponent } from './components/users/login/login.component'
+import { SignupComponent } from './components/users/signup/signup.component'
 
-import { UserComponent } from './components/user/user.component'
-import { MatchComponent } from './components/match/match.component'
-import { RankingComponent } from './components/ranking/ranking.component'
-import { ProfileComponent } from './components/profile/profile.component'
-import { SearchComponent } from './components/search/search.component'
+import { UserComponent } from './components/users/user/user.component'
+import { MatchComponent } from './components/game-components/match/match.component'
+import { RankingComponent } from './components/users/ranking/ranking.component'
+import { ProfileComponent } from './components/users/profile/profile.component'
+import { SearchComponent } from './components/users/search/search.component'
 import { NotFoundComponent } from './components/error-components/not-found/not-found.component'
 
 const routes: Routes = [

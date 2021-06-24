@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { SocketioService } from 'src/app/services/socketio.service';
 import { UserHttpService } from 'src/app/services/user-http.service';
 import * as jwtdecode from 'jwt-decode';
-import { LobbyDialogComponent } from '../lobby-dialog/lobby-dialog.component';
+import { LobbyDialogComponent } from '../../game-components/lobby-dialog/lobby-dialog.component';
 import { MatDialog } from '@angular/material/dialog'
 
 
