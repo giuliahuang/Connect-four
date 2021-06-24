@@ -1,8 +1,8 @@
 <header>
   <div class="topnav">
-    <a class="active">Home</a>
+    <a [ngClass]="{'active': selectedItem === '/home'}" routerLink='home'>Home</a>
     <a>Contact</a>
     <a>About</a>
-    <a [routerLink]="['/profile/']">Profile</a>
+    <a [ngClass]="{'active': selectedItem === '/profile'}" [routerLink]="['/profile/']">Profile</a>
   </div>
 </header>
