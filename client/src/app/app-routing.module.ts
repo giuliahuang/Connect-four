@@ -6,6 +6,7 @@ import { SignupComponent } from './components/signup/signup.component'
 import { UserComponent } from './components/user/user.component'
 import { MatchComponent } from './components/match/match.component'
 import { RankingComponent } from './components/ranking/ranking.component'
+import { ProfileComponent } from './components/profile/profile.component'
 
 const routes: Routes = [
   { path: 'user', component: UserComponent },
@@ -13,8 +14,8 @@ const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'ranking', component: RankingComponent }
-
+  { path: 'ranking', component: RankingComponent },
+  { path: 'profile/:username', component: ProfileComponent }
 ]
 
 @NgModule({

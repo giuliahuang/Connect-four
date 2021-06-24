@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../logger'
 import User from '../models/User'
 import { getFriendProfile, processFriendRequest, removeFromFriendList, sendFriendRequest } from '../mongo/friendsMethods'
 /**
@@ -69,7 +70,7 @@ export async function deleteFriend(req: Request, res: Response): Promise<void> {
  */
 export async function friendProfile(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  const result = await getFriendProfile(user.username, req.query.username as string)
+  const result = await getFriendProfile(user.username, req.params.username as string)
   if (result) res.status(200).json(result)
-  else res.status(500).json({ error: true, message: 'Could retrieve friend\'s profile' })
+  else res.status(500).json({ error: true, message: 'Couldn\'t retrieve friend\'s profile' })
 }

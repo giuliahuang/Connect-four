@@ -1,1 +1,25 @@
-<p>profile works!</p>
+<div class="profile">
+  Username: {{user?.username}} <br>
+  MMR: {{user?.mmr}}<br>
+  Stats:<br>
+  <ul>
+    <li>Wins: {{wins}} </li>
+    <li>Losses: {{losses}}</li>
+    <li>W/L ration: {{ratio}}</li>
+  </ul>
+  Friends:
+  <ul>
+    <li *ngFor="let friend of friends">{{friend}}</li>
+  </ul>
+  <button *ngIf="this.username" class="button" (click)="addFriend()">Send friend request</button>
+  <div *ngIf="!this.username" class="Friend requests">
+    Friend requests:
+    <ul>
+      <li *ngFor="let username of friendRequests">{{username}}<button (click)="acceptFriend(username)">Accept</button><button
+          (click)="refuseFriend(username)">Refuse</button></li>
+    </ul>
+  </div>
+  <img class="avatar" src={{avatar}} width="200" height="200" />
+</div>
+
+<file-upload requiredFileType="image/png"></file-upload>

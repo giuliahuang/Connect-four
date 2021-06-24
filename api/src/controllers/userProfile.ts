@@ -20,7 +20,7 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
     sentFriendReqs: user.sentFriendReqs,
     receivedFriendReqs: user.receivedFriendReqs,
     avatar: user.avatar,
-    matchesPlayed: user.matchesPlayed
+    matchesPlayed: JSON.parse(JSON.stringify(user.matchesPlayed))
   })
 }
 
@@ -30,10 +30,10 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
  * @param res Response
  */
 export async function uploadAvatar(req: Request, res: Response): Promise<void> {
-  const user: User = req.user as User
-  const remove = path.join(__dirname, '../../public/')
-  const relPath = req.file.path.replace(remove, '')
   try {
+    const user: User = req.user as User
+    const remove = path.join(__dirname, '../../public/')
+    const relPath = req.file.path.replace(remove, '')
     await setAvatar(user._id, relPath)
     res.status(200).json({ message: 'Avatar saved' })
   } catch (err) {

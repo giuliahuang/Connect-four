@@ -1,0 +1,12 @@
+<div style="text-align: center">
+  <h3>Upload a new avatar</h3>
+  <form>
+    <div>
+      <input type="file" name="image" (change)="onFileSelected($event)" />
+    </div>
+    <br>
+    <div>
+      <button type="submit" (click)="onUpload()">Upload</button>
+    </div>
+  </form>
+</div>

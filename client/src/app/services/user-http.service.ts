@@ -80,6 +80,10 @@ export class UserHttpService {
     return this.http.get(`${this.url}/auth/profile`)
   }
 
+  getOtherUserProfile(username: string) {
+    return this.http.get(`${this.url}/auth/profile/user/${username}`)
+  }
+
   get_username() {
     const username = (jwtdecode(this.token) as TokenData).username
     console.log(jwtdecode(this.token))
@@ -112,5 +116,17 @@ export class UserHttpService {
       }
     }
     return false
+  }
+
+  addFriend(username: string) {
+    const data = { 'requestedUsername': username }
+    const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+    return this.http.post(`${this.url}/auth/friends`, data, config)
+  }
+
+  respondFriendRequest(hasAccepted: boolean, username: string) {
+    const data = { 'hasAccepted': hasAccepted, 'askerUsername': username }
+    const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+    return this.http.post(`${this.url}/auth/friends/friendrequests`, data, config)
   }
 }

@@ -24,7 +24,7 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   notifyStartedPlaying(p1, port)
   notifyStartedPlaying(p2, port)
 
-  io.emit('order',({player1:match.player1.username,player2:match.player2.username,random:Math.round(Math.random())}));
+  io.emit('order', ({ player1: match.player1.username, player2: match.player2.username, random: Math.round(Math.random()) }))
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
@@ -43,7 +43,7 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id) .toString()|| (socket.request['user']._id).toString() === (match.player2.id).toString())
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
     socket.join(`${match.uuid}.player`)
   else
     socket.join(`${match.uuid}.observers`)
@@ -84,10 +84,11 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
     io.emit('dot', column)
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
+      logger.info(`Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
-      
-        setTimeout=>(closeServer(io, p1, p2),1000)
+
+      setTimeout => (closeServer(io, p1, p2), 1000)
     }
   } else {
     socket.emit('moveRejection', column)
@@ -133,7 +134,7 @@ function closeServer(io: IOServer, p1: PlayerWithWS, p2: PlayerWithWS) {
 async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
   const user = await getUserById(p.player.id)
   user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', {username: user.username, port})
+    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
   })
 }
 

@@ -20,6 +20,7 @@ import { HttpClientJsonpModule } from '@angular/common/http'
 import { MatTableModule } from '@angular/material/table'
 import { MatPaginatorModule } from '@angular/material/paginator'
 import { MatSortModule } from '@angular/material/sort'
+import {MatIconModule} from '@angular/material/icon'
 
 //Components
 import { AppComponent } from './app.component'
@@ -39,7 +40,8 @@ import { RankTableComponent } from './components/rank-table/rank-table.component
 import { UserHttpService } from './services/user-http.service'
 
 import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service';
-import { ProfileComponent } from './components/profile/profile.component'
+import { ProfileComponent } from './components/profile/profile.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component'
 
 @NgModule({
   declarations: [
@@ -56,6 +58,7 @@ import { ProfileComponent } from './components/profile/profile.component'
     RankingComponent,
     RankTableComponent,
     ProfileComponent,
+    FileUploadComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -77,6 +80,7 @@ import { ProfileComponent } from './components/profile/profile.component'
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    MatIconModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

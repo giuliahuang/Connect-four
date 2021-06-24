@@ -47,7 +47,7 @@ export const UserSchema = new mongoose.Schema<User>({
   },
   avatar: {
     type: mongoose.SchemaTypes.String,
-    default: 'placeholder.jpg'
+    default: 'uploads/placeholder.jpg'
   },
   lastSeen: {
     type: mongoose.SchemaTypes.Number,

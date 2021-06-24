@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { receiveMessageOnPort } from 'worker_threads'
 import logger from "../logger"
 import User from "../models/User"
 import UserModel from "./User"
@@ -17,14 +18,19 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
     await session.withTransaction(async () => {
       const asker = await UserModel.findOne({ username: askerUsername })
       const requested = await UserModel.findOne({ username: requestedUsername })
-
       if (asker && requested && asker !== requested) {
-        if (!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username)) {
+        if ((!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username))
+          || (!asker.friends.includes(requested.username) && (!requested.friends.includes(asker.username)))) {
+
           asker.sentFriendReqs.push(requested.username)
           requested.receivedFriendReqs.push(asker.username)
           asker.save()
           requested.save()
+        } else {
+          throw new Error('Friend request already sent')
         }
+      } else {
+        throw new Error('User not found')
       }
     })
 
@@ -50,14 +56,21 @@ export async function processFriendRequest(hasAccepted: boolean, askerUsername: 
       const asker = await UserModel.findOne({ username: askerUsername })
       const requested = await UserModel.findOne({ username: requestedUsername })
 
-      if (asker && requested) {
-        asker.sentFriendReqs = asker.sentFriendReqs.filter(username => username === requested.username)
-        requested.receivedFriendReqs = requested.receivedFriendReqs.filter(username => username === asker.username)
-        asker.save()
-        requested.save()
+      if (asker && requested && asker.sentFriendReqs.includes(requested.username)) {
+        asker.sentFriendReqs = asker.sentFriendReqs.filter(username => username !== requested.username)
+        requested.receivedFriendReqs = requested.receivedFriendReqs.filter(username => username !== asker.username)
         if (hasAccepted) {
-          await addFriend(asker, requested)
+          asker.friends.push(requested.username)
+          requested.friends.push(asker.username)
         }
+        await asker.save()
+        await requested.save()
+        const u = await UserModel.findOne({ username: asker.username })
+        const u2 = await UserModel.findOne({ username: requested.username })
+        logger.info(u)
+        logger.info(u2)
+      } else {
+        throw new Error('Request not found')
       }
     })
 
@@ -65,33 +78,6 @@ export async function processFriendRequest(hasAccepted: boolean, askerUsername: 
   } catch (err) {
     logger.error(err)
   }
-}
-
-/**
- * Actually adds two users to the respective friends lists
- * @param user1 
- * @param user2 
- * @returns true if the operation was processed properly, false otherwise
- */
-async function addFriend(user1: User & mongoose.Document<User>, user2: User & mongoose.Document<User>) {
-  try {
-    const session = await UserModel.startSession()
-
-    await session.withTransaction(async () => {
-      if (!user1.friends.includes(user2.username) && !user2.friends.includes(user1.username)) {
-        user1.friends.push(user2.username)
-        user2.friends.push(user1.username)
-        await user1.save()
-        await user2.save()
-      }
-    })
-
-    session.endSession()
-    return true
-  } catch (err) {
-    logger.error(err)
-  }
-  return false
 }
 
 /**
@@ -130,12 +116,11 @@ export async function removeFromFriendList(sourceUsername: string, deleteFriendU
 
 export async function getFriendProfile(username: string, friendUsername: string): Promise<User | undefined> {
   try {
-    const user = await getUserByUsername(username)
-    const friend = await getUserByUsername(friendUsername)
-    if (friend && user && (user.friends.includes(friend.username) || user.roles.includes('ADMIN') || user.roles.includes('MODERATOR'))) {
-      friend.sentFriendReqs = []
-      friend.receivedFriendReqs = []
-      return friend
+    const user = await getUserByUsername(friendUsername)
+    if (user) {
+      user.sentFriendReqs = []
+      user.receivedFriendReqs = []
+      return user
     }
   } catch (err) {
     logger.error(err)

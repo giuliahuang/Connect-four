@@ -9,7 +9,7 @@ const router = express.Router()
 
 router.get('/', getUserProfile)
 
-router.get('/:username', friendProfile)
+router.get('/user/:username', friendProfile)
 
 router.put('/avatar', cors(corsOptions), urlencoded({ extended: true }), json(), upload.single('data'), uploadAvatar)
 
