@@ -147,17 +147,8 @@ export class UserHttpService {
       }))
   }
 
-  deleteFriend(user: any): Observable<void> {
-    const options = {
-      headers: new HttpHeaders({
-        authorization: (this.token),
-        'cache-control': 'no-cache',
-        'Content-Type': 'application/json',
-      })
-    }
-    return this.http.delete<void>(this.url + '/auth/friends/${user}', options).pipe(
-      tap((data: any) => {
-        console.log(JSON.stringify(data))
-      }))
+  deleteFriend(user: any) {
+    const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+    return this.http.delete(`${this.url}/auth/friends/${user}`)
   }
 }

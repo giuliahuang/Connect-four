@@ -94,14 +94,20 @@ export async function removeFromFriendList(sourceUsername: string, deleteFriendU
       const sourceUser = await UserModel.findOne({ username: sourceUsername })
       const deletedFriend = await UserModel.findOne({ username: deleteFriendUsername })
 
+      logger.info(sourceUser)
+      logger.info(deletedFriend)
       if (sourceUser && deletedFriend &&
         sourceUser.friends.includes(deletedFriend.username) &&
         deletedFriend.friends.includes(sourceUser.username)) {
 
-        sourceUser.friends = sourceUser.friends.filter(data => data === deletedFriend.username)
-        deletedFriend.friends = deletedFriend.friends.filter(data => data === sourceUser.username)
+        sourceUser.friends = sourceUser.friends.filter(data => data !== deletedFriend.username)
+        deletedFriend.friends = deletedFriend.friends.filter(data => data !== sourceUser.username)
+        logger.info(sourceUser)
+        logger.info(deletedFriend)
         await sourceUser.save()
         await deletedFriend.save()
+      } else {
+        throw new Error('Friend not found')
       }
     })
 

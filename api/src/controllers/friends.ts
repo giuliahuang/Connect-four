@@ -56,7 +56,7 @@ export async function respondFriendRequest(req: Request, res: Response): Promise
  */
 export async function deleteFriend(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  const result = await removeFromFriendList(user.email, req.query.username as string)
+  const result = await removeFromFriendList(user.username, req.params.username as string)
   if (result)
     res.status(200).json({ message: 'Successfully deleted friend' })
   else

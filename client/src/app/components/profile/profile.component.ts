@@ -63,10 +63,17 @@ export class ProfileComponent implements OnInit {
   }
 
   acceptFriend(username: string) {
-    this.userHttpService.respondFriendRequest(true, username).subscribe(res => console.log(res))
+    this.userHttpService.respondFriendRequest(true, username).subscribe(res => {
+      this.friendRequests = this.friendRequests.filter(name => name !== username)
+      this.friends.push(username)
+    })
   }
 
   refuseFriend(username: string) {
-    this.userHttpService.respondFriendRequest(false, username).subscribe(res => console.log(res))
+    this.userHttpService.respondFriendRequest(false, username).subscribe(res => this.friendRequests = this.friendRequests.filter(name => name !== username))
+  }
+
+  removeFriend(username: string) {
+    this.userHttpService.deleteFriend(username).subscribe(res => this.friends = this.friends.filter(friend => friend !== username))
   }
 }
