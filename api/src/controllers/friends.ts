@@ -1,16 +1,6 @@
 import { Request, Response } from 'express'
-import logger from '../logger'
 import User from '../models/User'
 import { getFriendProfile, processFriendRequest, removeFromFriendList, sendFriendRequest } from '../mongo/friendsMethods'
-/**
- * Sends a response containing the friends list of the user who originated the request
- * @param req Request
- * @param res Response
- */
-export async function getFriendsList(req: Request, res: Response): Promise<void> {
-  const user: User = req.user as User
-  res.status(200).json(user.friends)
-}
 
 /**
  * Sends a response containing the friend requests of the user who originated the request
