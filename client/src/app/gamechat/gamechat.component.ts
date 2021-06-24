@@ -36,7 +36,8 @@ export class GamechatComponent implements OnInit {
 
   receiveMessage() {
     this.gamesocketService.receiveMessage().subscribe((data: any) => {
-      this.messageArray.push(data)
+      console.log(data)
+      this.messageArray.push({ user: data.player, message: data.message })
       this.messageText = ''
     })
   }
