@@ -1,5 +1,5 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
-import { NgModule } from '@angular/core'
+import { ErrorHandler, NgModule } from '@angular/core'
 
 // Modules
 import { FlexLayoutModule } from '@angular/flex-layout'
@@ -20,7 +20,7 @@ import { HttpClientJsonpModule } from '@angular/common/http'
 import { MatTableModule } from '@angular/material/table'
 import { MatPaginatorModule } from '@angular/material/paginator'
 import { MatSortModule } from '@angular/material/sort'
-import {MatIconModule} from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon'
 
 //Components
 import { AppComponent } from './app.component'
@@ -39,11 +39,14 @@ import { RankTableComponent } from './components/rank-table/rank-table.component
 //Services
 import { UserHttpService } from './services/user-http.service'
 
-import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service';
-import { ProfileComponent } from './components/profile/profile.component';
-import { FileUploadComponent } from './components/file-upload/file-upload.component';
-import { SearchComponent } from './components/search/search.component';
+import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
+import { ProfileComponent } from './components/profile/profile.component'
+import { FileUploadComponent } from './components/file-upload/file-upload.component'
+import { SearchComponent } from './components/search/search.component'
 import { ChangePasswordComponent } from './components/change-password/change-password.component'
+import { GlobalErrorHandlerService } from './services/global-error-handler.service';
+import { NotFoundComponent } from './components/error-components/not-found/not-found.component';
+import { NotAuthorizedComponent } from './components/error-components/not-authorized/not-authorized.component'
 
 @NgModule({
   declarations: [
@@ -63,6 +66,8 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
     FileUploadComponent,
     SearchComponent,
     ChangePasswordComponent,
+    NotFoundComponent,
+    NotAuthorizedComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -88,7 +93,8 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
+    { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
     BrowserAnimationsModule,
     MatSnackBarModule,
   ],
