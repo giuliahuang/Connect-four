@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 //Material
 import { FlexLayoutModule } from '@angular/flex-layout'
@@ -23,18 +23,19 @@ import { MatDialogModule } from '@angular/material/dialog'
 
 //Services
 import { UserHttpService } from './user-http.service'
-import { UserComponent } from './user/user.component';
-import { GamechatComponent } from './gamechat/gamechat.component';
-import { LobbyDialogComponent } from './lobby-dialog/lobby-dialog.component';
-import { EndgameDialogComponent } from './endgame-dialog/endgame-dialog.component';
-import { CellComponent } from './cell/cell.component';
-import { FriendtmpComponent } from './friendtmp/friendtmp.component';
-import { RankingComponent } from './ranking/ranking.component';
-import { HttpClientJsonpModule } from '@angular/common/http';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { UserComponent } from './user/user.component'
+import { GamechatComponent } from './gamechat/gamechat.component'
+import { LobbyDialogComponent } from './lobby-dialog/lobby-dialog.component'
+import { EndgameDialogComponent } from './endgame-dialog/endgame-dialog.component'
+import { CellComponent } from './cell/cell.component'
+import { FriendtmpComponent } from './friendtmp/friendtmp.component'
+import { RankingComponent } from './ranking/ranking.component'
+import { HttpClientJsonpModule } from '@angular/common/http'
+import { MatTableModule } from '@angular/material/table'
+import { MatPaginatorModule } from '@angular/material/paginator'
+import { MatSortModule } from '@angular/material/sort'
 import { RankTableComponent } from './rank-table/rank-table.component'
+import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service'
 
 
 @NgModule({
@@ -75,6 +76,7 @@ import { RankTableComponent } from './rank-table/rank-table.component'
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     BrowserAnimationsModule,
     MatSnackBarModule,
   ],
