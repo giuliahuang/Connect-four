@@ -9,17 +9,18 @@
   </ul>
   Friends:
   <ul>
-    <li *ngFor="let friend of friends">{{friend}}<button (click)="removeFriend(friend)">Remove</button></li>
+    <li *ngFor="let friend of this.user.friends">{{friend}}<button (click)="removeFriend(friend)">Remove</button></li>
   </ul>
-  <button *ngIf="this.username && !this.loggedUser.friends.includes(this.username) && !this.loggedUser.sentFriendReqs.includes(this.username)" class="button" (click)="addFriend()">Send friend request</button>
-  <div *ngIf="!this.username" class="Friend requests">
+  <button *ngIf="this.loggedUsername !== this.user.username && !this.user.friends.includes(this.loggedUsername)" class="button"
+    (click)="addFriend()">Send friend request</button>
+  <div *ngIf="this.loggedUsername === this.user.username" class="Friend requests">
     Friend requests:
     <ul>
-      <li *ngFor="let username of friendRequests">{{username}}<button (click)="acceptFriend(username)">Accept</button><button
-          (click)="refuseFriend(username)">Refuse</button></li>
+      <li *ngFor="let username of this.user.receivedFriendReqs">{{username}}<button
+          (click)="acceptFriend(username)">Accept</button><button (click)="refuseFriend(username)">Refuse</button></li>
     </ul>
   </div>
-  <img class="avatar" src={{avatar}} width="200" height="200" />
+  <img class="avatar" src={{this.user.avatar}} width="200" height="200" />
 </div>
 
 <file-upload requiredFileType="image/png"></file-upload>

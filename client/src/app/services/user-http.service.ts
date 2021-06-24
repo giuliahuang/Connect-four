@@ -5,9 +5,14 @@ import { tap } from 'rxjs/operators'
 
 @Injectable()
 export class UserHttpService {
-  public url = 'http://localhost:5000';
+  private url = 'http://localhost:5000';
+  public username: string = ''
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { 
+    this.getUserProfile().subscribe((profile: any) => {
+      this.username = profile.username
+    })
+  }
 
   register(user: any): Observable<any> {
     const options = {
@@ -29,7 +34,7 @@ export class UserHttpService {
     return this.http.get(`${this.url}/auth/profile`)
   }
 
-  getOtherUserProfile(username: string) {
+  getOtherUserProfile(username: string | null) {
     return this.http.get(`${this.url}/auth/profile/user/${username}`)
   }
 

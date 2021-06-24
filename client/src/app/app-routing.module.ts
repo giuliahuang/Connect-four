@@ -10,14 +10,25 @@ import { ProfileComponent } from './components/users/profile/profile.component'
 import { SearchComponent } from './components/users/search/search.component'
 import { NotFoundComponent } from './components/error-components/not-found/not-found.component'
 import { AuthGuardService } from './services/auth/auth-guard.service'
+import { ProfileResolver } from './components/users/profile/profile-resolver'
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [AuthGuardService] },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuardService] },
   { path: 'match', component: MatchComponent, canActivate: [AuthGuardService] },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'ranking', component: RankingComponent, canActivate: [AuthGuardService] },
-  { path: 'profile/:username', component: ProfileComponent, canActivate: [AuthGuardService] },
+  {
+    path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
+  {
+    path: 'profile/:username', component: ProfileComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
   { path: '**', component: NotFoundComponent }
 ]

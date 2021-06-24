@@ -35,6 +35,7 @@ import { ChangePasswordComponent } from './components/users/change-password/chan
 import { FileUploadComponent } from './components/users/file-upload/file-upload.component'
 import { FriendtmpComponent } from './components/users/friendtmp/friendtmp.component'
 import { LoginComponent } from './components/users/login/login.component'
+import { ProfileResolver } from './components/users/profile/profile-resolver'
 import { ProfileComponent } from './components/users/profile/profile.component'
 import { RankTableComponent } from './components/users/rank-table/rank-table.component'
 import { RankingComponent } from './components/users/ranking/ranking.component'
@@ -96,6 +97,7 @@ import { UserHttpService } from './services/user-http.service'
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
     BrowserAnimationsModule,
     MatSnackBarModule,
+    ProfileResolver
   ],
   bootstrap: [AppComponent]
 })
