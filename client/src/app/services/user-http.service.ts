@@ -1,10 +1,9 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http'
-import { tap, catchError } from 'rxjs/operators'
-import { Observable, throwError } from 'rxjs'
 import * as jwtdecode from 'jwt-decode'
-
-
+import { Observable } from 'rxjs'
+import { tap } from 'rxjs/operators'
+import Friend from '../interfaces/Friend'
 
 interface TokenData {
   username: string,
@@ -128,5 +127,37 @@ export class UserHttpService {
     const data = { 'hasAccepted': hasAccepted, 'askerUsername': username }
     const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
     return this.http.post(`${this.url}/auth/friends/friendrequests`, data, config)
+  }
+
+  searchUser(username: string) {
+    return this.http.get(`${this.url}/auth/search?username=${username}`)
+  }
+
+  getFriends(): Observable<any> {
+    const options = {
+      headers: new HttpHeaders({
+        authorization: (this.token),
+        'cache-control': 'no-cache',
+        'Content-Type': 'application/json',
+      })
+    }
+    return this.http.get<Friend[]>(this.url + '/auth/friends', options).pipe(
+      tap((data: any) => {
+        console.log(JSON.stringify(data))
+      }))
+  }
+
+  deleteFriend(user: any): Observable<void> {
+    const options = {
+      headers: new HttpHeaders({
+        authorization: (this.token),
+        'cache-control': 'no-cache',
+        'Content-Type': 'application/json',
+      })
+    }
+    return this.http.delete<void>(this.url + '/auth/friends/${user}', options).pipe(
+      tap((data: any) => {
+        console.log(JSON.stringify(data))
+      }))
   }
 }

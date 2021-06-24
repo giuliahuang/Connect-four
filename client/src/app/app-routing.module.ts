@@ -7,6 +7,7 @@ import { UserComponent } from './components/user/user.component'
 import { MatchComponent } from './components/match/match.component'
 import { RankingComponent } from './components/ranking/ranking.component'
 import { ProfileComponent } from './components/profile/profile.component'
+import { SearchComponent } from './components/search/search.component'
 
 const routes: Routes = [
   { path: 'user', component: UserComponent },
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'ranking', component: RankingComponent },
-  { path: 'profile/:username', component: ProfileComponent }
+  { path: 'profile/:username', component: ProfileComponent },
+  { path: 'search', component: SearchComponent }
 ]
 
 @NgModule({
