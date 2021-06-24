@@ -8,6 +8,7 @@ import { MatchComponent } from './components/match/match.component'
 import { RankingComponent } from './components/ranking/ranking.component'
 import { ProfileComponent } from './components/profile/profile.component'
 import { SearchComponent } from './components/search/search.component'
+import { AdminComponent } from './components/admin/admin.component'
 
 const routes: Routes = [
   { path: 'user', component: UserComponent },
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'signup', component: SignupComponent },
   { path: 'ranking', component: RankingComponent },
   { path: 'profile/:username', component: ProfileComponent },
-  { path: 'search', component: SearchComponent }
+  { path: 'search', component: SearchComponent },
+  { path: 'admin', component: AdminComponent}
 ]
 
 @NgModule({

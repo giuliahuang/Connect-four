@@ -19,6 +19,8 @@ export class ProfileComponent implements OnInit {
   friends: string[] = []
   friendRequests: string[] = []
 
+  isAdmin : boolean = false
+
   constructor(private userHttpService: UserHttpService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {

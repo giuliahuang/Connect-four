@@ -42,7 +42,8 @@ import { UserHttpService } from './services/user-http.service'
 import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
-import { SearchComponent } from './components/search/search.component'
+import { SearchComponent } from './components/search/search.component';
+import { AdminComponent } from './components/admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { SearchComponent } from './components/search/search.component'
     ProfileComponent,
     FileUploadComponent,
     SearchComponent,
+    AdminComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
