@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { SocketioService } from '../socketio.service';
+import { SocketioService } from '../../services/socketio.service'
 
 @Component({
   selector: 'app-lobby-dialog',

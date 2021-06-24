@@ -38,7 +38,8 @@ import { RankTableComponent } from './components/rank-table/rank-table.component
 //Services
 import { UserHttpService } from './services/user-http.service'
 
-import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service'
+import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service';
+import { ProfileComponent } from './components/profile/profile.component'
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { AuthInterceptor } from './auth-interceptor/auth-interceptor.service'
     FriendtmpComponent,
     RankingComponent,
     RankTableComponent,
+    ProfileComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [

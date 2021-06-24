@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SocketioService } from '../socketio.service';
-import { UserHttpService } from '../user-http.service';
+import { SocketioService } from 'src/app/services/socketio.service';
+import { UserHttpService } from 'src/app/services/user-http.service';
 import * as jwtdecode from 'jwt-decode';
 import { LobbyDialogComponent } from '../lobby-dialog/lobby-dialog.component';
 import { MatDialog } from '@angular/material/dialog'

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SocketioService } from '../socketio.service';
+import { SocketioService } from '../../services/socketio.service'
 
 interface FriendInMatch{
   username:string,

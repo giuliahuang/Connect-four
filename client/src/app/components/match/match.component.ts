@@ -1,12 +1,8 @@
-import { AssertNotNull, tokenName } from '@angular/compiler';
-import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SocketioService } from '../socketio.service';
-import { UserHttpService } from '../user-http.service';
-import { GamesocketService } from '../gamesocket.service';
-import { MatDialog } from '@angular/material/dialog';
-import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.component';
-import { i18nMetaToJSDoc } from '@angular/compiler/src/render3/view/i18n/meta';
+import { Component, OnInit } from '@angular/core'
+import { MatDialog } from '@angular/material/dialog'
+import { Router } from '@angular/router'
+import { GamesocketService } from 'src/app/services/gamesocket.service'
+import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.component'
 
 @Component({
   selector: 'app-match',

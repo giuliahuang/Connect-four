@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserHttpService } from '../user-http.service';
 import { Router } from '@angular/router';
-import { SocketioService } from '../socketio.service';
+import { SocketioService } from 'src/app/services/socketio.service';
+import { UserHttpService } from 'src/app/services/user-http.service';
 
 
 @Component({

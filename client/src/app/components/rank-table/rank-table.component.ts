@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RankingService } from '../ranking.service';
+import { RankingService } from 'src/app/services/ranking.service';
 import { RankingComponent } from '../ranking/ranking.component';
 
 export interface PeriodicElement {
