@@ -11,7 +11,7 @@
   <ul>
     <li *ngFor="let friend of friends">{{friend}}<button (click)="removeFriend(friend)">Remove</button></li>
   </ul>
-  <button *ngIf="this.username" class="button" (click)="addFriend()">Send friend request</button>
+  <button *ngIf="this.username && !this.loggedUser.friends.includes(this.username) && !this.loggedUser.sentFriendReqs.includes(this.username)" class="button" (click)="addFriend()">Send friend request</button>
   <div *ngIf="!this.username" class="Friend requests">
     Friend requests:
     <ul>
