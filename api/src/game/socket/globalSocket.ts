@@ -27,8 +27,8 @@ export function globalCallback(io: IOServer, socket: Socket): void {
     invitePlayer(socket, username)
   })
 
-  socket.on('inviteResponse', (hasAccepted: boolean, inviterUsername: string) => {
-    inviteResponse(socket, hasAccepted, inviterUsername)
+  socket.on('inviteResponse', (message) => {
+    inviteResponse(socket, message.hasAccepted, message.inviterUsername)
   })
 
   socket.on('dm', (message: string, destUsername: string) => {

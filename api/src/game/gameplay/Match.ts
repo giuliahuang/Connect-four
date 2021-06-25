@@ -4,7 +4,6 @@ import { endMatch } from '../../mongo/matchMethods'
 import Player from '../Player'
 import MoveResult from './MoveResult'
 import { v4 as uuidv4 } from 'uuid'
-
 export class Match {
   public readonly player1: Player
   public readonly player2: Player
@@ -35,9 +34,9 @@ export class Match {
 
     //vertical alignment
     if (this.heights[col] > 3
-      && this.game_board[this.heights[col] - 2][col] == player
-      && this.game_board[this.heights[col] - 3][col] == player
-      && this.game_board[this.heights[col] - 4][col] == player) {
+      && this.game_board[this.heights[col] - 2][col] === player
+      && this.game_board[this.heights[col] - 3][col] === player
+      && this.game_board[this.heights[col] - 4][col] === player) {
       return true
     }
 
@@ -63,7 +62,7 @@ export class Match {
   }
 
   public colIsFull(col: number): boolean {
-    return (this.heights[col] == this.rows)
+    return (this.heights[col] === this.rows)
   }
 
   /**
