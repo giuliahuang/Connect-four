@@ -18,6 +18,8 @@ export class FriendListComponent implements OnInit {
   hasAccepted: boolean = false
   inviterUsername: string = ""
 
+  onlineFriends: string[] = []
+
   constructor(
     private socketioService: SocketioService,
     private route: ActivatedRoute
@@ -28,8 +30,15 @@ export class FriendListComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
     this.socketioService.getOnlineFriend().subscribe(username => {
-      console.log(username)
+      if (!this.onlineFriends.includes(username)) this.onlineFriends.push(username)
     })
+    this.socketioService.getFriendDisconnected().subscribe(username => {
+      console.log(`${username} disconnected`)
+
+      this.onlineFriends = this.onlineFriends.filter(friend => friend !== username)
+    })
+    console.log(this.onlineFriends)
+
   }
 
   sendInviteRequest(username: string) {

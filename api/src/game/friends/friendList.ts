@@ -72,16 +72,16 @@ export async function clientConnected(socket: Socket): Promise<void> {
  */
 export async function clientDisconnected(socket: Socket): Promise<void> {
   try {
-    const username = await hgetAsync('users', socket.id)
-    redis.hdel('users', socket.id)
+    const username = await hgetAsync('sockets', socket.id)
+    redis.hdel('sockets', socket.id)
+    redis.hdel('users', username)
     if (username) {
       const user = await getUserByUsername(username)
       if (user) {
         cancelMatchmaking(user._id)
         user.friends.forEach(friend => {
-          socket.to(friend).emit('disconnected', username)
+          socket.to(friend).emit('friendDisconnected', username)
         })
-        redis.hdel('users', socket.id)
       }
     }
   } catch (err) {
@@ -96,7 +96,7 @@ export async function clientDisconnected(socket: Socket): Promise<void> {
  */
 export async function getNewMessages(socket: Socket): Promise<Message[]> {
   try {
-    const username = socket.request['user.username']
+    const username = socket.request['user'].username
     const user = await UserModel.findOne({ username })
     if (user && user.lastSeen) {
       const ls = user.lastSeen
