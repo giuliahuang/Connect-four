@@ -48,7 +48,6 @@ export class SocketioService {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
       console.log(message)
-
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
@@ -105,5 +104,17 @@ export class SocketioService {
       inviterUsername: username,
     }
     this.socket?.emit('inviteResponse', message)
+  }
+
+  getOnlineFriend() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendConnected', (data) => observer.next(data))
+    })
+  }
+
+  getFriendDisconnected() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendDisconnected', (data) => observer.next(data))
+    })
   }
 }

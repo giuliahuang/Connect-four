@@ -27,16 +27,17 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
       color2 = 'red'
     }
 
-    ; (p1.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
-      ; (p2.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
-
     let player1: Player, player2: Player
     if (Math.round(Math.random())) {
       player1 = p1.player
       player2 = p2.player
+        ; (p1.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
+        ; (p2.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
     } else {
       player1 = p2.player
       player2 = p1.player
+        ; (p2.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
+        ; (p1.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
     }
 
     const match = new Match(player1, player2)

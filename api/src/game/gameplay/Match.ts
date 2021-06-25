@@ -80,28 +80,30 @@ export class Match {
       matchResult: undefined
     }
     let player: Player
-    
+
     if (this.player1.id.toString() === playerId.toString()) player = this.player1
     else if (this.player2.id.toString() === playerId.toString()) player = this.player2
     else return res
 
+    if (!this.colIsFull(col)) {
+      if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
+        logger.info(this.game_board[this.heights[col]][col])
+        this.game_board[this.heights[col]][col] = player.id
+        this.heights[col]++
+        res.accepted = true
 
-    if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
-      this.game_board[this.heights[col]][col] = player.id
-      this.heights[col]++
-      res.accepted = true
-
-      if (this.isWinner(col)) {
-        let loser: Player
-        if (player === this.player1) loser = this.player2
-        else loser = this.player1
-        res.matchResult = {
-          winner: player.username,
-          loser: loser.username
+        if (this.isWinner(col)) {
+          let loser: Player
+          if (player === this.player1) loser = this.player2
+          else loser = this.player1
+          res.matchResult = {
+            winner: player.username,
+            loser: loser.username
+          }
+          this.endGame(res.matchResult)
         }
-        this.endGame(res.matchResult)
+        this.p1Turn = !this.p1Turn
       }
-      this.p1Turn = !this.p1Turn
     }
     return res
   }

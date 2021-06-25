@@ -21,7 +21,7 @@ export class EndgameDialogComponent implements OnInit {
   }
 
   exit(){
-    this.router.navigate(['/user']);
+    this.router.navigate(['/']);
   }
 
 }

@@ -1,17 +1,15 @@
-<h1>Connect Four!</h1>
-<hr />
-
-<h4>Player1: {{player.username}} Color: {{ player.color }}</h4>
-<h4>Player2: {{otherPlayer.username}} Color: {{ otherPlayer.color }}</h4>
-
-<div class="spacer"></div>
-<div class="container">
-    <div class = "gamegrid">
-        <app-cell *ngFor="let val of cell; let i = index" [ngStyle]=" {'background-color': val}"
-            (click)="addDotRequest(i)">
-        </app-cell>
+<div class="flex-container">
+    <div class="left-column">
+        <div class="turn">{{turnMessage}}</div>
+        <div class="spacer"></div>
+        <div class="gamegrid">
+            <app-cell [index]="i" [events]="eventsSubject.asObservable()" [hoverColor]="player.color"
+                *ngFor="let val of cell; let i = index" [ngStyle]=" {'background-color': val}"
+                (click)="addDotRequest(i)">
+            </app-cell>
+        </div>
     </div>
-
-    <app-gamechat [playerColor]="this.player.color"></app-gamechat>
+    <div class="right-column">
+        <app-gamechat [playerColor]="this.player.color"></app-gamechat>
+    </div>
 </div>
-<div class="spacer"></div>
