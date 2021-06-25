@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, Input, HostBinding, OnChanges, SimpleChanges } from '@angular/core'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
 
@@ -8,35 +8,36 @@ import { UserHttpService } from 'src/app/services/user-http.service'
   styleUrls: ['./gamechat.component.scss']
 })
 export class GamechatComponent implements OnInit {
-  user: any
-  messageText!: String
+  @Input() playerColor: string = ''
+  otherPlayerColor: string = ''
+  username: string
+  messageText: String = ''
   messageArray: Array<{ user: String, message: String }> = [];
 
   constructor(
     private gamesocketService: GamesocketService,
-    private userHttpService: UserHttpService
-  ) {
+    private userHttpService: UserHttpService) {
+    this.username = this.userHttpService.username
   }
 
   ngOnInit(): void {
     this.receiveMessage()
-    this.userHttpService.getUserProfile().subscribe(user => {
-      this.user = user
-    })
+    if (this.playerColor === 'red')
+      this.otherPlayerColor = 'blue'
+    else
+      this.otherPlayerColor = 'red'
   }
 
   sendMessage() {
-    console.log(this.user.username)
-    if (this.messageText.trim().length !== 0) {
+    if (this.messageText.trim().length !== 0 && this.messageText.length <= 150) {
       this.gamesocketService.sendMessage(this.messageText)
-      this.messageArray.push({ user: this.user.username, message: this.messageText })
-      this.messageText = ''
+      this.messageArray.push({ user: this.username, message: this.messageText })
     }
+    this.messageText = ''
   }
 
   receiveMessage() {
     this.gamesocketService.receiveMessage().subscribe((data: any) => {
-      console.log(data)
       this.messageArray.push({ user: data.player, message: data.message })
       this.messageText = ''
     })

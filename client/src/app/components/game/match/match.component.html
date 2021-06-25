@@ -1,0 +1,17 @@
+<h1>Connect Four!</h1>
+<hr />
+
+<h4>Player1: {{player.username}} Color: {{ player.color }}</h4>
+<h4>Player2: {{otherPlayer.username}} Color: {{ otherPlayer.color }}</h4>
+
+<div class="spacer"></div>
+<div class="container">
+    <div class = "gamegrid">
+        <app-cell *ngFor="let val of cell; let i = index" [ngStyle]=" {'background-color': val}"
+            (click)="addDotRequest(i)">
+        </app-cell>
+    </div>
+
+    <app-gamechat [playerColor]="this.player.color"></app-gamechat>
+</div>
+<div class="spacer"></div>

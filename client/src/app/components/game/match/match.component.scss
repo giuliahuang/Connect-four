@@ -1,0 +1,34 @@
+.title {
+  text-align: center;
+}
+
+.gamegrid {
+  display: grid;
+  grid-template-columns: repeat(7, 75px);
+  grid-template-rows: repeat(6, 75px);
+  width: 525px;
+  height: 450px;
+  margin: 0 auto;
+  justify-content: center;
+  background-color: black;
+  float: left;
+  margin-left: 50px;
+}
+
+app-cell {
+  border: 5px solid black;
+  background-color: white;
+  border-radius: 50%;
+  outline: 5px solid black;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  padding-left: 15vh;
+  padding-right: 40vh;
+}
+
+.spacer {
+    min-height: 5vh;
+}

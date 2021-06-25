@@ -1,5 +1,3 @@
-import mongoose from 'mongoose'
-import { receiveMessageOnPort } from 'worker_threads'
 import logger from "../logger"
 import User from "../models/User"
 import UserModel from "./User"
@@ -19,8 +17,11 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
       const asker = await UserModel.findOne({ username: askerUsername })
       const requested = await UserModel.findOne({ username: requestedUsername })
       if (asker && requested && asker !== requested) {
-        if ((!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username))
-          || (!asker.friends.includes(requested.username) && (!requested.friends.includes(asker.username)))) {
+        if (
+          !asker.sentFriendReqs.includes(requested.username) &&
+          !requested.receivedFriendReqs.includes(asker.username) &&
+          !asker.friends.includes(requested.username) &&
+          !requested.friends.includes(asker.username)) {
 
           asker.sentFriendReqs.push(requested.username)
           requested.receivedFriendReqs.push(asker.username)

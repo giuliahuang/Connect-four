@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { SocketioService } from 'src/app/services/socketio.service';
-import { UserHttpService } from 'src/app/services/user-http.service';
+import { Component, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
+import { AuthenticationService } from 'src/app/services/auth/authentication.service'
+import { SocketioService } from 'src/app/services/socketio.service'
 
 
 @Component({
@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   public errmessage = undefined;
   public user = { email: '', password: '', remember: '' };
   constructor( 
-    private us: UserHttpService, 
+    private auth: AuthenticationService, 
     private router: Router ,
     private socketIoService:SocketioService) { }
 
@@ -22,19 +22,12 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.us.login( this.user ).subscribe( (d) => {
-      console.log('Login granted: ' + JSON.stringify(d) );
-      console.log('User service token: ' + this.us.get_token() );
+    this.auth.login( this.user ).subscribe( () => {
       this.errmessage = undefined;
-      var token = this.us.get_token()
-      this.socketIoService.connect(token.replace("Bearer ",""));
-      this.router.navigate(['/user']);
+      this.router.navigate(['/']);
     }, (err) => {
       console.log('Login error: ' + JSON.stringify(err) );
       this.errmessage = err.message;
-
     });
-
   }
-
 }

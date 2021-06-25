@@ -1,25 +1,44 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
+import { NotFoundComponent } from './components/error/not-found/not-found.component'
+import { MatchComponent } from './components/game/match/match.component'
+import { HomeComponent } from './components/home/home.component'
 import { LoginComponent } from './components/users/login/login.component'
-import { SignupComponent } from './components/users/signup/signup.component'
-
-import { UserComponent } from './components/users/user/user.component'
-import { MatchComponent } from './components/game-components/match/match.component'
+import { ProfileResolver } from './components/users/profile/profile-resolver'
 import { RankingComponent } from './components/users/ranking/ranking.component'
-import { ProfileComponent } from './components/users/profile/profile.component'
 import { SearchComponent } from './components/users/search/search.component'
-import { NotFoundComponent } from './components/error-components/not-found/not-found.component'
+import { SignupComponent } from './components/users/signup/signup.component'
+import { AuthGuardService } from './services/auth/auth-guard.service'
+
+import { ProfileComponent } from './components/users/profile/profile.component'
+import { AdminComponent } from './components/admin/admin.component'
 
 const routes: Routes = [
-  { path: 'user', component: UserComponent },
-  { path: 'match', component: MatchComponent },
-  { path: '', component: LoginComponent },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  {
+    path: 'home', component: HomeComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
+  {
+    path: 'match', component: MatchComponent, canActivate: [AuthGuardService]
+  },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'ranking', component: RankingComponent },
-  { path: 'profile/:username', component: ProfileComponent },
-  { path: 'search', component: SearchComponent },
-  { path: '**', component: NotFoundComponent }
+  { path: 'ranking', component: RankingComponent, canActivate: [AuthGuardService] },
+  {
+    path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
+  {
+    path: 'profile/:username', component: ProfileComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
+  { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
+  { path: 'admin', component: AdminComponent },
+  { path: '**', component: NotFoundComponent },
 ]
 
 @NgModule({

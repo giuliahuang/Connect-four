@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core'
-import { SocketioService } from '../../../services/socketio.service'
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router'
+import { SocketioService } from 'src/app/services/socketio.service'
 
 interface FriendInMatch {
   username: string,
@@ -7,24 +8,25 @@ interface FriendInMatch {
 }
 
 @Component({
-  selector: 'app-friendtmp',
-  templateUrl: './friendtmp.component.html',
-  styleUrls: ['./friendtmp.component.scss']
+  selector: 'app-friend-list',
+  templateUrl: './friend-list.component.html',
+  styleUrls: ['./friend-list.component.scss']
 })
-export class FriendtmpComponent implements OnInit {
-
+export class FriendListComponent implements OnInit {
+  user: any
   friendInMatch: Array<FriendInMatch>
   hasAccepted: boolean = false
   inviterUsername: string = ""
-
-
+  
   constructor(
-    private socketioService: SocketioService
+    private socketioService: SocketioService,
+    private route: ActivatedRoute
   ) {
     this.friendInMatch = this.getFriendInMatchList()
   }
 
   ngOnInit(): void {
+    this.user = this.route.snapshot.data.profile
   }
 
   sendInviteRequest(username: string) {
