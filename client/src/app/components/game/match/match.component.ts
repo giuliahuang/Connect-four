@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, Output, EventEmitter } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Subject } from 'rxjs'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
@@ -17,6 +18,13 @@ export class MatchComponent implements OnInit {
   heights: number[] = []
   player: any
   otherPlayer: any
+  isMyTurn: boolean
+
+  eventsSubject: Subject<any> = new Subject<any>()
+
+  emitEventToChild(message: any) {
+    this.eventsSubject.next(message)
+  }
 
   constructor(
     private gamesocketService: GamesocketService,
@@ -39,6 +47,12 @@ export class MatchComponent implements OnInit {
       username: socketIoService.otherPlayer,
       color: otherColor
     }
+    this.isMyTurn = this.socketIoService.isFirst
+  }
+
+  get turnMessage() {
+    if (this.isMyTurn) return 'It\'s your turn to play!'
+    else return `Wait for ${this.otherPlayer.username} to make a move`
   }
 
   ngOnInit(): void {
@@ -87,13 +101,13 @@ export class MatchComponent implements OnInit {
   receiveGameUpdate() {
     this.gamesocketService.receiveGameUpdate().subscribe((message: any) => {
       this.addDot(message.column, message.player)
+      this.isMyTurn = !this.isMyTurn
     })
   }
 
   //sends a request to the server to add a dot
   addDotRequest(index: number) {
     var col = index % 7
-    console.log('add dot request at col ' + col)
     this.gamesocketService.addDotRequest(col)
   }
 
@@ -113,19 +127,10 @@ export class MatchComponent implements OnInit {
         color = this.player.color
       else
         color = this.otherPlayer.color
-      this.cell.splice(col + (7 * (5 - this.heights[col])), 1, color)
+      const cellIndex = col + (7 * (5 - this.heights[col]))
+      this.emitEventToChild({ index: cellIndex, color })
+      this.cell.splice(cellIndex, 1, color)
       this.heights[col]++
     }
   }
-
-  //receives the order of the player and sets the starting color
-  // receivePlayers() {
-  //   this.gamesocketService.gamesocket?.on('order', (message) => {
-  //     this.player1.username = message.player1
-  //     this.player2.username = message.player2
-  //     console.log(this.player1)
-  //     console.log(this.player2)
-  //     this.nextColor = message.random
-  //   })
-  // }
 }
