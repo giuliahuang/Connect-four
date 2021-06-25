@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io"
+import { Socket } from "socket.io"
 import { promisify } from 'util'
 import logger from "../../logger"
 import Message from "../../models/Message"
@@ -25,7 +25,7 @@ const hexistsAsync = promisify(redis.hexists).bind(redis)
  */
 export function sendMessage(user: User, message: string, destUsername: string, socket: Socket): void {
   if (user.friends.includes(destUsername)) {
-    socket.to(destUsername).emit('dm', message)
+    socket.to(destUsername).emit('dm', message, user.username)
     dm(message, user.username, destUsername)
   } else
     socket.to(user.username).emit('dm', `${destUsername} is not a valid friend`)
@@ -106,4 +106,14 @@ export async function getNewMessages(socket: Socket): Promise<Message[]> {
     logger.error(err)
   }
   return []
+}
+
+export async function getMessageHistory(socket: Socket, username2: string): Promise<void> {
+  let messages: Message[] = []
+  try {
+    messages = await MessageModel.find({ userIds: { $all: [socket.request['user'].username, username2] } })
+  } catch (err) {
+    logger.prettyError(err)
+  }
+  socket.emit(JSON.parse(JSON.stringify(messages)))
 }

@@ -17,8 +17,9 @@ export class FriendListComponent implements OnInit {
   friendInMatch: Array<FriendInMatch>
   hasAccepted: boolean = false
   inviterUsername: string = ""
-
   onlineFriends: string[] = []
+  showChat: boolean = false
+  chatMate: string = ''
 
   constructor(
     private socketioService: SocketioService,
@@ -91,5 +92,10 @@ export class FriendListComponent implements OnInit {
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
       this.friendInMatch!.push(message)
     })
+  }
+
+  openChat(friend: string) {
+    this.showChat = !this.showChat
+    this.chatMate = friend
   }
 }

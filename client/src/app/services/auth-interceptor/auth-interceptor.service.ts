@@ -16,21 +16,16 @@ export class AuthInterceptorService implements HttpInterceptor {
       const cloned = req.clone({
         headers: req.headers.set('Authorization', idToken)
       })
-      return next.handle(cloned).pipe(
-        catchError(this.handleError)
-      )
-    } else {
-      return next.handle(req).pipe(
-        catchError(this.handleError)
-      )
+      return next.handle(cloned)
     }
-  }
 
-  handleError(error: HttpErrorResponse) {
-    console.log(error)
-    if (error.status === 401) {
-      this.router.navigate(['/'])
-    }
-    return throwError(error)
+    return next.handle(req).pipe(
+      catchError((err) => {
+        if (err && err.status === 401) {
+          this.router.navigate(['/login'])
+        }
+        return next.handle(req)
+      })
+    )
   }
 }
