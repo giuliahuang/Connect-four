@@ -25,6 +25,8 @@ export class FriendtmpComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.receiveStartedPlaying()
+    this.receiveStoppedPlaying()
   }
 
   sendInviteRequest(username: string) {
@@ -71,8 +73,11 @@ export class FriendtmpComponent implements OnInit {
 
   //receives the data of the player who finished the play and deletes it from the list
   receiveStoppedPlaying() {
+    console.log("receive start playing")
     this.socketioService.receiveStoppedPlaying().subscribe((message: any) => {
       this.deleteFromList(this.friendInMatch.indexOf(message))
+      console.log("Stopped Playing")
+      console.log(this.friendInMatch)
     })
   }
 
@@ -80,8 +85,11 @@ export class FriendtmpComponent implements OnInit {
 
   //receives the data of the player who started the play and adds it to the list
   receiveStartedPlaying() {
+    console.log("receive start playing")
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
       this.friendInMatch!.push(message)
+      console.log("Started Playing")
+      console.log(this.friendInMatch)
     })
   }
 

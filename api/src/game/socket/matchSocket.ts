@@ -1,3 +1,4 @@
+import { userInfo } from 'os'
 import { Server as IOServer, Socket } from 'socket.io'
 import { promisify } from 'util'
 import logger from '../../logger'
@@ -23,6 +24,10 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   joinChat(socket, match)
   notifyStartedPlaying(p1, port)
   notifyStartedPlaying(p2, port)
+  
+  socket.on('entrato',(m)=>{
+    logger.info(m)
+  })
 
   io.emit('order', ({ player1: match.player1.username, player2: match.player2.username, random: Math.round(Math.random()) }))
 
@@ -45,8 +50,10 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 function joinChat(socket: Socket, match: Match) {
   if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
     socket.join(`${match.uuid}.player`)
-  else
+  else{
+    logger.info("joined observable chat")
     socket.join(`${match.uuid}.observers`)
+  }
 }
 
 /**
@@ -80,6 +87,7 @@ function chat(message: string, socket: Socket, match: Match) {
 function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer) {
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
+  logger.info(moveResult.accepted)
   if (moveResult.accepted) {
     io.emit('dot', column)
     if (moveResult.matchResult) {
@@ -132,10 +140,11 @@ function closeServer(io: IOServer, p1: PlayerWithWS, p2: PlayerWithWS) {
 }
 
 async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
-  const user = await getUserById(p.player.id)
-  user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
-  })
+  const user = await getUserById(p.player.id);
+  (p.ws as Socket).broadcast.emit('startedPlaying', {username: user!.username, port})
+  //user?.friends.forEach(friend => {
+  //  ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
+  //})
 }
 
 async function notifyStoppedPlaying(p: PlayerWithWS) {
