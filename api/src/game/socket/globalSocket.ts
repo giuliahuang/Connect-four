@@ -27,8 +27,8 @@ export function globalCallback(io: IOServer, socket: Socket): void {
     invitePlayer(socket, username)
   })
 
-  socket.on('inviteResponse', (hasAccepted: boolean, inviterUsername: string) => {
-    inviteResponse(socket, hasAccepted, inviterUsername)
+  socket.on('inviteResponse', (message) => {
+    inviteResponse(socket, message.hasAccepted, message.inviterUsername)
   })
 
   socket.on('dm', (message: string, destUsername: string) => {
@@ -46,7 +46,7 @@ export function globalCallback(io: IOServer, socket: Socket): void {
  * @param socket Socket client of the user who just connected
  */
 async function clientInit(socket: Socket) {
-  socket.join(socket.request['user.username'])
+  socket.join(socket.request['user'].username)
   await clientConnected(socket)
   const newMessages = await getNewMessages(socket)
   if (newMessages.length > 0) socket.emit('newMessages', newMessages)
