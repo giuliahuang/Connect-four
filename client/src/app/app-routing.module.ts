@@ -10,7 +10,7 @@ import { SearchComponent } from './components/users/search/search.component'
 import { SignupComponent } from './components/users/signup/signup.component'
 import { AuthGuardService } from './services/auth/auth-guard.service'
 
-import { ProfileComponent } from './components/profile/profile.component'
+import { ProfileComponent } from './components/users/profile/profile.component'
 import { AdminComponent } from './components/admin/admin.component'
 
 const routes: Routes = [
