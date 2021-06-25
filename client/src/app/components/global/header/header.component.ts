@@ -15,8 +15,6 @@ export class HeaderComponent implements OnInit {
       (event: NavigationEvent) => {
         if (event instanceof NavigationStart) {
           this.selectedItem = event.url
-          console.log(this.selectedItem)
-
         }
       }
     )
