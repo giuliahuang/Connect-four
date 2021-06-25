@@ -42,15 +42,6 @@ export class GamesocketService {
         observer.next(message)
       })
     })
-
-  }
-
-  receivePlayerDisconnetedMessage() {
-    return new Observable((observer) => {
-      this.gamesocket?.on('playerDisconnected', message => {
-        observer.unsubscribe()
-      })
-    })
   }
 
   receiveEndMatch() {

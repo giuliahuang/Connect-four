@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, Router } from '@angular/router'
+import { Subject, Subscription } from 'rxjs'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
@@ -12,11 +13,24 @@ import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.compone
   styleUrls: ['./match.component.scss']
 })
 
-export class MatchComponent implements OnInit {
+export class MatchComponent implements OnInit, OnDestroy {
   cell: any[] = []
   heights: number[] = []
   player: any
   otherPlayer: any
+  isMyTurn: boolean
+
+  gameUpdatesSubscription!: Subscription
+  endMatchSubscription!: Subscription
+  winnerSubscription!: Subscription
+  playerMoveRejectionSubscription!: Subscription
+  playerDisconnetedSubscription!: Subscription
+
+  eventsSubject: Subject<any> = new Subject<any>()
+
+  emitEventToChild(message: any) {
+    this.eventsSubject.next(message)
+  }
 
   constructor(
     private gamesocketService: GamesocketService,
@@ -39,15 +53,29 @@ export class MatchComponent implements OnInit {
       username: socketIoService.otherPlayer,
       color: otherColor
     }
+    this.isMyTurn = this.socketIoService.isFirst
+  }
+
+  get turnMessage() {
+    if (this.isMyTurn) return 'It\'s your turn to play!'
+    else return `Wait for ${this.otherPlayer.username} to make a move`
   }
 
   ngOnInit(): void {
     this.newGame()
-    this.receiveGameUpdate()
-    this.receiveEndMatch()
+    this.gameUpdatesSubscription = this.receiveGameUpdate()
+    this.endMatchSubscription = this.receiveEndMatch()
     this.receiveWinnerMessage()
-    this.receivePlayerMoveRejection()
+    this.playerMoveRejectionSubscription = this.receivePlayerMoveRejection()
     this.receivePlayerDisconnetedMessage()
+  }
+
+  ngOnDestroy() {
+    this.gameUpdatesSubscription.unsubscribe()
+    this.endMatchSubscription.unsubscribe()
+    this.winnerSubscription.unsubscribe()
+    this.playerMoveRejectionSubscription.unsubscribe()
+    this.playerDisconnetedSubscription.unsubscribe()
   }
 
   //initialization of the game
@@ -57,21 +85,19 @@ export class MatchComponent implements OnInit {
   }
 
   //opens a dialog with the winner message and an exit button
-  openDialog(message: String) {
+  public openDialog(message: String) {
     this.dialog.open(EndgameDialogComponent, { data: { message: message } })
   }
 
-  //receives a disconnection message with the user and its reason
   receivePlayerDisconnetedMessage() {
-    this.gamesocketService.receivePlayerMoveRejection().subscribe((message: any) => {
-      //TODO
-      console.log(`player ${message.username} has disconnected for ${message.reason}`)
+    this.gamesocketService.gamesocket?.on('playerDisconnected', () => {
+      this.openDialog('You won by forfeit')
     })
   }
 
   //receive a rejection when it is not the right player move
   receivePlayerMoveRejection() {
-    this.gamesocketService.receivePlayerMoveRejection().subscribe((message: any) => {
+    return this.gamesocketService.receivePlayerMoveRejection().subscribe((message: any) => {
       console.log(`player ${message.username} cannot add dot at column ${message.column}`)
     })
   }
@@ -85,21 +111,21 @@ export class MatchComponent implements OnInit {
 
   //updates the gameboard if allowed by the server
   receiveGameUpdate() {
-    this.gamesocketService.receiveGameUpdate().subscribe((message: any) => {
+    return this.gamesocketService.receiveGameUpdate().subscribe((message: any) => {
       this.addDot(message.column, message.player)
+      this.isMyTurn = !this.isMyTurn
     })
   }
 
   //sends a request to the server to add a dot
   addDotRequest(index: number) {
     var col = index % 7
-    console.log('add dot request at col ' + col)
     this.gamesocketService.addDotRequest(col)
   }
 
   //end of match
   receiveEndMatch() {
-    this.gamesocketService.receiveEndMatch().subscribe((username) => {
+    return this.gamesocketService.receiveEndMatch().subscribe((username) => {
       console.log('End Match of ' + username)
       this.router.navigate(['/user'])
     })
@@ -113,19 +139,10 @@ export class MatchComponent implements OnInit {
         color = this.player.color
       else
         color = this.otherPlayer.color
-      this.cell.splice(col + (7 * (5 - this.heights[col])), 1, color)
+      const cellIndex = col + (7 * (5 - this.heights[col]))
+      this.emitEventToChild({ index: cellIndex, color })
+      this.cell.splice(cellIndex, 1, color)
       this.heights[col]++
     }
   }
-
-  //receives the order of the player and sets the starting color
-  // receivePlayers() {
-  //   this.gamesocketService.gamesocket?.on('order', (message) => {
-  //     this.player1.username = message.player1
-  //     this.player2.username = message.player2
-  //     console.log(this.player1)
-  //     console.log(this.player2)
-  //     this.nextColor = message.random
-  //   })
-  // }
 }

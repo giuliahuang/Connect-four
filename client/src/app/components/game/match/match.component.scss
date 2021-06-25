@@ -1,5 +1,6 @@
-.title {
-  text-align: center;
+.flex-container {
+  display: flex;
+  justify-content: space-around;
 }
 
 .gamegrid {
@@ -13,6 +14,17 @@
   background-color: black;
   float: left;
   margin-left: 50px;
+  margin-top: 50px;
+}
+
+.left-column {
+  display: flex;
+  flex-flow: column;
+  height: 55vh;
+}
+
+.right-column {
+  padding-top: 13vh;
 }
 
 app-cell {
@@ -22,13 +34,12 @@ app-cell {
   outline: 5px solid black;
 }
 
-.container {
-  display: flex;
-  flex-direction: row;
-  padding-left: 15vh;
-  padding-right: 40vh;
+.turn {
+  padding-top: 50px;
+  font-size: 3.5rem;
+  font-weight: 700;
 }
 
 .spacer {
-    min-height: 5vh;
+  flex: 1;
 }

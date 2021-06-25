@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class FriendComponent implements OnInit {
   @Input() username: string = ''
+  @Input() isOnline: boolean = false
 
   constructor() { }
 
