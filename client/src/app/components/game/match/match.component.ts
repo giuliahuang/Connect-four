@@ -48,6 +48,7 @@ export class MatchComponent implements OnInit {
       color: otherColor
     }
     this.isMyTurn = this.socketIoService.isFirst
+    console.log(this.isMyTurn)
   }
 
   get turnMessage() {

@@ -48,7 +48,6 @@ export class SocketioService {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
       console.log(message)
-
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
