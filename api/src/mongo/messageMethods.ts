@@ -20,7 +20,7 @@ export async function dm(message: string, senderUsername: string, destUsername: 
       })
       await newMessage.save()
     }
-  } catch(err) {
+  } catch (err) {
     logger.prettyError(err)
   }
 }

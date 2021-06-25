@@ -100,7 +100,7 @@ export async function getNewMessages(socket: Socket): Promise<Message[]> {
     const user = await UserModel.findOne({ username })
     if (user && user.lastSeen) {
       const ls = user.lastSeen
-      return await MessageModel.find({ users: user, createdAt: { "$gt": { ls } } })
+      return await MessageModel.find({ users: user.username, createdAt: { "$gt": { ls } } })
     }
   } catch (err) {
     logger.error(err)
@@ -108,12 +108,18 @@ export async function getNewMessages(socket: Socket): Promise<Message[]> {
   return []
 }
 
-export async function getMessageHistory(socket: Socket, username2: string): Promise<void> {
-  let messages: Message[] = []
+/**
+ * Retrieves the past 50 messages between the two users
+ * @param socket Socket instance of the client who asked for the history
+ * @param username Username of the user the client is chatting with
+ */
+export async function getMessageHistory(socket: Socket, username: string): Promise<void> {
   try {
-    messages = await MessageModel.find({ userIds: { $all: [socket.request['user'].username, username2] } })
+    const user = socket.request['user']
+    const res = await MessageModel.find({ users: { $all: [user.username, username] } }).limit(50)
+    console.log(res)
+    socket.emit(JSON.parse(JSON.stringify(res)))
   } catch (err) {
     logger.prettyError(err)
   }
-  socket.emit(JSON.parse(JSON.stringify(messages)))
 }

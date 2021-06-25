@@ -34,12 +34,8 @@ export class FriendListComponent implements OnInit {
       if (!this.onlineFriends.includes(username)) this.onlineFriends.push(username)
     })
     this.socketioService.getFriendDisconnected().subscribe(username => {
-      console.log(`${username} disconnected`)
-
       this.onlineFriends = this.onlineFriends.filter(friend => friend !== username)
     })
-    console.log(this.onlineFriends)
-
   }
 
   sendInviteRequest(username: string) {
