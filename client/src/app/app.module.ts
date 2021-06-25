@@ -44,7 +44,9 @@ import { SignupComponent } from './components/users/signup/signup.component'
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
 import { GlobalErrorHandlerService } from './services/global-error-handler.service'
 //Services
-import { UserHttpService } from './services/user-http.service'
+import { UserHttpService } from './services/user-http.service';
+import { FriendListComponent } from './components/users/friend-list/friend-list.component';
+import { FriendComponent } from './components/users/friend/friend.component'
 
 @NgModule({
   declarations: [
@@ -68,6 +70,8 @@ import { UserHttpService } from './services/user-http.service'
     HeaderComponent,
     FooterComponent,
     HomeComponent,
+    FriendListComponent,
+    FriendComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [

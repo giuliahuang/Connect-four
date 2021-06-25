@@ -14,7 +14,11 @@ import { AuthGuardService } from './services/auth/auth-guard.service'
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuardService] },
+  {
+    path: 'home', component: HomeComponent, canActivate: [AuthGuardService], resolve: {
+      profile: ProfileResolver
+    }
+  },
   {
     path: 'match', component: MatchComponent, canActivate: [AuthGuardService]
   },
