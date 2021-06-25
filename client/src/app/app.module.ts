@@ -40,9 +40,11 @@ import { RankTableComponent } from './components/users/rank-table/rank-table.com
 import { RankingComponent } from './components/users/ranking/ranking.component'
 import { SearchComponent } from './components/users/search/search.component'
 import { SignupComponent } from './components/users/signup/signup.component'
+
+//Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
 import { GlobalErrorHandlerService } from './services/global-error-handler.service'
-//Services
+import { AdminComponent } from './components/admin/admin.component';
 import { UserHttpService } from './services/user-http.service';
 import { FriendListComponent } from './components/users/friend-list/friend-list.component';
 import { FriendComponent } from './components/users/friend/friend.component'
@@ -62,14 +64,15 @@ import { FriendComponent } from './components/users/friend/friend.component'
     ProfileComponent,
     FileUploadComponent,
     SearchComponent,
+    AdminComponent,
     ChangePasswordComponent,
     NotFoundComponent,
     NotAuthorizedComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
-    FriendListComponent,
     FriendComponent,
+    FriendListComponent
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [

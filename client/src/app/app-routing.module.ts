@@ -5,12 +5,13 @@ import { MatchComponent } from './components/game/match/match.component'
 import { HomeComponent } from './components/home/home.component'
 import { LoginComponent } from './components/users/login/login.component'
 import { ProfileResolver } from './components/users/profile/profile-resolver'
-import { ProfileComponent } from './components/users/profile/profile.component'
 import { RankingComponent } from './components/users/ranking/ranking.component'
 import { SearchComponent } from './components/users/search/search.component'
 import { SignupComponent } from './components/users/signup/signup.component'
 import { AuthGuardService } from './services/auth/auth-guard.service'
 
+import { ProfileComponent } from './components/users/profile/profile.component'
+import { AdminComponent } from './components/admin/admin.component'
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -36,7 +37,8 @@ const routes: Routes = [
     }
   },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
-  { path: '**', component: NotFoundComponent }
+  { path: 'admin', component: AdminComponent },
+  { path: '**', component: NotFoundComponent },
 ]
 
 @NgModule({
