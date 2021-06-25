@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment'
 import { GamesocketService } from './gamesocket.service'
 import { LobbyDialogComponent } from '../components/game-components/lobby-dialog/lobby-dialog.component'
 import { UserHttpService } from './user-http.service'
+import { ObserverService } from './observer.service'
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class SocketioService {
     private router: Router,
     private us: UserHttpService,
     private gs: GamesocketService,
+    private os: ObserverService,
   ) {
   }
 
@@ -43,6 +45,25 @@ export class SocketioService {
     })
     this.socket.emit('joinGame', 'joined on initial websocket')
 
+  }
+
+  //provato sempre con match component ma non funziona perchè il server io non è in ascolto
+  //il motivo è perchè non viene chiamato la funzione in cui il server io è in ascolto
+  joinGameMatch(token: any, port: number){
+    this.gs.connectObserverMatch(
+      io('http://localhost:' + port, {
+        'forceNew': true,
+        extraHeaders: {
+          'x-auth-token': token
+        },
+        transportOptions: {
+          polling: {
+            extraHeaders: {
+              'x-auth-token': token
+            }
+          }
+        },
+      }))
   }
 
   receiveMatchPort(token: any) {
@@ -78,6 +99,7 @@ export class SocketioService {
   receiveStartedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('startedPlaying', (message) => {
+        console.log("有好友开始了游戏")
         observer.next(message)
       })
     })
@@ -86,13 +108,26 @@ export class SocketioService {
   receiveStoppedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('stoppedPlaying', (message) => {
+        
+        console.log("有好友结束了游戏")
         observer.next(message)
       })
     })
   }
 
   sendInviteRequest(username: string) {
+    console.log("invite request sent")
     this.socket?.emit('invite', username)
+  }
+
+  receiveInviteRequest(){
+    return new Observable((observer)=>{
+      this.socket?.on('invite',(message)=>{
+        console.log("Invite request received")
+        observer.next(message)
+        observer.unsubscribe()
+      })
+    })
   }
 
   sendInviteResponse(hasAccepted: boolean, username: string) {
@@ -100,7 +135,18 @@ export class SocketioService {
       hasAccepted: hasAccepted,
       inviterUsername: username,
     }
+    console.log("inviteResponse emitted")
     this.socket?.emit('inviteResponse', message)
+  }
+
+  receiveInviteResponse(){
+    return new Observable((observer)=>{
+      this.socket?.on('inviteResponse',(message)=>{
+        observer.next(message);
+        observer.unsubscribe();
+      })
+    })
+
   }
 
 

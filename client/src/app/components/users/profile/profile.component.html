@@ -9,7 +9,10 @@
   </ul>
   Friends:
   <ul>
-    <li *ngFor="let friend of friends">{{friend}}<button (click)="removeFriend(friend)">Remove</button></li>
+    <li *ngFor="let friend of friends">{{friend}}
+      <button (click)="removeFriend(friend)">Remove</button>
+      <button (click)="invite(friend)">Invite</button>
+    </li>
   </ul>
   <button *ngIf="this.username" class="button" (click)="addFriend()">Send friend request</button>
   <div *ngIf="!this.username" class="Friend requests">

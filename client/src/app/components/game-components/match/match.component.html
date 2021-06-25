@@ -14,7 +14,7 @@
         <div class="container">
             <h1>Connect Four!</h1>
             <hr />
-
+            
               <span id="header">
                   <h4>Player1: {{player1.username}}    Color: {{ player1.color }}</h4>
                   <h4>Player2: {{player2.username}}    Color: {{ player2.color }}</h4>
@@ -22,6 +22,10 @@
                 <h4>Player 1: <span id="player1header" class="text-danger"></span></h4>
                 <h4>Plyaer 2: <span id="player2header" class="text-warning"></span></h4>
                   -->
+                  <button mat-raised-button (click)="receiveGameUpdate()">Receive</button>
+                  <br>
+                  <br>
+                
               </span>
               
             <main>

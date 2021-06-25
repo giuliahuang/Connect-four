@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { Socket } from 'socket.io-client'
+import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
 
 @Component({
@@ -19,7 +21,7 @@ export class ProfileComponent implements OnInit {
   friends: string[] = []
   friendRequests: string[] = []
 
-  constructor(private userHttpService: UserHttpService, private route: ActivatedRoute) { }
+  constructor(private userHttpService: UserHttpService, private route: ActivatedRoute, private socketIoService:SocketioService) { }
 
   ngOnInit(): void {
     if (!this.username) {
@@ -60,6 +62,11 @@ export class ProfileComponent implements OnInit {
     if (this.loggedUser.username !== this.user.username) {
       this.userHttpService.addFriend(this.user.username).subscribe(res => console.log(res))
     }
+  }
+
+  invite(username:string){
+    this.socketIoService.sendInviteRequest(username);
+    
   }
 
   acceptFriend(username: string) {

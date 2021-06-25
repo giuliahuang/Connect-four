@@ -45,7 +45,9 @@ import { SearchComponent } from './components/users/search/search.component'
 import { ChangePasswordComponent } from './components/users/change-password/change-password.component'
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 import { NotFoundComponent } from './components/error-components/not-found/not-found.component';
-import { NotAuthorizedComponent } from './components/error-components/not-authorized/not-authorized.component'
+import { NotAuthorizedComponent } from './components/error-components/not-authorized/not-authorized.component';
+import { ObserverComponent } from './components/game-components/observer/observer.component';
+import { InviteDialogComponent } from './components/game-components/invite-dialog/invite-dialog.component'
 
 @NgModule({
   declarations: [
@@ -67,6 +69,8 @@ import { NotAuthorizedComponent } from './components/error-components/not-author
     ChangePasswordComponent,
     NotFoundComponent,
     NotAuthorizedComponent,
+    ObserverComponent,
+    InviteDialogComponent,
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -88,14 +92,14 @@ import { NotAuthorizedComponent } from './components/error-components/not-author
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatIconModule
+    MatIconModule,
+    MatSnackBarModule,
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
     BrowserAnimationsModule,
-    MatSnackBarModule,
   ],
   bootstrap: [AppComponent]
 })

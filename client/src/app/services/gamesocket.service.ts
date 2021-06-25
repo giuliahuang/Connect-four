@@ -21,6 +21,11 @@ export class GamesocketService {
       this.router.navigate(['/match'])
     }
 
+    connectObserverMatch(socket:Socket){
+      this.gamesocket=socket;
+      this.router.navigate(['/match'])
+    }
+
     addDotRequest(col:number){
       console.log('add dot request emitted')
       this.gamesocket?.emit('insertDisc',col);

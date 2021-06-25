@@ -34,13 +34,15 @@ export class MatchComponent implements OnInit {
 
 
   ngOnInit(): void {
+    console.log("game starting")
+    this.entrato()
+    this.receivePlayers()
     this.newGame()
     this.receiveGameUpdate();
     this.receiveEndMatch();
     this.receiveWinnerMessage();
     this.receivePlayerMoveRejection();
     this.receivePlayerDisconnetedMessage()
-    this.receivePlayers()
   }
 
   //initialization of the game
@@ -91,6 +93,11 @@ export class MatchComponent implements OnInit {
     this.gamesocketService.gamesocket?.on('winner',(message)=>{
       this.openDialog(message);
     })
+  }
+
+  entrato(){
+    console.log("sono entrato")
+    this.gamesocketService.gamesocket?.emit('entrato',"sono entrato!!!!!!!!!!!")
   }
 
   //updates the gameboard if allowed by the server
