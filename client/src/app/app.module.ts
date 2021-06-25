@@ -33,7 +33,6 @@ import { HeaderComponent } from './components/global/header/header.component'
 import { HomeComponent } from './components/home/home.component'
 import { ChangePasswordComponent } from './components/users/change-password/change-password.component'
 import { FileUploadComponent } from './components/users/file-upload/file-upload.component'
-import { FriendtmpComponent } from './components/users/friendtmp/friendtmp.component'
 import { LoginComponent } from './components/users/login/login.component'
 import { ProfileResolver } from './components/users/profile/profile-resolver'
 import { ProfileComponent } from './components/users/profile/profile.component'
@@ -58,7 +57,6 @@ import { FriendComponent } from './components/users/friend/friend.component'
     LobbyDialogComponent,
     EndgameDialogComponent,
     CellComponent,
-    FriendtmpComponent,
     RankingComponent,
     RankTableComponent,
     ProfileComponent,
