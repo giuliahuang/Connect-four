@@ -46,7 +46,6 @@ import { ChangePasswordComponent } from './components/users/change-password/chan
 import { GlobalErrorHandlerService } from './services/global-error-handler.service';
 import { NotFoundComponent } from './components/error-components/not-found/not-found.component';
 import { NotAuthorizedComponent } from './components/error-components/not-authorized/not-authorized.component';
-import { ObserverComponent } from './components/game-components/observer/observer.component';
 import { InviteDialogComponent } from './components/game-components/invite-dialog/invite-dialog.component'
 
 @NgModule({
@@ -69,7 +68,6 @@ import { InviteDialogComponent } from './components/game-components/invite-dialo
     ChangePasswordComponent,
     NotFoundComponent,
     NotAuthorizedComponent,
-    ObserverComponent,
     InviteDialogComponent,
   ],
   entryComponents: [LobbyDialogComponent],
