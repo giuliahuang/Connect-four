@@ -1,0 +1,27 @@
+<div class="profile">
+  Username: {{user?.username}} <br>
+  MMR: {{user?.mmr}}<br>
+  Stats:<br>
+  <ul>
+    <li>Wins: {{wins}} </li>
+    <li>Losses: {{losses}}</li>
+    <li>W/L ration: {{ratio}}</li>
+  </ul>
+  Friends:
+  <ul>
+    <li *ngFor="let friend of this.user.friends">{{friend}}<button (click)="removeFriend(friend)">Remove</button></li>
+  </ul>
+  <button *ngIf="this.loggedUsername !== this.user.username && !this.user.friends.includes(this.loggedUsername)" class="button"
+    (click)="addFriend()">Send friend request</button>
+  <div *ngIf="this.loggedUsername === this.user.username" class="Friend requests">
+    Friend requests:
+    <ul>
+      <li *ngFor="let username of this.user.receivedFriendReqs">{{username}}<button
+          (click)="acceptFriend(username)">Accept</button><button (click)="refuseFriend(username)">Refuse</button></li>
+    </ul>
+  </div>
+  <img class="avatar" src={{this.user.avatar}} width="200" height="200" />
+</div>
+
+<file-upload requiredFileType="image/png"></file-upload>
+<app-change-password></app-change-password>

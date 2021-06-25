@@ -1,5 +1,3 @@
-import mongoose from 'mongoose'
-import { receiveMessageOnPort } from 'worker_threads'
 import logger from "../logger"
 import User from "../models/User"
 import UserModel from "./User"
@@ -19,8 +17,11 @@ export async function sendFriendRequest(askerUsername: string, requestedUsername
       const asker = await UserModel.findOne({ username: askerUsername })
       const requested = await UserModel.findOne({ username: requestedUsername })
       if (asker && requested && asker !== requested) {
-        if ((!asker.sentFriendReqs.includes(requested.username) && !requested.receivedFriendReqs.includes(asker.username))
-          || (!asker.friends.includes(requested.username) && (!requested.friends.includes(asker.username)))) {
+        if (
+          !asker.sentFriendReqs.includes(requested.username) &&
+          !requested.receivedFriendReqs.includes(asker.username) &&
+          !asker.friends.includes(requested.username) &&
+          !requested.friends.includes(asker.username)) {
 
           asker.sentFriendReqs.push(requested.username)
           requested.receivedFriendReqs.push(asker.username)
@@ -94,14 +95,20 @@ export async function removeFromFriendList(sourceUsername: string, deleteFriendU
       const sourceUser = await UserModel.findOne({ username: sourceUsername })
       const deletedFriend = await UserModel.findOne({ username: deleteFriendUsername })
 
+      logger.info(sourceUser)
+      logger.info(deletedFriend)
       if (sourceUser && deletedFriend &&
         sourceUser.friends.includes(deletedFriend.username) &&
         deletedFriend.friends.includes(sourceUser.username)) {
 
-        sourceUser.friends = sourceUser.friends.filter(data => data === deletedFriend.username)
-        deletedFriend.friends = deletedFriend.friends.filter(data => data === sourceUser.username)
+        sourceUser.friends = sourceUser.friends.filter(data => data !== deletedFriend.username)
+        deletedFriend.friends = deletedFriend.friends.filter(data => data !== sourceUser.username)
+        logger.info(sourceUser)
+        logger.info(deletedFriend)
         await sourceUser.save()
         await deletedFriend.save()
+      } else {
+        throw new Error('Friend not found')
       }
     })
 

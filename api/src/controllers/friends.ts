@@ -1,16 +1,6 @@
 import { Request, Response } from 'express'
-import logger from '../logger'
 import User from '../models/User'
 import { getFriendProfile, processFriendRequest, removeFromFriendList, sendFriendRequest } from '../mongo/friendsMethods'
-/**
- * Sends a response containing the friends list of the user who originated the request
- * @param req Request
- * @param res Response
- */
-export async function getFriendsList(req: Request, res: Response): Promise<void> {
-  const user: User = req.user as User
-  res.status(200).json(user.friends)
-}
 
 /**
  * Sends a response containing the friend requests of the user who originated the request
@@ -56,7 +46,7 @@ export async function respondFriendRequest(req: Request, res: Response): Promise
  */
 export async function deleteFriend(req: Request, res: Response): Promise<void> {
   const user: User = req.user as User
-  const result = await removeFromFriendList(user.email, req.query.username as string)
+  const result = await removeFromFriendList(user.username, req.params.username as string)
   if (result)
     res.status(200).json({ message: 'Successfully deleted friend' })
   else

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import logger from '../logger'
 import User from '../models/User'
 import { getUserByEmail, setPassword } from '../mongo/userMethods'
 import { validatePassword } from '../utils/passwordUtils'
@@ -8,7 +9,7 @@ import { validatePassword } from '../utils/passwordUtils'
  * @param req Request
  * @param res Response
  */
-export async function newPassword(req: Request, res: Response): Promise<void> {
+export async function changeTempPassword(req: Request, res: Response): Promise<void> {
   const password = req.body.password
   const user = await getUserByEmail(req.body.email)
 
@@ -24,11 +25,12 @@ export async function newPassword(req: Request, res: Response): Promise<void> {
  * @param req Request
  * @param res Response
  */
-export async function changePassword(req: Request, res: Response): Promise<void> {
+export async function newPassword(req: Request, res: Response): Promise<void> {
   const user = req.user as User
   const currentPass = req.body.currentPass
   const newPass = req.body.newPass
-  if (validatePassword(currentPass, user.hash, user.salt)) {
+  
+  if (user && validatePassword(currentPass, user.hash, user.salt)) {
     const result = await setPassword(user.email, newPass)
     if (result) res.status(200).json({ message: 'Password reset correctly' })
     else res.status(500).json({ error: true, message: 'Something went wrong while changing the password' })

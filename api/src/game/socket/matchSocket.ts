@@ -24,13 +24,9 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   notifyStartedPlaying(p1, port)
   notifyStartedPlaying(p2, port)
 
-  io.emit('order', ({ player1: match.player1.username, player2: match.player2.username, random: Math.round(Math.random()) }))
-
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
-
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
-
 
   socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
@@ -81,17 +77,17 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
   if (moveResult.accepted) {
-    io.emit('dot', column)
+    io.emit('dot', {column, player: user.username})
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
       logger.info(`Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
 
-      setTimeout => (closeServer(io, p1, p2), 1000)
+      closeServer(io, p1, p2)
+    } else {
+      socket.emit('moveRejection', column)
     }
-  } else {
-    socket.emit('moveRejection', column)
   }
 }
 

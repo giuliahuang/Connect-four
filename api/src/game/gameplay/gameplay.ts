@@ -18,8 +18,17 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
   if (port) {
     const io = createIOServer(port)
 
-      ; (p1.ws as Socket).emit('matched', port)
-      ; (p2.ws as Socket).emit('matched', port)
+    let color1: string, color2: string
+    if (Math.random()) {
+      color1 = 'red'
+      color2 = 'blue'
+    } else {
+      color1 = 'blue'
+      color2 = 'red'
+    }
+
+    ; (p1.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
+      ; (p2.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
 
     let player1: Player, player2: Player
     if (Math.round(Math.random())) {
