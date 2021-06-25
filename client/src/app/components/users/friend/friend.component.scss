@@ -8,7 +8,9 @@
 }
 
 .online {
-  border: solid;
-  border-color: greenyellow;
-  border-radius: 10%;
+  color: greenyellow;
+}
+
+.offline {
+  color: red;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { SocketioService } from 'src/app/services/socketio.service'
 
@@ -17,7 +17,7 @@ export class FriendListComponent implements OnInit {
   friendInMatch: Array<FriendInMatch>
   hasAccepted: boolean = false
   inviterUsername: string = ""
-  
+
   constructor(
     private socketioService: SocketioService,
     private route: ActivatedRoute
@@ -27,6 +27,9 @@ export class FriendListComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
+    this.socketioService.getOnlineFriend().subscribe(username => {
+      console.log(username)
+    })
   }
 
   sendInviteRequest(username: string) {
@@ -40,14 +43,11 @@ export class FriendListComponent implements OnInit {
   }
 
   sendInviteResponse() {
-
     this.socketioService.sendInviteResponse(this.hasAccepted, this.inviterUsername)
   }
 
 
   receiveInviteResponse() {
-
-
     this.socketioService.socket?.on('inviteResponse', (message) => {
       this.hasAccepted = message
     })
@@ -59,7 +59,6 @@ export class FriendListComponent implements OnInit {
       this.friendInMatch!.splice(index, 1)
     }
   }
-
 
   //returns the friendInMatch list if it exists
   getFriendInMatchList(): Array<FriendInMatch> {
@@ -78,13 +77,10 @@ export class FriendListComponent implements OnInit {
     })
   }
 
-
-
   //receives the data of the player who started the play and adds it to the list
   receiveStartedPlaying() {
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
       this.friendInMatch!.push(message)
     })
   }
-
 }
