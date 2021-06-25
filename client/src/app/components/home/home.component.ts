@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { AuthenticationService } from 'src/app/services/auth/authentication.service'
 import { SocketioService } from 'src/app/services/socketio.service'
-import { LobbyDialogComponent } from '../game-components/lobby-dialog/lobby-dialog.component'
+import { LobbyDialogComponent } from '../game/lobby-dialog/lobby-dialog.component'
 
 @Component({
   selector: 'app-home',
