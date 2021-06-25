@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { Router } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
+import { SocketioService } from 'src/app/services/socketio.service'
+import { UserHttpService } from 'src/app/services/user-http.service'
 import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.component'
 
 @Component({
@@ -10,132 +12,120 @@ import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.compone
   styleUrls: ['./match.component.scss']
 })
 
-
 export class MatchComponent implements OnInit {
-
-  cell: any[]=[]
-  nextColor!: boolean;
-  heights:number[]=[]
-  player1={
-    username:"",
-    color:""
-  }
-  player2={
-    username:"",
-    color:""
-  }
+  cell: any[] = []
+  heights: number[] = []
+  player: any
+  otherPlayer: any
 
   constructor(
-    private gamesocketService: GamesocketService, 
-    private router:Router,
-    private dialog:MatDialog,
-    ){
+    private gamesocketService: GamesocketService,
+    private router: Router,
+    private dialog: MatDialog,
+    private route: ActivatedRoute,
+    private userHttpService: UserHttpService,
+    private socketIoService: SocketioService
+  ) {
+    this.player = {
+      username: userHttpService.username,
+      color: socketIoService.color
+    }
+    let otherColor: string
+    if (this.player.color === 'red')
+      otherColor = 'blue'
+    else
+      otherColor = 'red'
+    this.otherPlayer = {
+      username: socketIoService.otherPlayer,
+      color: otherColor
+    }
   }
-
 
   ngOnInit(): void {
     this.newGame()
-    this.receiveGameUpdate();
-    this.receiveEndMatch();
-    this.receiveWinnerMessage();
-    this.receivePlayerMoveRejection();
+    this.receiveGameUpdate()
+    this.receiveEndMatch()
+    this.receiveWinnerMessage()
+    this.receivePlayerMoveRejection()
     this.receivePlayerDisconnetedMessage()
-    this.receivePlayers()
   }
 
   //initialization of the game
-  newGame(){
+  newGame() {
     this.heights = Array(7).fill(0)
-    this.cell = Array(42).fill(null);
-    this.player1.username="";
-    this.player2.username="";
-    this.player1.color="";
-    this.player2.color="";
+    this.cell = Array(42).fill(null)
+  }
 
-    if(this.nextColor){
-      this.player1.color="yellow"
-      this.player2.color="red"
-    }
-    else{
-      this.player2.color="yellow"
-      this.player1.color="red"
-    }
-  }
-  
-  get color(){
-    return this.nextColor ? "yellow" : "red"
-  }
-  
   //opens a dialog with the winner message and an exit button
-  openDialog(message:String){
-    let dialogRef = this.dialog.open(EndgameDialogComponent,{data: {message: message}})
+  openDialog(message: String) {
+    this.dialog.open(EndgameDialogComponent, { data: { message: message } })
   }
 
   //receives a disconnection message with the user and its reason
-  receivePlayerDisconnetedMessage(){
-    this.gamesocketService.receivePlayerMoveRejection().subscribe((message:any)=>{
+  receivePlayerDisconnetedMessage() {
+    this.gamesocketService.receivePlayerMoveRejection().subscribe((message: any) => {
       //TODO
       console.log(`player ${message.username} has disconnected for ${message.reason}`)
     })
   }
 
   //receive a rejection when it is not the right player move
-  receivePlayerMoveRejection(){
-    this.gamesocketService.receivePlayerMoveRejection().subscribe((message:any)=>{
+  receivePlayerMoveRejection() {
+    this.gamesocketService.receivePlayerMoveRejection().subscribe((message: any) => {
       console.log(`player ${message.username} cannot add dot at column ${message.column}`)
     })
   }
 
   //receives a message when player wins the game
-  receiveWinnerMessage(){
-    this.gamesocketService.gamesocket?.on('winner',(message)=>{
-      this.openDialog(message);
+  receiveWinnerMessage() {
+    this.gamesocketService.gamesocket?.on('winner', (message) => {
+      this.openDialog(message)
     })
   }
 
   //updates the gameboard if allowed by the server
-  receiveGameUpdate(){
-    console.log('start receiving game update')
-    this.gamesocketService.receiveGameUpdate().subscribe((col:any) => {
-      this.addDot(col)
-     });
+  receiveGameUpdate() {
+    this.gamesocketService.receiveGameUpdate().subscribe((message: any) => {
+      this.addDot(message.column, message.player)
+    })
   }
 
-
   //sends a request to the server to add a dot
-  addDotRequest(index:number){
-    var col=index%7;
+  addDotRequest(index: number) {
+    var col = index % 7
     console.log('add dot request at col ' + col)
-    this.gamesocketService.addDotRequest(col);
+    this.gamesocketService.addDotRequest(col)
   }
 
   //end of match
-  receiveEndMatch(){
-    this.gamesocketService.receiveEndMatch().subscribe((username)=>{
+  receiveEndMatch() {
+    this.gamesocketService.receiveEndMatch().subscribe((username) => {
       console.log('End Match of ' + username)
       this.router.navigate(['/user'])
     })
   }
 
   //adds a dot to the gameboard
-  private addDot(col:number){
-    if(this.heights[col]<7){
-      this.cell.splice(col+(7*(5-this.heights[col])),1,this.color)
+  private addDot(col: number, player: string) {
+    if (this.heights[col] < 7) {
+      let color: string
+      if (player === this.player.username)
+        color = this.player.color
+      else
+        color = this.otherPlayer.color
+      this.cell.splice(col + (7 * (5 - this.heights[col])), 1, color)
       this.heights[col]++
-      this.nextColor = !this.nextColor
     }
   }
-  
+
   //receives the order of the player and sets the starting color
-  receivePlayers(){
-     this.gamesocketService.gamesocket?.on('order', (message)=>{
-       console.log("player received")
-        this.player1.username = message.player1;
-        this.player2.username = message.player2;
-        this.nextColor=message.random;
-     })
-  }
-
-
+  // receivePlayers() {
+  //   this.gamesocketService.gamesocket?.on('order', (message) => {
+  //     this.player1.username = message.player1
+  //     this.player2.username = message.player2
+  //     console.log(this.player1)
+  //     console.log(this.player2)
+  //     this.nextColor = message.random
+  //   })
+  // }
 }
-

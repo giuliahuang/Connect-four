@@ -1,28 +1,28 @@
-import { tokenName } from '@angular/compiler'
-import { Token } from '@angular/compiler/src/ml_parser/lexer'
 import { Injectable } from '@angular/core'
-import { Router } from '@angular/router'
-import { observable, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
+import { AuthenticationService } from './auth/authentication.service'
 import { GamesocketService } from './gamesocket.service'
-import { LobbyDialogComponent } from '../components/game-components/lobby-dialog/lobby-dialog.component'
-import { UserHttpService } from './user-http.service'
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketioService {
-
   socket: Socket | undefined
   gamesocket: Socket | undefined
 
+  public otherPlayer: string = ''
+  public isFirst: boolean = false
+  public color: string = ''
 
   constructor(
-    private router: Router,
-    private us: UserHttpService,
     private gs: GamesocketService,
+    private auth: AuthenticationService
   ) {
+    const token = this.auth.getToken()
+    if (token)
+      this.connect(token.replace("Bearer ", ""))
   }
 
   connect(token: any) {
@@ -42,14 +42,18 @@ export class SocketioService {
       console.log(message)
     })
     this.socket.emit('joinGame', 'joined on initial websocket')
-
   }
 
   receiveMatchPort(token: any) {
     console.log('waiting for port')
-    this.socket?.on('matched', (port) => {
+    this.socket?.on('matched', (message: any) => {
+      console.log(message)
+
+      this.isFirst = message.first
+      this.color = message.color
+      this.otherPlayer = message.otherPlayer
       this.gs.connectMatch(
-        io('http://localhost:' + port, {
+        io('http://localhost:' + message.port, {
           'forceNew': true,
           extraHeaders: {
             'x-auth-token': token
@@ -66,8 +70,8 @@ export class SocketioService {
   }
 
   startGame() {
-    this.socket!.emit('startGame', "someone is starting the game")
-    this.socket!.emit('play')
+    this.socket?.emit('startGame', "someone is starting the game")
+    this.socket?.emit('play')
   }
 
   cancelPlay() {
@@ -102,7 +106,4 @@ export class SocketioService {
     }
     this.socket?.emit('inviteResponse', message)
   }
-
-
-
 }

@@ -24,9 +24,6 @@ export class LoginComponent implements OnInit {
   login() {
     this.auth.login( this.user ).subscribe( () => {
       this.errmessage = undefined;
-      const token = this.auth.getToken()
-      if (token)
-        this.socketIoService.connect(token.replace("Bearer ",""));
       this.router.navigate(['/']);
     }, (err) => {
       console.log('Login error: ' + JSON.stringify(err) );
