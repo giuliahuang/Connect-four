@@ -60,6 +60,7 @@ export async function clientConnected(socket: Socket): Promise<void> {
 export async function clientDisconnected(socket: Socket): Promise<void> {
   try {
     const username = await hgetAsync('users', socket.id)
+    redis.hdel('users', socket.id)
     if (username) {
       const user = await getUserByUsername(username)
       if (user) {
