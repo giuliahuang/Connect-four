@@ -1,15 +1,9 @@
 <div class="chat-container">
   <div class="chat-messages">
     <span class="message" *ngFor="let item of messageArray">
-    <span *ngIf="(item.user === username)">
-      <span [ngStyle]="{'color': playerColor}"  class="username">{{item.user}}</span>: {{item.message}}
-    </span>
-    <span *ngIf="(item.user === otherUsername)">
-      <span [ngStyle]="{'color': otherPlayerColor}"  class="username">{{item.user}}</span>: {{item.message}}
-    </span>
-    <span *ngIf="isObserver&&item.user!==username&&item.user!==otherUsername">
-      <span [ngStyle]="{'color': 'gray'}"  class="username">{{item.user}}</span>: {{item.message}}
-    </span>
+      <span [ngStyle]="{'color': item.user === username ? playerColor : otherPlayerColor}"
+        class="username">{{item.user}}</span>:
+      {{item.message}}
     </span>
   </div>
   <hr>
