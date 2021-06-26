@@ -25,7 +25,6 @@ export class FriendComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.receiveInviter()
   }
 
   spectate() {
@@ -35,12 +34,6 @@ export class FriendComponent implements OnInit {
 
   inviteToPlay() {
     this.socketioService.sendInviteRequest(this.friend.username)
-  }
-
-  receiveInviter() {
-    this.socketioService.receiveInviteRequest().subscribe((message: any) => {
-      console.log(message)
-    })
   }
 
   openChat() {
