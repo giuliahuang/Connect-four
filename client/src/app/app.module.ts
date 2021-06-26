@@ -28,7 +28,6 @@ import { UserHttpService } from './services/user-http.service'
 
 //Components
 import { AppComponent } from './app.component'
-import { NotAuthorizedComponent } from './components/error/not-authorized/not-authorized.component'
 import { NotFoundComponent } from './components/error/not-found/not-found.component'
 import { CellComponent } from './components/game/cell/cell.component'
 import { EndgameDialogComponent } from './components/game/endgame-dialog/endgame-dialog.component'
@@ -71,7 +70,6 @@ import { AdminComponent } from './components/admin/admin.component'
     AdminComponent,
     ChangePasswordComponent,
     NotFoundComponent,
-    NotAuthorizedComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
