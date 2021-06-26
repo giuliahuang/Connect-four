@@ -1,2 +1,9 @@
-<input type="text" #username>
-<button (click)="search(username.value)">Search</button>
+<!-- <input type="text" class="matInput" #username placeholder="Search"> -->
+<!-- <button (click)="search(username.value)">Search</button> -->
+
+<form class="example-form">
+  <mat-form-field class="example-full-width" appearance="fill">
+    <mat-label>Search users</mat-label>
+    <input matInput #username (keyup.enter)="search(username.value); username.value = ''">
+  </mat-form-field>
+</form>

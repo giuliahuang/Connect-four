@@ -3,7 +3,7 @@ import { ErrorHandler, NgModule } from '@angular/core'
 
 // Modules
 import { FlexLayoutModule } from '@angular/flex-layout'
-import { FormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -99,7 +99,8 @@ import { AdminComponent } from './components/admin/admin.component'
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatIconModule
+    MatIconModule,
+    ReactiveFormsModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
