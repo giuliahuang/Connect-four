@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SudoService } from 'src/app/services/sudo.service';
 import { UserHttpService } from 'src/app/services/user-http.service';
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   selector: 'app-admin',
@@ -9,14 +10,28 @@ import { UserHttpService } from 'src/app/services/user-http.service';
 })
 export class AdminComponent implements OnInit {
 
-  constructor(private sudo: SudoService, private userHttpService: UserHttpService) { }
+  constructor(private sudo: SudoService, private userHttpService: UserHttpService, private route: ActivatedRoute) { }
 
   mods: string[] = []
 
   users: any[] = []
+  
+  user: any
+
+  isAdmin : boolean = false
+  isMod : boolean = false
 
   ngOnInit(): void {
+    console.log(this.route.snapshot.data.profile.username)
+    this.user = this.route.snapshot.data.profile
     this.getMods()
+    if(this.user.roles.includes('ADMIN')){
+      this.isAdmin = true
+    }
+    if(this.user.roles.includes('MODERATOR')){
+      this.isMod = true
+    }
+    console.log("AAA "+this.isMod)
   }
 
   search(username: string) {

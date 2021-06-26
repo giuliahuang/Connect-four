@@ -66,4 +66,12 @@ export class UserHttpService {
     return this.http.post(`${this.url}/auth/profile/newpassword`, data, config)
   }
 
+  getFriends(){
+    return this.http.get(`${this.url}/auth/profile/friends`)
+  }
+  
+  deleteSelfUser(){
+    return this.http.delete(`${this.url}/auth/profile`)
+  }
+
 }

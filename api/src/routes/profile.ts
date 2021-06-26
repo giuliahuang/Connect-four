@@ -5,6 +5,7 @@ import upload from '../config/multer'
 import { friendProfile } from '../controllers/friends'
 import { getUserProfile, uploadAvatar } from '../controllers/userProfile'
 import { newPassword } from '../controllers/userPassword'
+import { deleteSelf } from '../controllers/userProfile'
 
 const router = express.Router()
 
@@ -15,5 +16,7 @@ router.get('/user/:username', friendProfile)
 router.put('/avatar', cors(corsOptions), urlencoded({ extended: true }), json(), upload.single('data'), uploadAvatar)
 
 router.post('/newpassword', express.urlencoded({ extended: true }), express.json(), newPassword)
+
+router.delete('/', deleteSelf)
 
 export default router

@@ -38,6 +38,10 @@ const routes: Routes = [
     }
   },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], resolve: {
+    profile: ProfileResolver
+    } 
+  },
   { path: 'admin', component: AdminComponent },
   { path: 'modnewpass', component: ModNewPasswordComponent },
   { path: 'not-found', component: NotFoundComponent },
