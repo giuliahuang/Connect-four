@@ -51,14 +51,6 @@ import { FriendComponent } from './components/global/friends/friend/friend.compo
 import { ChatComponent } from './components/global/friends/chat/chat.component'
 import { AdminComponent } from './components/admin/admin.component'
 import { InviteDialogComponent } from './components/game/invite-dialog/invite-dialog.component'
-
-//Services
-import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
-import { GlobalErrorHandlerService } from './services/global-error-handler.service'
-import { AdminComponent } from './components/admin/admin.component';
-import { UserHttpService } from './services/user-http.service';
-import { FriendListComponent } from './components/users/friend-list/friend-list.component';
-import { FriendComponent } from './components/users/friend/friend.component';
 import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
 
 @NgModule({
@@ -85,7 +77,7 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     HomeComponent,
     FriendComponent,
     FriendListComponent,
-    SearchAdminComponent
+    SearchAdminComponent,
     ChatComponent
   ],
   entryComponents: [LobbyDialogComponent],
