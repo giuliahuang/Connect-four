@@ -9,7 +9,7 @@ export class UserHttpService {
   private url = 'http://localhost:5000';
   public username: string = ''
 
-  constructor(private http: HttpClient, private socketService: SocketioService) {
+  constructor(private http: HttpClient) {
     this.getUserProfile().subscribe((profile: any) => {
       this.username = profile.username
     })
@@ -42,7 +42,6 @@ export class UserHttpService {
   addFriend(username: string) {
     const data = { 'requestedUsername': username }
     const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
-    this.socketService.addFriend(username)
     return this.http.post(`${this.url}/auth/friends`, data, config)
   }
 
