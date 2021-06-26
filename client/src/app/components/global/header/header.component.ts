@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core'
-import { NavigationStart, Router, Event as NavigationEvent } from '@angular/router'
+import { Component, EventEmitter, OnInit, Output } from '@angular/core'
+import { Event as NavigationEvent, NavigationEnd, Router } from '@angular/router'
 
 @Component({
   selector: 'app-header',
@@ -7,13 +7,14 @@ import { NavigationStart, Router, Event as NavigationEvent } from '@angular/rout
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  @Output() public sidenavToggle = new EventEmitter();
   selectedItem = '/home'
   event$: any
 
   constructor(private router: Router) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
-        if (event instanceof NavigationStart) {
+        if (event instanceof NavigationEnd) {
           this.selectedItem = event.url
         }
       }

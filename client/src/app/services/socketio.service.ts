@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
-import Message from '../interfaces/Message'
 import { AuthenticationService } from './auth/authentication.service'
 import { GamesocketService } from './gamesocket.service'
 
@@ -48,26 +47,13 @@ export class SocketioService {
     this.socket.emit('joinGame', 'joined on initial websocket')
   }
 
-  receiveMatchPort(token: any) {
+  receiveMatchPort() {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
-      this.gs.connectMatch(
-        io('http://localhost:' + message.port, {
-          'forceNew': true,
-          extraHeaders: {
-            'x-auth-token': token
-          },
-          transportOptions: {
-            polling: {
-              extraHeaders: {
-                'x-auth-token': token
-              }
-            }
-          },
-        }))
+      this.gs.connectMatch(message.port)
     })
   }
 
@@ -107,6 +93,7 @@ export class SocketioService {
   receiveStartedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('startedPlaying', (message) => {
+        console.log("有好友开始了游戏")
         observer.next(message)
       })
     })
@@ -115,13 +102,25 @@ export class SocketioService {
   receiveStoppedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('stoppedPlaying', (message) => {
+
+        console.log("有好友结束了游戏")
         observer.next(message)
       })
     })
   }
 
   sendInviteRequest(username: string) {
+    console.log("invite request sent")
     this.socket?.emit('invite', username)
+  }
+
+  receiveInviteRequest() {
+    return new Observable((observer) => {
+      this.socket?.on('invite', (message) => {
+        console.log("Invite request received")
+        observer.next(message)
+      })
+    })
   }
 
   sendInviteResponse(hasAccepted: boolean, username: string) {
@@ -129,7 +128,17 @@ export class SocketioService {
       hasAccepted: hasAccepted,
       inviterUsername: username,
     }
+    console.log("inviteResponse emitted")
     this.socket?.emit('inviteResponse', message)
+  }
+
+  receiveInviteResponse() {
+    return new Observable((observer) => {
+      this.socket?.on('inviteResponse', (message) => {
+        observer.next(message)
+      })
+    })
+
   }
 
   getOnlineFriend() {
@@ -164,6 +173,18 @@ export class SocketioService {
     return new Observable<any>(observer => {
       this.socket?.on('history', (messages) => {
         observer.next(messages)
+      })
+    })
+  }
+
+  addFriend(username: string) {
+    this.socket?.emit('friendRequest', username)
+  }
+
+  receiveFriendRequest() {
+    return new Observable(observer => {
+      this.socket?.on('friendRequest', (username) => {
+        return observer.next(username)
       })
     })
   }

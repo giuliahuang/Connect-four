@@ -1,9 +1,18 @@
-<header>
-  <div class="topnav">
-    <a [ngClass]="{'active': selectedItem === '/home' || selectedItem === '/'}" [routerLink]="['/home/']">Home</a>
-    <a>Contact</a>
-    <a>About</a>
-    <a [ngClass]="{'active': selectedItem === '/profile'}" [routerLink]="['/profile/']">Profile</a>
+<mat-toolbar color="primary">
+  <div fxFlex fxLayout fxLayoutAlign="start" fxHide.xs>
+    <ul fxLayout fxLayoutGap="25px" class="navigation-items">
+      <li>
+        <a [ngClass]="{'active': selectedItem === '/home' || selectedItem === '/'}" [routerLink]="['/home/']">Home</a>
+      </li>
+      <li>
+        <a [ngClass]="{'active': selectedItem === '/ranking'}" routerLink="/ranking">Ranking</a>
+      </li>
+      <li>
+        <a [ngClass]="{'active': selectedItem === '/profile'}" [routerLink]="['/profile/']">Profile</a>
+      </li>
+    </ul>
+  </div>
+  <div fxFlex fxLayout fxLayoutAlign="end" fxHide.xs>
     <app-search></app-search>
   </div>
-</header>
+</mat-toolbar>

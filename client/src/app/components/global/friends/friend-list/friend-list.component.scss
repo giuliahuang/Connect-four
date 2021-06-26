@@ -1,0 +1,16 @@
+.social-container{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.friend {
+  text-align: center;
+  flex: 1;
+}
+
+.chat-container {
+  margin-top: 50px;
+  align-self: flex-end;
+}

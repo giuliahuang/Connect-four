@@ -1,32 +1,39 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
-import { Subject, Subscription } from 'rxjs'
+import { Subject } from 'rxjs'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
 import { EndgameDialogComponent } from '../endgame-dialog/endgame-dialog.component'
+
+interface Player {
+  username: string,
+  color: string
+}
 
 @Component({
   selector: 'app-match',
   templateUrl: './match.component.html',
   styleUrls: ['./match.component.scss']
 })
+export class MatchComponent implements OnInit {
+  username: string
 
-export class MatchComponent implements OnInit, OnDestroy {
+  player1!: Player
+  player2!: Player
+
   cell: any[] = []
   heights: number[] = []
-  player: any
-  otherPlayer: any
-  isMyTurn: boolean
+  isMyTurn: boolean = false
 
-  isObserver:boolean
-
-  gameUpdatesSubscription!: Subscription
-  endMatchSubscription!: Subscription
-  winnerSubscription!: Subscription
-  playerMoveRejectionSubscription!: Subscription
-  playerDisconnetedSubscription!: Subscription
+  get color(): string {
+    if (this.username === this.player1.username)
+      return this.player1.color
+    else if (this.username === this.player2.username)
+      return this.player2.color
+    return ''
+  }
 
   eventsSubject: Subject<any> = new Subject<any>()
 
@@ -38,62 +45,57 @@ export class MatchComponent implements OnInit, OnDestroy {
     private gamesocketService: GamesocketService,
     private router: Router,
     private dialog: MatDialog,
-    private route: ActivatedRoute,
     private userHttpService: UserHttpService,
     private socketIoService: SocketioService
   ) {
-    
-    this.isObserver = this.socketIoService.isObserver
-    if(!this.isObserver){
-      this.player = {
-        username: userHttpService.username,
-        color: socketIoService.color
-      }
-    }
-    else{
-      this.player = {
-        username: this.socketIoService.currentPlayer,
-        color:socketIoService.color
-      }
-    }
-    let otherColor: string
-    if (this.player.color === 'red')
-      otherColor = 'blue'
-    else
-      otherColor = 'red'
-    this.otherPlayer = {
-      username: socketIoService.otherPlayer,
-      color: otherColor
-    }
-    this.isMyTurn = this.socketIoService.isFirst
+    this.username = userHttpService.username
+
+    const players = this.gamesocketService.players
+    this.player1 = players.player1
+    this.player2 = players.player2
+    if (this.username === this.player1.username)
+      this.isMyTurn = true
   }
 
   get turnMessage() {
-    if (this.isMyTurn) return 'It\'s your turn to play!'
-    else return `Wait for ${this.otherPlayer.username} to make a move`
+    if (this.isPlayer) {
+      if (this.isMyTurn) return 'It\'s your turn to play!'
+      else {
+        if (this.username === this.player1.username)
+          return `Wait for ${this.player2.username} to make a move`
+        else
+          return `Wait for ${this.player1.username} to make a move`
+      }
+    } else {
+      if (this.isMyTurn) 
+        return `Wait for ${this.player2.username} to make a move`
+      else
+        return `Wait for ${this.player1.username} to make a move`
+    }
   }
 
   ngOnInit(): void {
     this.newGame()
-    this.gameUpdatesSubscription = this.receiveGameUpdate()
-    this.endMatchSubscription = this.receiveEndMatch()
+    this.receiveGameUpdate()
+    this.receiveEndMatch()
     this.receiveWinnerMessage()
-    this.playerMoveRejectionSubscription = this.receivePlayerMoveRejection()
+    this.receivePlayerMoveRejection()
     this.receivePlayerDisconnetedMessage()
 
     this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd)
         this.gamesocketService.gamesocket?.disconnect()
     })
+
   }
 
-  ngOnDestroy() {
-    this.gameUpdatesSubscription?.unsubscribe()
-    this.endMatchSubscription?.unsubscribe()
-    this.winnerSubscription?.unsubscribe()
-    this.playerMoveRejectionSubscription?.unsubscribe()
-    this.playerDisconnetedSubscription?.unsubscribe()
-  }
+  // ngOnDestroy() {
+  //   this.gameUpdatesSubscription?.unsubscribe()
+  //   this.endMatchSubscription?.unsubscribe()
+  //   this.winnerSubscription?.unsubscribe()
+  //   this.playerMoveRejectionSubscription?.unsubscribe()
+  //   this.playerDisconnetedSubscription?.unsubscribe()
+  // }
 
   //initialization of the game
   newGame() {
@@ -107,8 +109,11 @@ export class MatchComponent implements OnInit, OnDestroy {
   }
 
   receivePlayerDisconnetedMessage() {
-    this.gamesocketService.gamesocket?.on('playerDisconnected', () => {
-      this.openDialog('You won by forfeit')
+    this.gamesocketService.gamesocket?.on('playerDisconnected', (message) => {
+      if(this.isPlayer)
+        this.openDialog('You won by forfeit')
+      else
+        this.openDialog(`Player ${message} has forfeited the game`)
     })
   }
 
@@ -143,7 +148,6 @@ export class MatchComponent implements OnInit, OnDestroy {
   //end of match
   receiveEndMatch() {
     return this.gamesocketService.receiveEndMatch().subscribe((username) => {
-      console.log('End Match of ' + username)
       this.router.navigate(['/user'])
     })
   }
@@ -152,14 +156,20 @@ export class MatchComponent implements OnInit, OnDestroy {
   private addDot(col: number, player: string) {
     if (this.heights[col] < 7) {
       let color: string
-      if (player === this.player.username)
-        color = this.player.color
+      if (player === this.player1.username)
+        color = this.player1.color
       else
-        color = this.otherPlayer.color
+        color = this.player2.color
+
       const cellIndex = col + (7 * (5 - this.heights[col]))
       this.emitEventToChild({ index: cellIndex, color })
       this.cell.splice(cellIndex, 1, color)
       this.heights[col]++
     }
+  }
+
+  get isPlayer(): boolean {
+    return this.username === this.player1.username ||
+      this.username === this.player2.username
   }
 }

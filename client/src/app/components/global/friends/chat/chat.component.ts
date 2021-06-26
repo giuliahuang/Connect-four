@@ -1,4 +1,4 @@
-import Message from './../../../interfaces/Message'
+import Message from '../../../../interfaces/Message'
 import { Component, Input, OnInit } from '@angular/core'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
@@ -38,6 +38,8 @@ export class ChatComponent implements OnInit {
   }
 
   sendMessage() {
+    console.log('memes')
+
     if (this.messageText.trim().length !== 0 && this.messageText.length <= 150) {
       const message: Message = {
         username: this.username,

@@ -9,7 +9,12 @@ import User from "../../models/User"
  * @param next Next
  */
 export default function staffChecker(req: Request, res: Response, next: NextFunction): void {
-  const user: User = req.body['user']
-  if (user.roles.includes('ADMIN') || user.roles.includes('MODERATOR')) next()
-  else res.status(401).json({ error: true, message: 'Unauthorized' })
+  if(req.user){
+    const user: any = req.user
+    if (user.roles.includes('ADMIN') || user.roles.includes('MODERATOR')) next()
+    else res.status(401).json({ error: true, message: 'Unauthorized' })
+  }else{
+    res.status(401).json({ error: true, message: 'Error user undefined' })
+  }
+  
 }

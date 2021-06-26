@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
   startGame() {
     this.socketIoService.startGame()
     this.openDialog()
-    this.socketIoService.receiveMatchPort(this.authenticationService.getToken()?.replace("Bearer ", ""))
+    this.socketIoService.receiveMatchPort()
   }
 
   

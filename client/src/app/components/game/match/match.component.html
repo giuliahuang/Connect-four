@@ -11,13 +11,13 @@
         </div>
         <div class="spacer"></div>
         <div class="gamegrid">
-            <app-cell [index]="i" [events]="eventsSubject.asObservable()" [hoverColor]="player.color"
+            <app-cell [index]="i" [events]="eventsSubject.asObservable()" [hoverColor]="color"
                 *ngFor="let val of cell; let i = index" [ngStyle]=" {'background-color': val}"
                 (click)="addDotRequest(i)">
             </app-cell>
         </div>
     </div>
     <div class="right-column">
-        <app-gamechat [playerColor]="this.player.color"></app-gamechat>
+        <app-gamechat [playerColor]="color"></app-gamechat>
     </div>
 </div>

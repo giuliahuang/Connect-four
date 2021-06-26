@@ -21,6 +21,7 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
 import { SimpleNotificationsModule } from 'angular2-notifications'
+import { MatListModule } from '@angular/material/list'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
@@ -43,15 +44,16 @@ import { FileUploadComponent } from './components/profile/file-upload/file-uploa
 import { LoginComponent } from './components/login/login.component'
 import { ProfileResolver } from './components/profile/profile-resolver'
 import { ProfileComponent } from './components/profile/profile.component'
-import { RankTableComponent } from './components/home/rank-table/rank-table.component'
-import { RankingComponent } from './components/home/ranking/ranking.component'
-import { SearchComponent } from './components/search/search.component'
+import { RankTableComponent } from './components/player-ranking/rank-table/rank-table.component'
+import { RankingComponent } from './components/player-ranking/ranking/ranking.component'
+import { SearchComponent } from './components/global/header/search/search.component'
 import { SignupComponent } from './components/signup/signup.component'
-import { FriendListComponent } from './components/home/friend-list/friend-list.component'
-import { FriendComponent } from './components/home/friend/friend.component'
-import { ChatComponent } from './components/home/chat/chat.component'
+import { FriendListComponent } from './components/global/friends/friend-list/friend-list.component'
+import { FriendComponent } from './components/global/friends/friend/friend.component'
+import { ChatComponent } from './components/global/friends/chat/chat.component'
 import { AdminComponent } from './components/admin/admin.component'
-
+import { InviteDialogComponent } from './components/game/invite-dialog/invite-dialog.component'
+import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
 
 @NgModule({
   declarations: [
@@ -71,11 +73,13 @@ import { AdminComponent } from './components/admin/admin.component'
     AdminComponent,
     ChangePasswordComponent,
     NotFoundComponent,
+    InviteDialogComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
     FriendComponent,
     FriendListComponent,
+    SearchAdminComponent,
     ChatComponent
   ],
   entryComponents: [LobbyDialogComponent],
@@ -101,6 +105,9 @@ import { AdminComponent } from './components/admin/admin.component'
     MatIconModule,
     ReactiveFormsModule,
     SimpleNotificationsModule.forRoot(),
+    MatSnackBarModule,
+    ReactiveFormsModule,
+    MatListModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

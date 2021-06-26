@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, Router, Event as NavigationEvent } from '@angular/router'
 import Friend from 'src/app/interfaces/Friend'
 import { SocketioService } from 'src/app/services/socketio.service'
 
@@ -16,10 +16,22 @@ export class FriendListComponent implements OnInit {
   showChat: boolean = false
   chatMate: string = ''
 
+  url = '/home'
+  event$: any
+
   constructor(
     private socketioService: SocketioService,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.event$ = this.router.events.subscribe(
+      (event: NavigationEvent) => {
+        if (event instanceof NavigationEnd) {
+          this.url = event.url
+        }
+      }
+    )
+  }
 
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
@@ -31,16 +43,6 @@ export class FriendListComponent implements OnInit {
     })
     this.receiveStartedPlaying()
     this.receiveStoppedPlaying()
-  }
-
-  sendInviteRequest(username: string) {
-    this.socketioService.sendInviteRequest(username)
-  }
-
-  receiveInviter() {
-    this.socketioService.socket?.on('invite', username => {
-      this.inviterUsername = username
-    })
   }
 
   sendInviteResponse() {
@@ -66,11 +68,6 @@ export class FriendListComponent implements OnInit {
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
       this.startedPlaying(message)
     })
-  }
-
-  openChat(friend: string) {
-    this.showChat = !this.showChat
-    this.chatMate = friend
   }
 
   isOnline(checkFriend: string) {
@@ -105,6 +102,16 @@ export class FriendListComponent implements OnInit {
         this.onlineFriends = this.onlineFriends.splice(i, 1)
         return
       }
+    }
+  }
+
+  chatEvent(username: any) {
+    if (username === this.chatMate) {
+      this.showChat = false
+      this.chatMate = ''
+    } else {
+      this.chatMate = username
+      this.showChat = true
     }
   }
 }

@@ -17,7 +17,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient, private router: Router) { }
 
   public getToken(): string | null {
-    return localStorage.getItem('postmessages_token')
+    return localStorage.getItem('jwt')
   }
 
   public login(user: any): Observable<any> {
@@ -32,7 +32,7 @@ export class AuthenticationService {
     return this.http.post(this.url + '/login', user, options).pipe(
       tap((data: any) => {
         console.log(JSON.stringify(data))
-        localStorage.setItem('postmessages_token', data.token)
+        localStorage.setItem('jwt', data.token)
       }))
   }
 

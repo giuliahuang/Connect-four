@@ -1,3 +1,4 @@
+import { userInfo } from 'os'
 import { Server as IOServer, Socket } from 'socket.io'
 import { promisify } from 'util'
 import logger from '../../logger'
@@ -22,13 +23,15 @@ const hsetAsync = promisify(redis.hset).bind(redis)
  */
 export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer, socket: Socket, port: number): void {
   joinChat(socket, match)
-  //notifyStartedPlaying(p1, port)
-  //notifyStartedPlaying(p2, port)
-  hsetAsync(['users', socket.id, socket.request['user'].username])
+  hsetAsync(['players', socket.id, socket.request['user'].username])
 
-  socket.on('message', (message: string) => { 
+  getPlayers(match, socket)
+  getGameBoard(match, socket)
+
+  socket.on('message', (message: string) => {
     logger.info(message)
-    chat(message, socket, match) })
+    chat(message, socket, match)
+  })
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
@@ -37,19 +40,39 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   })
 }
 
+function getPlayers(match: Match, socket: Socket) {
+  const player1 = {
+    username: match.player1.username,
+    color: match.player1Color
+  }
+  const player2 = {
+    username: match.player2.username,
+    color: match.player2Color
+  }
+  socket.emit('gamePlayers', { player1, player2 })
+}
+
+/**
+ * Emits game status to observer
+ * @param match 
+ * @param socket 
+ */
+function getGameBoard(match: Match, socket: Socket) {
+  const user = socket.request['user']
+  if (user.username !== match.player1.username && user.username !== match.player2.username)
+    socket.emit("gameStatus", JSON.parse(JSON.stringify(match.game_board)))
+}
+
 /**
  * Self explanatory, joins the appropriate chat through a Socket.io
  * @param socket Socket client of the user who connected
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()){
-    logger.info("JOINED IN PLAYERS CHAT")
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()) {
     socket.join(`${match.uuid}.player`)
-  }
-  else{
+  } else {
     socket.join(`${match.uuid}.observers`)
-    logger.info("JOINED IN OBSERVERS CHAT")
   }
 }
 
@@ -60,15 +83,15 @@ function joinChat(socket: Socket, match: Match) {
  * @param match Match object containing the relative info
  */
 function chat(message: string, socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
-  {  socket
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()) {
+    socket
       .to(`${match.uuid}.player`)
-      .to(`${match.uuid}.observers`)
-      .emit('message', { message, player: socket.request['user'].username })
-  
-  logger.info("emitted to players && observers")
+    .to(`${match.uuid}.observers`)
+    .emit('message', { message, player: socket.request['user'].username })
+
+    logger.info("emitted to players && observers")
   }
-  else{
+  else {
     socket
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user'].username })
@@ -89,11 +112,11 @@ function chat(message: string, socket: Socket, match: Match) {
 function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer) {
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
+  logger.info(moveResult.accepted)
   if (moveResult.accepted) {
     io.emit('dot', { column, player: user.username })
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
-      logger.info(`Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
 
@@ -114,8 +137,7 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
  */
 async function disconnect(reason: string, socket: Socket, player1: PlayerWithWS, player2: PlayerWithWS, io: IOServer) {
   try {
-    const username = await hgetAsync('users', socket.id)
-    logger.info(username)
+    const username = await hgetAsync('players', socket.id)
     if (username === player1.player.username) {
       endMatch({ winner: player2.player.username, loser: username })
       io.emit('playerDisconnected', username, reason)
@@ -139,13 +161,6 @@ function closeServer(io: IOServer, p1: PlayerWithWS, p2: PlayerWithWS) {
   notifyStoppedPlaying(p2)
   io.disconnectSockets()
   io.close()
-}
-
-async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
-  const user = await getUserById(p.player.id)
-  user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
-  })
 }
 
 async function notifyStoppedPlaying(p: PlayerWithWS) {

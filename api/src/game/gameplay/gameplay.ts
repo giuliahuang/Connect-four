@@ -45,8 +45,11 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
         notifyStartedPlaying(p2, p1.player.username, port, true, color1)
         notifyStartedPlaying(p1, p2.player.username, port, false, color2)
     }
-    
-    const match = new Match(player1, player2)
+
+    notifyStartedPlaying(p1, port)
+    notifyStartedPlaying(p2, port)
+
+    const match = new Match(player1, color1, player2, color2)
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
     io.on('connection', socket => matchCallback(match, p1, p2, io, socket, port))
   } else {
@@ -56,9 +59,9 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
   }
 }
 
-async function notifyStartedPlaying(p: PlayerWithWS, username2: string, port:number, first:boolean, color:string ) {
+async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
   const user = await getUserById(p.player.id)
   user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username1: user.username, username2, port, first, color})
+    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
   })
 }
