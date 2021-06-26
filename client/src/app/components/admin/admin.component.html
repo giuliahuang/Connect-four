@@ -1,6 +1,19 @@
 <div>
     List of admins:
     <ul>
-        <li *ngFor="let admin of admins">{{admin}}</li>
+        <li *ngFor="let mod of mods">{{mod}}<button (click)="removeMod(mod)">Remove mod</button></li>
     </ul>
+    <br>
+    Search user:
+    <input type="text" #username>
+    <button (click)="search(username.value)">Search</button>
+    <ul>
+        <li *ngFor="let user of users">{{user}}<button (click)="removeUser(user)">Remove user</button></li>
+    </ul>
+    <br>
+    Create new mod
+    <input type="text" placeholder="Username" required="true" #newModUsername>
+    <input type="text" placeholder="Email" required="true" #newModEmail>
+    <input type="password" placeholder="Password" required="true" #newModPassword>
+    <button (click)="createNewMod(newModUsername.value, newModEmail.value ,newModPassword.value)">Create new mod</button>
 </div>

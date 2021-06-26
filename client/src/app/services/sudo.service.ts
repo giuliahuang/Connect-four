@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class SudoService {
     
-    public url = 'http://localhost:5000/sudo'
+    public url = 'http://localhost:5000/auth/sudo'
 
     constructor(private httpClient: HttpClient){ }
 
@@ -15,12 +15,16 @@ export class SudoService {
         return this.httpClient.get(this.url+'/mods')
     }
 
-    createMod(user: any): Observable<any>{
-        return this.httpClient.put<any>(this.url+"/mods", user)
+    createMod(username: string, email: string ,password: string): Observable<any>{
+        const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+        const data = {'username': username, 'email': email, 'password': password}
+        return this.httpClient.put<any>(this.url+"/mods", data, config)
     }
 
-    deleteMod(user: any): Observable<any>{
-        return this.httpClient.delete<any>(this.url+'/users/${user}')
+    deleteMod(username: string){
+        const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+        console.log("USERNAME: "+username)
+        return this.httpClient.delete(this.url+"/users/"+username)
     }
 
 }
