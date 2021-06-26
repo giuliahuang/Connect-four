@@ -47,7 +47,8 @@ import { GlobalErrorHandlerService } from './services/global-error-handler.servi
 import { AdminComponent } from './components/admin/admin.component';
 import { UserHttpService } from './services/user-http.service';
 import { FriendListComponent } from './components/users/friend-list/friend-list.component';
-import { FriendComponent } from './components/users/friend/friend.component'
+import { FriendComponent } from './components/users/friend/friend.component';
+import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { FriendComponent } from './components/users/friend/friend.component'
     FooterComponent,
     HomeComponent,
     FriendComponent,
-    FriendListComponent
+    FriendListComponent,
+    SearchAdminComponent
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [

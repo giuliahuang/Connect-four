@@ -162,10 +162,20 @@ export async function deleteUserSudo(staffUsername: string, username: string): P
       const staff = await getUserByUsername(staffUsername)
       // TODO
       if (staff && staff.roles.includes('ADMIN')) {
-        UserModel.findOneAndDelete({ username })
+        //UserModel.findOneAndDelete({username: username })
+        UserModel.findOneAndDelete({username: username}).then(
+          (q)=> {
+            console.log("User "+username+" deleted "+q?.id)
+          }
+        )
         return true
       } else if (staff && staff.roles.includes('MODERATOR')) {
-        UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
+        //UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
+        UserModel.deleteOne({username: username, roles: { $nin: ['ADMIN', 'MODERATOR'] } }).then(
+          (q)=> {
+            console.log("User "+username+" deleted")
+          }
+        )
         return true
       }
     }
@@ -182,7 +192,11 @@ export async function deleteUserSudo(staffUsername: string, username: string): P
  */
 export async function deleteUser(username: string): Promise<boolean> {
   try {
-    await UserModel.findOneAndDelete({username})
+    await UserModel.deleteOne({username: username}).then(
+      (q)=> {
+        console.log("User "+username+" deleted")
+      }
+    )
     return true
   } catch (err) {
     logger.prettyError(err)
