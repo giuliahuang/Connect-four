@@ -37,9 +37,8 @@ export class ChatComponent implements OnInit {
     })
   }
 
+  //sends a message to the related friend
   sendMessage() {
-    console.log('memes')
-
     if (this.messageText.trim().length !== 0 && this.messageText.length <= 150) {
       const message: Message = {
         username: this.username,
@@ -51,6 +50,8 @@ export class ChatComponent implements OnInit {
     this.messageText = ''
   }
 
+  
+  //sends a message from the related friend
   receiveMessage() {
     this.socketService.receiveMessage().subscribe((data: any) => {
       this.messageArray.push({ username: data.player, content: data.message })

@@ -41,9 +41,6 @@ export class SocketioService {
         }
       },
     })
-    this.socket.on('ok', message => {
-      console.log(message)
-    })
     this.socket.emit('joinGame', 'joined on initial websocket')
   }
 
@@ -63,14 +60,12 @@ export class SocketioService {
   }
 
   cancelPlay() {
-    console.log("calcel play request")
     this.socket?.emit('cancelPlay')
   }
 
   receiveStartedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('startedPlaying', (message) => {
-        console.log("有好友开始了游戏")
         observer.next(message)
       })
     })
@@ -79,22 +74,18 @@ export class SocketioService {
   receiveStoppedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('stoppedPlaying', (message) => {
-
-        console.log("有好友结束了游戏")
         observer.next(message)
       })
     })
   }
 
   sendInviteRequest(username: string) {
-    console.log("invite request sent")
     this.socket?.emit('invite', username)
   }
 
   receiveInviteRequest() {
     return new Observable((observer) => {
       this.socket?.on('invite', (message) => {
-        console.log("Invite request received")
         observer.next(message)
       })
     })
@@ -105,7 +96,6 @@ export class SocketioService {
       hasAccepted: hasAccepted,
       inviterUsername: username,
     }
-    console.log("inviteResponse emitted")
     this.socket?.emit('inviteResponse', message)
   }
 
