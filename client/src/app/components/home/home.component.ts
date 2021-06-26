@@ -4,27 +4,29 @@ import { AuthenticationService } from 'src/app/services/auth/authentication.serv
 import { SocketioService } from 'src/app/services/socketio.service'
 import { LobbyDialogComponent } from '../game/lobby-dialog/lobby-dialog.component'
 
+interface FriendInMatch {
+  username: string,
+  port: number,
+}
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
   constructor(
     private socketIoService: SocketioService,
     private dialog: MatDialog,
-    private authenticationService: AuthenticationService) { }
+    private authenticationService: AuthenticationService
+  ) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+  }
 
   openDialog() {
     this.dialog.open(LobbyDialogComponent, { disableClose: true })
-  }
-
-  //an user can invite another user (in his friends' list)
-  invite() {
-
   }
 
   //adds the user in the lobby to find a match

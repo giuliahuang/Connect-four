@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router, Event as NavigationEvent } from '@angular/router'
 import Friend from 'src/app/interfaces/Friend'
 import { SocketioService } from 'src/app/services/socketio.service'
+import { NotificationsService } from 'angular2-notifications'
+import { MatDialog } from '@angular/material/dialog'
+import { LobbyDialogComponent } from 'src/app/components/game/lobby-dialog/lobby-dialog.component'
 
 @Component({
   selector: 'app-friend-list',
@@ -22,7 +25,9 @@ export class FriendListComponent implements OnInit {
   constructor(
     private socketioService: SocketioService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private notificationService: NotificationsService,
+    private dialog: MatDialog
   ) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
@@ -43,6 +48,7 @@ export class FriendListComponent implements OnInit {
     })
     this.receiveStartedPlaying()
     this.receiveStoppedPlaying()
+    this.reiceveFriendReqNot()
   }
 
   sendInviteResponse() {
@@ -113,5 +119,25 @@ export class FriendListComponent implements OnInit {
       this.chatMate = username
       this.showChat = true
     }
+  }
+
+  openDialog() {
+    this.dialog.open(LobbyDialogComponent, { disableClose: true })
+  }
+
+  onFriendRequest(username: string) {
+    this.notificationService.info('Request', "You receive a friend requesto from " + username, {
+      position: ['bottom', 'right'],
+      timeOut: 8000,
+      animate: 'fade',
+      showProgressBar: true,
+    })
+  }
+
+  reiceveFriendReqNot() {
+    this.socketioService.receiveFriendRequest().subscribe((message) => {
+      console.log("Friend request from : " + message)
+      this.onFriendRequest(message as string)
+    })
   }
 }
