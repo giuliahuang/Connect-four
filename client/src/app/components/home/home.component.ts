@@ -15,7 +15,6 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private socketIoService: SocketioService,
-    private dialog: MatDialog,
     private authenticationService: AuthenticationService,
     private dialogService: DialogService,
     private snackbar:MatSnackBar
@@ -26,8 +25,8 @@ export class HomeComponent implements OnInit {
     this.receiveInviteResponse();
   }
 
-  openDialog() {
-    this.dialog.open(LobbyDialogComponent, { disableClose: true })
+  openLobbyDialog() {
+    this.dialogService.openLobbyDialog()
   }
 
   receiveInviteRequest(){
@@ -54,7 +53,7 @@ export class HomeComponent implements OnInit {
   //adds the user in the lobby to find a match
   startGame() {
     this.socketIoService.startGame()
-    this.openDialog()
+    this.openLobbyDialog()
     this.socketIoService.receiveMatchPort()
   }
 }
