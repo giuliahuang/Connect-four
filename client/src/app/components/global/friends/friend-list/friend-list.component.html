@@ -1,11 +1,11 @@
 <div *ngIf="url !== '/login' && url !== '/signup'" class="social-container">
-  <div id="chat-container" *ngIf="showChat">
-    <app-chat [friendUsername]="chatMate" class='chat'></app-chat>
-  </div>
   <div class="bigcontainer">
     <mat-list>
       <mat-list-item>Online friends</mat-list-item>
-      <app-friend mat-list-item *ngFor="let friend of onlineFriends" [friend]="friend" (chatEvent)="chatEvent($event)"></app-friend>
+      <app-friend class="friend" mat-list-item *ngFor="let friend of onlineFriends" [friend]="friend" (chatEvent)="chatEvent($event)"></app-friend>
     </mat-list>
+  </div>
+  <div id="chat-container" *ngIf="showChat">
+    <app-chat [friendUsername]="chatMate" class='chat'></app-chat>
   </div>
 </div>

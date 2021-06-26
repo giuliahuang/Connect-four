@@ -1,4 +1,4 @@
-<div class="chat-container">
+<!-- <div class="chat-container">
   <span class="chat-header">{{friendUsername}}</span>
   <div class="chat-messages">
     <span class="message" *ngFor="let item of messageArray">
@@ -14,4 +14,20 @@
       <button mat-flat-button (click)="sendMessage();">Send</button>
     </form>
   </div>
+</div> -->
+
+<div class="chat-container">
+  <span class="chat-header">{{friendUsername}}</span>
+  <mat-list>
+    <mat-list-item *ngFor="let message of messageArray">
+      <span class="username">{{message.username }}:</span>
+      <span class="demo-2">{{message.content}} </span>
+    </mat-list-item>
+  </mat-list>
+  <br><br>
+  <mat-form-field>
+    <input matInput type="text" [(ngModel)]="messageText" name="msg" placeholder="Enter Message"
+      autocomplete="off" maxlength="150" /><br><br>
+    <button mat-flat-button (click)="sendMessage();">Send</button>
+  </mat-form-field>
 </div>

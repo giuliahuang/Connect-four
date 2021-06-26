@@ -36,6 +36,8 @@ export class ChatComponent implements OnInit {
   }
 
   sendMessage() {
+    console.log('memes')
+
     if (this.messageText.trim().length !== 0 && this.messageText.length <= 150) {
       const message: Message = {
         username: this.username,
