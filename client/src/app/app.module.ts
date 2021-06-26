@@ -20,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
+import { SimpleNotificationsModule } from 'angular2-notifications'
 import { MatListModule } from '@angular/material/list'
 
 //Services
@@ -102,6 +103,8 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     MatPaginatorModule,
     MatSortModule,
     MatIconModule,
+    ReactiveFormsModule,
+    SimpleNotificationsModule.forRoot(),
     MatSnackBarModule,
     ReactiveFormsModule,
     MatListModule

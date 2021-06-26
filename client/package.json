@@ -12,7 +12,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~11.2.12",
+    "@angular/animations": "~11.2.14",
     "@angular/cdk": "^10.0.0",
     "@angular/common": "~11.2.12",
     "@angular/compiler": "~11.2.12",
@@ -27,6 +27,7 @@
     "@material/dialog": "^11.0.0",
     "@types/jwt-decode": "^2.2.1",
     "@types/socket.io-client": "^3.0.0",
+    "angular2-notifications": "^9.0.0",
     "fs": "0.0.1-security",
     "jwt-decode": "^2.2.0",
     "path": "^0.12.7",

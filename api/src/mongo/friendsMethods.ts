@@ -68,8 +68,6 @@ export async function processFriendRequest(hasAccepted: boolean, askerUsername: 
         await requested.save()
         const u = await UserModel.findOne({ username: asker.username })
         const u2 = await UserModel.findOne({ username: requested.username })
-        logger.info(u)
-        logger.info(u2)
       } else {
         throw new Error('Request not found')
       }
