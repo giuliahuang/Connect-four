@@ -1,0 +1,16 @@
+<div class="chat-container">
+  <div class="chat-messages">
+    <span class="message" *ngFor="let item of messageArray">
+      <span [ngStyle]="{'color': item.user === username ? playerColor : otherPlayerColor}" class="username">{{item.user}}</span>:
+      {{item.message}}
+    </span>
+  </div>
+  <hr>
+  <div class="chat-form-container">
+    <form id="chat-form">
+      <input type="text" class="form-control" [(ngModel)]="messageText" name="msg" placeholder="Enter Message" required
+        autocomplete="off" maxlength="150" />
+      <button mat-flat-button (click)="sendMessage();">Send</button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<mat-card class="container">
+  <mat-toolbar color="primary">Signup Page</mat-toolbar>
+  <form class="form">
+    <mat-form-field class="field">
+      <input matInput type="email" #email="ngModel" name="email" [(ngModel)]="user.email"
+        pattern="[^@\s]+@[^@\s]+.[^@\s]+" required id="inputEmail" aria-describedby="emailHelp"
+        placeholder="Enter email">
+    </mat-form-field>
+
+    <mat-form-field class="field">
+      <input matInput type="text" #username="ngModel" required name="username" [(ngModel)]="user.username"
+        id="inputUsername" placeholder="Enter username">
+    </mat-form-field>
+
+    <mat-form-field class="field">
+      <input matInput type="password" #password="ngModel" required name="password" [(ngModel)]="user.password"
+        id="inputPassword" placeholder="Password">
+    </mat-form-field>
+
+    <div *ngIf="errmessage" role="alert">
+      Login error: {{errmessage}}
+    </div>
+
+    <button mat-raised-button [disabled]=" !email.valid || !password.valid || !username.valid" (click)="signup();">Sign
+      up</button>
+    <button mat-raised-button routerLink="/login">Sign in instead</button>
+  </form>
+</mat-card>

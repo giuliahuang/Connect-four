@@ -1,7 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html {
+  font-size: 100%;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+text {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+// main {
+//   display: flex;
+//   min-height: 100vh;
+//   flex-direction: column;
+// }
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}

@@ -13,6 +13,7 @@ import { cancelMatchmaking } from "../matchmaking/matchmaking"
 // Promisified Redis hashmap methods
 const hgetAsync = promisify(redis.hget).bind(redis)
 const hsetAsync = promisify(redis.hset).bind(redis)
+const hexistsAsync = promisify(redis.hexists).bind(redis)
 
 /**
  * Sends a message to the specified user if they are a friend through the associated
@@ -24,10 +25,20 @@ const hsetAsync = promisify(redis.hset).bind(redis)
  */
 export function sendMessage(user: User, message: string, destUsername: string, socket: Socket): void {
   if (user.friends.includes(destUsername)) {
-    socket.to(destUsername).emit('dm', message)
+    socket.to(destUsername).emit('dm', message, user.username)
     dm(message, user.username, destUsername)
   } else
     socket.to(user.username).emit('dm', `${destUsername} is not a valid friend`)
+}
+
+async function getOnlineFriends(socket: Socket) {
+  const user = socket.request['user']
+
+  for (const friend of user.friends) {
+    const isOnline = await hexistsAsync('users', friend)
+    if (isOnline)
+      socket.emit('friendConnected', friend)
+  }
 }
 
 /**
@@ -39,11 +50,13 @@ export function sendMessage(user: User, message: string, destUsername: string, s
 export async function clientConnected(socket: Socket): Promise<void> {
   const user: User = socket.request['user']
   try {
-    await hsetAsync(['users', socket.id, user.username])
-    const friends: string[] = socket.request['user.friends']
+    await hsetAsync(['sockets', socket.id, user.username])
+    await hsetAsync(['users', user.username, socket.id])
+    await getOnlineFriends(socket)
+    const friends: string[] = user.friends
     if (friends) {
       friends.forEach(friend => {
-        socket.to(friend).emit('connected', socket.request['user.username'])
+        socket.to(friend).emit('friendConnected', user.username)
       })
     }
   } catch (err) {
@@ -59,15 +72,16 @@ export async function clientConnected(socket: Socket): Promise<void> {
  */
 export async function clientDisconnected(socket: Socket): Promise<void> {
   try {
-    const username = await hgetAsync('users', socket.id)
+    const username = await hgetAsync('sockets', socket.id)
+    redis.hdel('sockets', socket.id)
+    redis.hdel('users', username)
     if (username) {
       const user = await getUserByUsername(username)
       if (user) {
         cancelMatchmaking(user._id)
         user.friends.forEach(friend => {
-          socket.to(friend).emit('disconnected', username)
+          socket.to(friend).emit('friendDisconnected', username)
         })
-        redis.hdel('users', socket.id)
       }
     }
   } catch (err) {
@@ -82,14 +96,30 @@ export async function clientDisconnected(socket: Socket): Promise<void> {
  */
 export async function getNewMessages(socket: Socket): Promise<Message[]> {
   try {
-    const username = socket.request['user.username']
+    const username = socket.request['user'].username
     const user = await UserModel.findOne({ username })
     if (user && user.lastSeen) {
       const ls = user.lastSeen
-      return await MessageModel.find({ users: user, createdAt: { "$gt": { ls } } })
+      return await MessageModel.find({ users: user.username, createdAt: { "$gt": { ls } } })
     }
   } catch (err) {
     logger.error(err)
   }
   return []
+}
+
+/**
+ * Retrieves the past 50 messages between the two users
+ * @param socket Socket instance of the client who asked for the history
+ * @param username Username of the user the client is chatting with
+ */
+export async function getMessageHistory(socket: Socket, username: string): Promise<void> {
+  try {
+    const user = socket.request['user']
+    const res = await MessageModel.find({ users: { $all: [user.username, username] } }).limit(50)
+    console.log(res)
+    socket.emit(JSON.parse(JSON.stringify(res)))
+  } catch (err) {
+    logger.prettyError(err)
+  }
 }

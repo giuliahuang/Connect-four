@@ -20,6 +20,7 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
     sentFriendReqs: user.sentFriendReqs,
     receivedFriendReqs: user.receivedFriendReqs,
     avatar: user.avatar,
+    roles: user.roles,
     matchesPlayed: JSON.parse(JSON.stringify(user.matchesPlayed))
   })
 }

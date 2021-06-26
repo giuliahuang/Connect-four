@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from "socket.io"
 import logger from '../../logger'
 import User from "../../models/User"
-import { clientConnected, clientDisconnected, getNewMessages, sendMessage } from "../friends/friendList"
+import { clientConnected, clientDisconnected, getMessageHistory, getNewMessages, sendMessage } from "../friends/friendList"
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
 import { cancelMatchmaking, play } from "../matchmaking/matchmaking"
 
@@ -35,6 +35,10 @@ export function globalCallback(io: IOServer, socket: Socket): void {
     sendMessage(socket.request['user'], message, destUsername, socket)
   })
 
+  socket.on('history', (friendUsername: string) => {
+    getMessageHistory(socket, friendUsername)
+  })
+
   socket.on('disconnect', () => {
     clientDisconnected(socket)
   })
@@ -46,7 +50,7 @@ export function globalCallback(io: IOServer, socket: Socket): void {
  * @param socket Socket client of the user who just connected
  */
 async function clientInit(socket: Socket) {
-  socket.join(socket.request['user'].username)
+  await socket.join(socket.request['user'].username)
   await clientConnected(socket)
   const newMessages = await getNewMessages(socket)
   if (newMessages.length > 0) socket.emit('newMessages', newMessages)

@@ -1,30 +1,28 @@
-import { tokenName } from '@angular/compiler'
-import { Token } from '@angular/compiler/src/ml_parser/lexer'
 import { Injectable } from '@angular/core'
-import { Router } from '@angular/router'
-import { observable, Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
+import { AuthenticationService } from './auth/authentication.service'
 import { GamesocketService } from './gamesocket.service'
-import { LobbyDialogComponent } from '../components/game-components/lobby-dialog/lobby-dialog.component'
-import { UserHttpService } from './user-http.service'
-import { ObserverService } from './observer.service'
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketioService {
-
   socket: Socket | undefined
   gamesocket: Socket | undefined
 
+  public otherPlayer: string = ''
+  public isFirst: boolean = false
+  public color: string = ''
 
   constructor(
-    private router: Router,
-    private us: UserHttpService,
     private gs: GamesocketService,
-    private os: ObserverService,
+    private auth: AuthenticationService
   ) {
+    const token = this.auth.getToken()
+    if (token)
+      this.connect(token.replace("Bearer ", ""))
   }
 
   connect(token: any) {
@@ -44,51 +42,21 @@ export class SocketioService {
       console.log(message)
     })
     this.socket.emit('joinGame', 'joined on initial websocket')
-
   }
 
-  //provato sempre con match component ma non funziona perchè il server io non è in ascolto
-  //il motivo è perchè non viene chiamato la funzione in cui il server io è in ascolto
-  joinGameMatch(token: any, port: number){
-    this.gs.connectObserverMatch(
-      io('http://localhost:' + port, {
-        'forceNew': true,
-        extraHeaders: {
-          'x-auth-token': token
-        },
-        transportOptions: {
-          polling: {
-            extraHeaders: {
-              'x-auth-token': token
-            }
-          }
-        },
-      }))
-  }
-
-  receiveMatchPort(token: any) {
+  receiveMatchPort() {
     console.log('waiting for port')
-    this.socket?.on('matched', (port) => {
-      this.gs.connectMatch(
-        io('http://localhost:' + port, {
-          'forceNew': true,
-          extraHeaders: {
-            'x-auth-token': token
-          },
-          transportOptions: {
-            polling: {
-              extraHeaders: {
-                'x-auth-token': token
-              }
-            }
-          },
-        }))
+    this.socket?.on('matched', (message: any) => {
+      this.isFirst = message.first
+      this.color = message.color
+      this.otherPlayer = message.otherPlayer
+      this.gs.connectMatch(message.port)
     })
   }
 
   startGame() {
-    this.socket!.emit('startGame', "someone is starting the game")
-    this.socket!.emit('play')
+    this.socket?.emit('startGame', "someone is starting the game")
+    this.socket?.emit('play')
   }
 
   cancelPlay() {
@@ -149,6 +117,39 @@ export class SocketioService {
 
   }
 
+  getOnlineFriend() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendConnected', (data) => observer.next(data))
+    })
+  }
 
+  getFriendDisconnected() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendDisconnected', (data) => observer.next(data))
+    })
+  }
 
+  sendMessage(message: string, destUsername: string) {
+    this.socket?.emit('dm', message, destUsername)
+  }
+
+  receiveMessage() {
+    return new Observable((observer) => {
+      this.socket?.on('dm', (message: string, username: string) => {
+        observer.next({ content: message, username })
+      })
+    })
+  }
+
+  requestMessageHistory(friendUsername: string) {
+    this.socket?.emit('history', friendUsername)
+  }
+
+  receiveMessageHistory() {
+    return new Observable<any>(observer => {
+      this.socket?.on('history', (messages) => {
+        observer.next(messages)
+      })
+    })
+  }
 }

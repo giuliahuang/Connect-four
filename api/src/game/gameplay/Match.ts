@@ -6,7 +6,9 @@ import MoveResult from './MoveResult'
 import { v4 as uuidv4 } from 'uuid'
 export class Match {
   public readonly player1: Player
+  public readonly player1Color: string
   public readonly player2: Player
+  public readonly player2Color: string
   public readonly uuid = uuidv4()
   private readonly rows = 6
   private readonly columns = 7
@@ -14,9 +16,11 @@ export class Match {
   private heights = Array(this.columns).fill(0) //height of columns
   private p1Turn = true
 
-  constructor(player1: Player, player2: Player) {
+  constructor(player1: Player, player1Color: string, player2: Player, player2Color: string) {
     this.player1 = player1
+    this.player1Color = player1Color
     this.player2 = player2
+    this.player2Color = player2Color
   }
 
   /**
@@ -79,30 +83,29 @@ export class Match {
       matchResult: undefined
     }
     let player: Player
-    
+
     if (this.player1.id.toString() === playerId.toString()) player = this.player1
     else if (this.player2.id.toString() === playerId.toString()) player = this.player2
     else return res
 
-    logger.info(this.heights[col])
-    if (((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2))&&!this.colIsFull(col)) {
-      
-      logger.info("ok")
-      this.game_board[this.heights[col]][col] = player.id
-      this.heights[col]++
-      res.accepted = true
+    if (!this.colIsFull(col)) {
+      if ((this.p1Turn && player === this.player1) || (!this.p1Turn && player === this.player2)) {
+        this.game_board[this.heights[col]][col] = player.id
+        this.heights[col]++
+        res.accepted = true
 
-      if (this.isWinner(col)) {
-        let loser: Player
-        if (player === this.player1) loser = this.player2
-        else loser = this.player1
-        res.matchResult = {
-          winner: player.username,
-          loser: loser.username
+        if (this.isWinner(col)) {
+          let loser: Player
+          if (player === this.player1) loser = this.player2
+          else loser = this.player1
+          res.matchResult = {
+            winner: player.username,
+            loser: loser.username
+          }
+          this.endGame(res.matchResult)
         }
-        this.endGame(res.matchResult)
+        this.p1Turn = !this.p1Turn
       }
-      this.p1Turn = !this.p1Turn
     }
     return res
   }
