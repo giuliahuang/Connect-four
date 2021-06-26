@@ -19,6 +19,8 @@ export class ProfileComponent implements OnInit {
   losses = 0
   ratio = 1
 
+  isAdmin : boolean = false
+
   constructor(private userHttpService: UserHttpService, private route: ActivatedRoute) {
     this.loggedUsername = userHttpService.username
   }
@@ -27,6 +29,9 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
     this.user.avatar = `${this.apiUrl}/${this.user.avatar}`
+    if(this.user.roles.includes('ADMIN')){
+      this.isAdmin = true
+    }
   }
 
   computeStats() {

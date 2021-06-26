@@ -22,7 +22,7 @@
   </div>
   <img class="avatar" src={{this.user.avatar}} width="200" height="200" />
 </div>
-<p><a ng-attr-href="this.isAdmin" routerLink="/admin">Admin page</a></p>
+<p><a *ngIf="this.isAdmin == true" routerLink="/admin">Admin page</a></p>
 
 <file-upload requiredFileType="image/png"></file-upload>
 <app-change-password></app-change-password>
