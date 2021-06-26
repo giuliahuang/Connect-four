@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { Event as NavigationEvent, NavigationEnd, Router } from '@angular/router'
+import { AuthenticationService } from 'src/app/services/auth/authentication.service'
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,9 @@ export class HeaderComponent implements OnInit {
   selectedItem = '/home'
   event$: any
 
-  constructor(private router: Router) {
+  constructor(private router: Router,
+    private authService: AuthenticationService
+    ) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
         if (event instanceof NavigationEnd) {
@@ -22,4 +25,8 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void { }
+
+  logout() {
+    this.authService.logout()
+  }
 }

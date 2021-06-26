@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
 
 @Component({
@@ -19,9 +20,9 @@ export class ProfileComponent implements OnInit {
   losses = 0
   ratio = 1
 
-  isAdmin : boolean = false
+  isAdmin: boolean = false
 
-  constructor(private userHttpService: UserHttpService, private route: ActivatedRoute) {
+  constructor(private userHttpService: UserHttpService, private route: ActivatedRoute, private socketIoService: SocketioService) {
     this.loggedUsername = userHttpService.username
   }
 
@@ -29,7 +30,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
     this.user.avatar = `${this.apiUrl}/${this.user.avatar}`
-    if(this.user.roles.includes('ADMIN')){
+    if (this.user.roles.includes('ADMIN')) {
       this.isAdmin = true
     }
   }
@@ -48,6 +49,7 @@ export class ProfileComponent implements OnInit {
 
   addFriend() {
     if (this.loggedUsername !== this.user.username) {
+      this.socketIoService.addFriend(this.user.username)
       this.userHttpService.addFriend(this.user.username).subscribe(res => console.log(res))
     }
   }

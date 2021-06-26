@@ -6,13 +6,18 @@ import { DialogService } from 'src/app/services/dialog.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { LobbyDialogComponent } from '../game/lobby-dialog/lobby-dialog.component'
 
+interface FriendInMatch {
+  username: string,
+  port: number,
+}
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
   constructor(
     private socketIoService: SocketioService,
     private authenticationService: AuthenticationService,

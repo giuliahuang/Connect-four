@@ -11,7 +11,7 @@ import { UserHttpService } from 'src/app/services/user-http.service'
 export class ChatComponent implements OnInit {
   @Input() friendUsername!: string
   messageText: string = ''
-  messageArray: Array<Message> = [];
+  messageArray: Array<Message>=[];
   username!: string
 
   constructor(
@@ -21,9 +21,11 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.messageArray = []
     this.socketService.requestMessageHistory(this.friendUsername)
     this.socketService.receiveMessageHistory().subscribe(history => {
-      console.log(history)
+      for(var i = 0; i<history.length; i++)
+        this.messageArray.push({ username:history[i].sender, content: history[i].content})
     })
 
     this.socketService.receiveMessage().subscribe((message: any) => {

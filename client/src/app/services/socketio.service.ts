@@ -16,6 +16,9 @@ export class SocketioService {
   public isFirst: boolean = false
   public color: string = ''
 
+  public isObserver: boolean = false
+  public currentPlayer: string = ''
+
   constructor(
     private gs: GamesocketService,
     private auth: AuthenticationService
@@ -148,6 +151,7 @@ export class SocketioService {
   receiveFriendRequest() {
     return new Observable(observer => {
       this.socket?.on('friendRequest', (username) => {
+        console.log('request from ' + username)
         return observer.next(username)
       })
     })

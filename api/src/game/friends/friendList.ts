@@ -117,8 +117,7 @@ export async function getMessageHistory(socket: Socket, username: string): Promi
   try {
     const user = socket.request['user']
     const res = await MessageModel.find({ users: { $all: [user.username, username] } }).limit(50)
-    console.log(res)
-    socket.emit(JSON.parse(JSON.stringify(res)))
+    socket.emit('history',JSON.parse(JSON.stringify(res)))
   } catch (err) {
     logger.prettyError(err)
   }
