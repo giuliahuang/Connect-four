@@ -34,16 +34,11 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
       player2 = p2.player
         ; (p1.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
         ; (p2.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
-        notifyStartedPlaying(p1, p2.player.username, port, true, color1)
-        notifyStartedPlaying(p2, p1.player.username, port, false, color2)
-
     } else {
       player1 = p2.player
       player2 = p1.player
-        ; (p2.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p1.player.username })
-        ; (p1.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p2.player.username })
-        notifyStartedPlaying(p2, p1.player.username, port, true, color1)
-        notifyStartedPlaying(p1, p2.player.username, port, false, color2)
+        ; (p2.ws as Socket).emit('matched', { port, first: true, color: color1, otherPlayer: p2.player.username })
+        ; (p1.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
     }
 
     notifyStartedPlaying(p1, port)

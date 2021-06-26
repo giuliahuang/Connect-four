@@ -57,29 +57,6 @@ export class SocketioService {
     })
   }
 
-  JoinFriendMatchPort(data:any){
-    this.isObserver=data.isObserver
-    this.isFirst = data.first
-    this.color = data.color
-    this.currentPlayer = data.player1
-    this.otherPlayer = data.player2
-
-    this.gs.connectMatch(
-      io('http://localhost:' +data.port, {
-        'forceNew': true,
-        extraHeaders: {
-          'x-auth-token': data.token
-        },
-        transportOptions: {
-          polling: {
-            extraHeaders: {
-              'x-auth-token': data.token
-            }
-          }
-        },
-      }))
-  }
-
   startGame() {
     this.socket?.emit('startGame', "someone is starting the game")
     this.socket?.emit('play')
@@ -184,6 +161,7 @@ export class SocketioService {
   receiveFriendRequest() {
     return new Observable(observer => {
       this.socket?.on('friendRequest', (username) => {
+        console.log('request from ' + username)
         return observer.next(username)
       })
     })
