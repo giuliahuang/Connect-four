@@ -22,11 +22,13 @@ const hsetAsync = promisify(redis.hset).bind(redis)
  */
 export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer, socket: Socket, port: number): void {
   joinChat(socket, match)
-  notifyStartedPlaying(p1, port)
-  notifyStartedPlaying(p2, port)
+  //notifyStartedPlaying(p1, port)
+  //notifyStartedPlaying(p2, port)
   hsetAsync(['users', socket.id, socket.request['user'].username])
 
-  socket.on('message', (message: string) => { chat(message, socket, match) })
+  socket.on('message', (message: string) => { 
+    logger.info(message)
+    chat(message, socket, match) })
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
@@ -41,10 +43,14 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()){
+    logger.info("JOINED IN PLAYERS CHAT")
     socket.join(`${match.uuid}.player`)
-  else
+  }
+  else{
     socket.join(`${match.uuid}.observers`)
+    logger.info("JOINED IN OBSERVERS CHAT")
+  }
 }
 
 /**
@@ -55,14 +61,19 @@ function joinChat(socket: Socket, match: Match) {
  */
 function chat(message: string, socket: Socket, match: Match) {
   if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
-    socket
+  {  socket
       .to(`${match.uuid}.player`)
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user'].username })
-  else
+  
+  logger.info("emitted to players && observers")
+  }
+  else{
     socket
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user'].username })
+    logger.info("emitted to observers")
+  }
 }
 
 /**
