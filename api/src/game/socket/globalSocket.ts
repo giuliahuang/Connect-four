@@ -1,7 +1,7 @@
 import { Server as IOServer, Socket } from "socket.io"
 import logger from '../../logger'
 import User from "../../models/User"
-import { clientConnected, clientDisconnected, getNewMessages, sendMessage } from "../friends/friendList"
+import { clientConnected, clientDisconnected, getMessageHistory, getNewMessages, sendMessage } from "../friends/friendList"
 import { invitePlayer, inviteResponse } from "../friends/gameInvites"
 import { cancelMatchmaking, play } from "../matchmaking/matchmaking"
 
@@ -33,6 +33,10 @@ export function globalCallback(io: IOServer, socket: Socket): void {
 
   socket.on('dm', (message: string, destUsername: string) => {
     sendMessage(socket.request['user'], message, destUsername, socket)
+  })
+
+  socket.on('history', (friendUsername: string) => {
+    getMessageHistory(socket, friendUsername)
   })
 
   socket.on('disconnect', () => {

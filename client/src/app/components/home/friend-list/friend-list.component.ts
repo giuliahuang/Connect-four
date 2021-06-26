@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import Friend from 'src/app/interfaces/Friend'
 import { SocketioService } from 'src/app/services/socketio.service'
-
-interface FriendInMatch {
-  username: string,
-  port: number,
-}
 
 @Component({
   selector: 'app-friend-list',
@@ -14,31 +10,27 @@ interface FriendInMatch {
 })
 export class FriendListComponent implements OnInit {
   user: any
-  friendInMatch: Array<FriendInMatch>
   hasAccepted: boolean = false
   inviterUsername: string = ""
-
-  onlineFriends: string[] = []
+  onlineFriends: Friend[] = []
+  showChat: boolean = false
+  chatMate: string = ''
 
   constructor(
     private socketioService: SocketioService,
     private route: ActivatedRoute
-  ) {
-    this.friendInMatch = this.getFriendInMatchList()
-  }
+  ) { }
 
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
     this.socketioService.getOnlineFriend().subscribe(username => {
-      if (!this.onlineFriends.includes(username)) this.onlineFriends.push(username)
+      if (!this.isOnline(username)) this.onlineFriends.push({ username, port: undefined })
     })
     this.socketioService.getFriendDisconnected().subscribe(username => {
-      console.log(`${username} disconnected`)
-
-      this.onlineFriends = this.onlineFriends.filter(friend => friend !== username)
+      this.hasGoneOffline(username)
     })
-    console.log(this.onlineFriends)
-
+    this.receiveStartedPlaying()
+    this.receiveStoppedPlaying()
   }
 
   sendInviteRequest(username: string) {
@@ -62,34 +54,57 @@ export class FriendListComponent implements OnInit {
     })
   }
 
-  //delets the user information from the friendInMatch list
-  deleteFromList(index: number) {
-    if (index > -1) {
-      this.friendInMatch!.splice(index, 1)
-    }
-  }
-
-  //returns the friendInMatch list if it exists
-  getFriendInMatchList(): Array<FriendInMatch> {
-    if (this.friendInMatch != undefined) {
-      return this.friendInMatch
-    }
-    else {
-      return this.friendInMatch = []
-    }
-  }
-
   //receives the data of the player who finished the play and deletes it from the list
   receiveStoppedPlaying() {
     this.socketioService.receiveStoppedPlaying().subscribe((message: any) => {
-      this.deleteFromList(this.friendInMatch.indexOf(message))
+      this.stoppedPlaying(message)
     })
   }
 
   //receives the data of the player who started the play and adds it to the list
   receiveStartedPlaying() {
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
-      this.friendInMatch!.push(message)
+      this.startedPlaying(message)
     })
+  }
+
+  openChat(friend: string) {
+    this.showChat = !this.showChat
+    this.chatMate = friend
+  }
+
+  isOnline(checkFriend: string) {
+    for (let i = 0; i < this.onlineFriends.length; ++i) {
+      if (this.onlineFriends[i].username === checkFriend)
+        return true
+    }
+    return false
+  }
+
+  startedPlaying(playingFriend: Friend) {
+    for (let i = 0; i < this.onlineFriends.length; ++i) {
+      if (this.onlineFriends[i].username === playingFriend.username) {
+        this.onlineFriends[i].port = playingFriend.port
+        return
+      }
+    }
+  }
+
+  stoppedPlaying(stoppedPlayingFriend: string) {
+    for (const friend of this.onlineFriends) {
+      if (friend.username === stoppedPlayingFriend) {
+        friend.port = undefined
+        return
+      }
+    }
+  }
+
+  hasGoneOffline(friend: string) {
+    for (let i = 0; i < this.onlineFriends.length; ++i) {
+      if (friend === this.onlineFriends[i].username) {
+        this.onlineFriends = this.onlineFriends.splice(i, 1)
+        return
+      }
+    }
   }
 }

@@ -4,6 +4,7 @@ import { JwtHelperService } from '@auth0/angular-jwt'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { HttpClient } from '@angular/common/http'
+import { Router } from '@angular/router'
 
 const jwtHelper = new JwtHelperService()
 
@@ -13,7 +14,7 @@ const jwtHelper = new JwtHelperService()
 export class AuthenticationService {
   private url: string = 'http://localhost:5000'
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   public getToken(): string | null {
     return localStorage.getItem('postmessages_token')

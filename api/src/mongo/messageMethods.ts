@@ -15,12 +15,12 @@ export async function dm(message: string, senderUsername: string, destUsername: 
     if (sender && dest && sender.friends.includes(dest.username)) {
       const newMessage = new MessageModel({
         content: message,
-        users: [sender, dest],
-        sender
+        users: [sender.username, dest.username],
+        sender: sender.username
       })
       await newMessage.save()
     }
-  } catch(err) {
+  } catch (err) {
     logger.prettyError(err)
   }
 }

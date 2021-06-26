@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
+import Message from '../interfaces/Message'
 import { AuthenticationService } from './auth/authentication.service'
 import { GamesocketService } from './gamesocket.service'
 
@@ -51,7 +52,6 @@ export class SocketioService {
   receiveMatchPort(token: any) {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
-      console.log(message)
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
@@ -142,6 +142,30 @@ export class SocketioService {
   getFriendDisconnected() {
     return new Observable<any>(observer => {
       this.socket?.on('friendDisconnected', (data) => observer.next(data))
+    })
+  }
+
+  sendMessage(message: string, destUsername: string) {
+    this.socket?.emit('dm', message, destUsername)
+  }
+
+  receiveMessage() {
+    return new Observable((observer) => {
+      this.socket?.on('dm', (message: string, username: string) => {
+        observer.next({ content: message, username })
+      })
+    })
+  }
+
+  requestMessageHistory(friendUsername: string) {
+    this.socket?.emit('history', friendUsername)
+  }
+
+  receiveMessageHistory() {
+    return new Observable<any>(observer => {
+      this.socket?.on('history', (messages) => {
+        observer.next(messages)
+      })
     })
   }
 }

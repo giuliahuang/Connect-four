@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
-import { ActivatedRoute, Router } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { Subject, Subscription } from 'rxjs'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { SocketioService } from 'src/app/services/socketio.service'
@@ -80,14 +80,19 @@ export class MatchComponent implements OnInit, OnDestroy {
     this.receiveWinnerMessage()
     this.playerMoveRejectionSubscription = this.receivePlayerMoveRejection()
     this.receivePlayerDisconnetedMessage()
+
+    this.router.events.subscribe((ev) => {
+      if (ev instanceof NavigationEnd)
+        this.gamesocketService.gamesocket?.disconnect()
+    })
   }
 
   ngOnDestroy() {
-    this.gameUpdatesSubscription.unsubscribe()
-    this.endMatchSubscription.unsubscribe()
-    this.winnerSubscription.unsubscribe()
-    this.playerMoveRejectionSubscription.unsubscribe()
-    this.playerDisconnetedSubscription.unsubscribe()
+    this.gameUpdatesSubscription?.unsubscribe()
+    this.endMatchSubscription?.unsubscribe()
+    this.winnerSubscription?.unsubscribe()
+    this.playerMoveRejectionSubscription?.unsubscribe()
+    this.playerDisconnetedSubscription?.unsubscribe()
   }
 
   //initialization of the game
