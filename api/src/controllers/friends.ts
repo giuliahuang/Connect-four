@@ -13,6 +13,16 @@ export async function getFriendsRequests(req: Request, res: Response): Promise<v
 }
 
 /**
+ * Sends a response containing the friends of the user who originated the request
+ * @param req Request
+ * @param res Response
+ */
+ export async function getFriends(req: Request, res: Response): Promise<void> {
+  const user: User = req.user as User
+  res.status(200).json(user.friends)
+}
+
+/**
  * Sends a friend request to the user through the requestedUsername property set in the
  * request's body
  * @param req Request

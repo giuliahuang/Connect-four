@@ -191,15 +191,12 @@ export async function deleteUserSudo(staffUsername: string, username: string): P
  * @returns true if successful, false otherwise
  */
 export async function deleteUser(username: string): Promise<boolean> {
+  console.log("son qua "+ username)
   try {
-    await UserModel.deleteOne({username: username}).then(
-      (q)=> {
-        console.log("User "+username+" deleted")
-      }
-    )
+    await UserModel.findOneAndDelete({username: username})
     return true
   } catch (err) {
-    logger.prettyError(err)
+    //console.log(err)
     return false
   }
 }

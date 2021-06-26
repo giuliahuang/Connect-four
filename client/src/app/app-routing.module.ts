@@ -37,7 +37,10 @@ const routes: Routes = [
     }
   },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
-  { path: 'admin', component: AdminComponent },
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], resolve: {
+    profile: ProfileResolver
+    } 
+  },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', component: NotFoundComponent },
 ]
