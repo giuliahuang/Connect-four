@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog'
 import { AuthenticationService } from 'src/app/services/auth/authentication.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { LobbyDialogComponent } from '../game/lobby-dialog/lobby-dialog.component'
+import { NotificationsService } from 'angular2-notifications'
 
 interface FriendInMatch {
   username: string,
@@ -23,13 +24,16 @@ export class HomeComponent implements OnInit {
   constructor(
     private socketIoService: SocketioService,
     private dialog: MatDialog,
-    private authenticationService: AuthenticationService) {
+    private authenticationService: AuthenticationService,
+    private notificationService: NotificationsService,
+    ) {
       this.friendInMatch = this.getFriendInMatchList()
-     }
+    }
 
   ngOnInit(): void {
     this.receiveStartedPlaying()
     this.receiveStoppedPlaying()
+    this.reiceveFriendReqNot()
    }
 
   openDialog() {
@@ -39,6 +43,23 @@ export class HomeComponent implements OnInit {
   //an user can invite another user (in his friends' list)
   invite() {
 
+  }
+
+  onRequest(username:string){
+    this.notificationService.info('Request', "You receive a friend requesto from " + username, {
+      position: ['bottom', 'right'],
+      timeOut: 2000,
+      animate: 'fade',
+      showProgressBar: true,
+    })
+  }
+
+
+  reiceveFriendReqNot(){
+    this.socketIoService.receiveFriendReqMsg().subscribe((message)=>{
+      console.log("Friend request from : " + message)
+      this.onRequest(message as string)
+    })
   }
 
   //adds the user in the lobby to find a match

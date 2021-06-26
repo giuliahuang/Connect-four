@@ -20,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
+import { SimpleNotificationsModule } from 'angular2-notifications'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
@@ -98,7 +99,8 @@ import { AdminComponent } from './components/admin/admin.component'
     MatPaginatorModule,
     MatSortModule,
     MatIconModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SimpleNotificationsModule.forRoot(),
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
