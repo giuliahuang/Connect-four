@@ -1,3 +1,4 @@
+import { Message } from '@angular/compiler/src/i18n/i18n_ast'
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
@@ -15,6 +16,9 @@ export class SocketioService {
   public otherPlayer: string = ''
   public isFirst: boolean = false
   public color: string = ''
+
+  public isObserver: boolean = false
+  public currentPlayer: string = ''
 
   constructor(
     private gs: GamesocketService,
@@ -66,6 +70,29 @@ export class SocketioService {
           },
         }))
     })
+  }
+
+  JoinFriendMatchPort(data:any){
+    this.isObserver=data.isObserver
+    this.isFirst = data.first
+    this.color = data.color
+    this.currentPlayer = data.player1
+    this.otherPlayer = data.player2
+
+    this.gs.connectMatch(
+      io('http://localhost:' +data.port, {
+        'forceNew': true,
+        extraHeaders: {
+          'x-auth-token': data.token
+        },
+        transportOptions: {
+          polling: {
+            extraHeaders: {
+              'x-auth-token': data.token
+            }
+          }
+        },
+      }))
   }
 
   startGame() {

@@ -20,6 +20,8 @@ export class MatchComponent implements OnInit, OnDestroy {
   otherPlayer: any
   isMyTurn: boolean
 
+  isObserver:boolean
+
   gameUpdatesSubscription!: Subscription
   endMatchSubscription!: Subscription
   winnerSubscription!: Subscription
@@ -40,9 +42,19 @@ export class MatchComponent implements OnInit, OnDestroy {
     private userHttpService: UserHttpService,
     private socketIoService: SocketioService
   ) {
-    this.player = {
-      username: userHttpService.username,
-      color: socketIoService.color
+    
+    this.isObserver = this.socketIoService.isObserver
+    if(!this.isObserver){
+      this.player = {
+        username: userHttpService.username,
+        color: socketIoService.color
+      }
+    }
+    else{
+      this.player = {
+        username: this.socketIoService.currentPlayer,
+        color:socketIoService.color
+      }
     }
     let otherColor: string
     if (this.player.color === 'red')
