@@ -20,6 +20,7 @@ export class GamesocketService {
     private authenticationService: AuthenticationService
   ) { }
 
+  //socket connection to the given match port
   connectMatch(port: number) {
     const token = this.authenticationService.getToken()?.replace("Bearer ", "")
     if (token) {
@@ -41,6 +42,7 @@ export class GamesocketService {
     }
   }
 
+  //gets the player during the match
   getPlayers() {
     this.gamesocket?.on('gamePlayers', (message) => {
       this.players = message
@@ -48,10 +50,12 @@ export class GamesocketService {
     })
   }
 
+  //sends a request to insert a disc
   addDotRequest(col: number) {
     this.gamesocket?.emit('insertDisc', col)
   }
 
+  //receives a rejection of a disc insertion
   receivePlayerMoveRejection() {
     return new Observable((observer) => {
       this.gamesocket?.on('playerMoveRejection', (message) => {
@@ -69,6 +73,7 @@ export class GamesocketService {
     })
   }
 
+  //notifies a player's friends his end of match
   receiveEndMatch() {
     return new Observable((observer) => {
       this.gamesocket?.on('stoppedPlaying', (message) => {
@@ -77,10 +82,13 @@ export class GamesocketService {
     })
   }
 
+  //a user sends a message during the game
   sendMessage(message: String) {
     this.gamesocket?.emit('message', message)
   }
 
+
+  //a user receives a message during the game
   receiveMessage() {
     return new Observable((observer) => {
       this.gamesocket?.on('message', (message) => {
@@ -89,6 +97,7 @@ export class GamesocketService {
     })
   }
 
+  //receives the users joined in the room
   receiveJoinedPlayers() {
     return new Observable((observer) => {
       this.gamesocket?.on('joinGame', (message) => {
@@ -97,6 +106,7 @@ export class GamesocketService {
     })
   }
 
+  //receives the status of the game in progress
   receiveGameStatus() {
     return new Observable((observer) => {
       this.gamesocket?.on('gameStatus', (message) => {

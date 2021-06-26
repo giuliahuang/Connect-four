@@ -51,11 +51,12 @@ export class FriendListComponent implements OnInit {
     this.reiceveFriendReqNot()
   }
 
+  //replies to an invite response
   sendInviteResponse() {
     this.socketioService.sendInviteResponse(this.hasAccepted, this.inviterUsername)
   }
 
-
+  //receives the invite response
   receiveInviteResponse() {
     this.socketioService.socket?.on('inviteResponse', (message) => {
       this.hasAccepted = message
@@ -76,6 +77,7 @@ export class FriendListComponent implements OnInit {
     })
   }
 
+  //verifies if a friend is online
   isOnline(checkFriend: string) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (this.onlineFriends[i].username === checkFriend)
@@ -84,6 +86,8 @@ export class FriendListComponent implements OnInit {
     return false
   }
 
+  
+  //verifies if a friend started a game
   startedPlaying(playingFriend: Friend) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (this.onlineFriends[i].username === playingFriend.username) {
@@ -93,6 +97,8 @@ export class FriendListComponent implements OnInit {
     }
   }
 
+  
+  //verifies if a friend ended a game
   stoppedPlaying(stoppedPlayingFriend: string) {
     for (const friend of this.onlineFriends) {
       if (friend.username === stoppedPlayingFriend) {
@@ -102,6 +108,8 @@ export class FriendListComponent implements OnInit {
     }
   }
 
+  
+  //verifies if a friend has gone offline
   hasGoneOffline(friend: string) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (friend === this.onlineFriends[i].username) {
