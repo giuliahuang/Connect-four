@@ -27,15 +27,18 @@ export class FriendComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  //starts to spectate the game in progess
   spectate() {
     if (this.friend.port)
       this.gameSocketService.connectMatch(this.friend.port)
   }
 
+  //invites a user from its friend list ot play a game
   inviteToPlay() {
     this.socketioService.sendInviteRequest(this.friend.username)
   }
 
+  //opens the chat of the related user
   openChat() {
     this.chatEvent.emit(this.friend.username)
   }

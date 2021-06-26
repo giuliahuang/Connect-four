@@ -28,6 +28,7 @@ export class GamechatComponent implements OnInit {
       this.otherPlayerColor = 'red'
   }
 
+  //sends a message during the game
   sendMessage() {
     if (this.messageText.trim().length !== 0 && this.messageText.length <= 150) {
       this.gamesocketService.sendMessage(this.messageText)
@@ -36,6 +37,7 @@ export class GamechatComponent implements OnInit {
     this.messageText = ''
   }
 
+  //receives a message during the game
   receiveMessage() {
     this.gamesocketService.receiveMessage().subscribe((data: any) => {
       this.messageArray.push({ user: data.player, message: data.message })

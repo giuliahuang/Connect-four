@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
     this.dialogService.openLobbyDialog()
   }
 
+  //receives invite requests for a game and sends a response 
   receiveInviteRequest(){
     this.socketIoService.receiveInviteRequest().subscribe((message:any)=>{
       this.dialogService.openInviteDialog(message).afterClosed().subscribe(res =>{
@@ -38,10 +39,13 @@ export class HomeComponent implements OnInit {
     })
   }
 
+  //receives the port for a new match
   receiveMatchPort(){
     this.socketIoService.receiveMatchPort()
   }
 
+
+  //receives the invite response previously sent
   receiveInviteResponse(){
     this.socketIoService.receiveInviteResponse().subscribe((message)=>{
       this.snackbar.open((message as string),'',{
@@ -50,6 +54,7 @@ export class HomeComponent implements OnInit {
       this.receiveMatchPort();
     })
   }
+  
   //adds the user in the lobby to find a match
   startGame() {
     this.socketIoService.startGame()
