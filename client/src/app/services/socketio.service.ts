@@ -76,7 +76,7 @@ export class SocketioService {
   receiveStoppedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('stoppedPlaying', (message) => {
-        
+
         console.log("有好友结束了游戏")
         observer.next(message)
       })
@@ -88,9 +88,9 @@ export class SocketioService {
     this.socket?.emit('invite', username)
   }
 
-  receiveInviteRequest(){
-    return new Observable((observer)=>{
-      this.socket?.on('invite',(message)=>{
+  receiveInviteRequest() {
+    return new Observable((observer) => {
+      this.socket?.on('invite', (message) => {
         console.log("Invite request received")
         observer.next(message)
         observer.unsubscribe()
@@ -107,11 +107,11 @@ export class SocketioService {
     this.socket?.emit('inviteResponse', message)
   }
 
-  receiveInviteResponse(){
-    return new Observable((observer)=>{
-      this.socket?.on('inviteResponse',(message)=>{
-        observer.next(message);
-        observer.unsubscribe();
+  receiveInviteResponse() {
+    return new Observable((observer) => {
+      this.socket?.on('inviteResponse', (message) => {
+        observer.next(message)
+        observer.unsubscribe()
       })
     })
 
@@ -149,6 +149,18 @@ export class SocketioService {
     return new Observable<any>(observer => {
       this.socket?.on('history', (messages) => {
         observer.next(messages)
+      })
+    })
+  }
+
+  addFriend(username: string) {
+    this.socket?.emit('friendRequest', username)
+  }
+
+  receiveFriendRequest() {
+    return new Observable(observer => {
+      this.socket?.on('friendRequest', (username) => {
+        return observer.next(username)
       })
     })
   }

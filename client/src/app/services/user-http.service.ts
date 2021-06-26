@@ -2,13 +2,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
+import { SocketioService } from './socketio.service'
 
 @Injectable()
 export class UserHttpService {
   private url = 'http://localhost:5000';
   public username: string = ''
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private socketService: SocketioService) {
     this.getUserProfile().subscribe((profile: any) => {
       this.username = profile.username
     })
@@ -41,6 +42,7 @@ export class UserHttpService {
   addFriend(username: string) {
     const data = { 'requestedUsername': username }
     const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+    this.socketService.addFriend(username)
     return this.http.post(`${this.url}/auth/friends`, data, config)
   }
 
@@ -64,4 +66,5 @@ export class UserHttpService {
     const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
     return this.http.post(`${this.url}/auth/profile/newpassword`, data, config)
   }
+
 }

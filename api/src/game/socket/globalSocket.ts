@@ -39,6 +39,10 @@ export function globalCallback(io: IOServer, socket: Socket): void {
     getMessageHistory(socket, friendUsername)
   })
 
+  socket.on('friendRequest', (username: string) => {
+    socket.to(username).emit('friendRequest', socket.request['user'].username)
+  })
+
   socket.on('disconnect', () => {
     clientDisconnected(socket)
   })
