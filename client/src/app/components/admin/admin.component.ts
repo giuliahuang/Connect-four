@@ -79,7 +79,6 @@ export class AdminComponent implements OnInit {
     this.sudo.createMod(username, email ,password).subscribe(()=>{
       this.mods = []
       this.getMods()
-      console.log("mod creato")
     })
   }
 

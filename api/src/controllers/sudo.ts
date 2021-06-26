@@ -22,12 +22,17 @@ export async function getModeratorsList(_req: Request, res: Response): Promise<v
  * @param res Response
  */
 export async function addModerator(req: Request, res: Response): Promise<void> {
-  const newMod = await newUser(req.body.username, req.body.email, req.body.password)
-  if (newMod) {
-    await setModerator(newMod.email)
-    res.status(200).json({ message: 'New moderator account create successfully' })
+  const user = req.user as User
+  if (user.roles.includes('ADMIN')) {
+    const newMod = await newUser(req.body.username, req.body.email, req.body.password, true)
+    if (newMod) {
+      await setModerator(newMod.email)
+      res.status(200).json({ message: 'New moderator account create successfully' })
+    } else {
+      res.status(500).json({ error: true, message: 'An error has occurred' })
+    }
   } else {
-    res.status(500).json({ error: true, message: 'An error has occurred' })
+    res.status(401).json({ error: true, message: 'You are not an admin' })
   }
 }
 

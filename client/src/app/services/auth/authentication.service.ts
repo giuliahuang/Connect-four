@@ -37,8 +37,8 @@ export class AuthenticationService {
   }
 
   logout() {
-    console.log('Logging out')
     localStorage.clear()
+    this.router.navigate(['login'])
   }
 
   public isAuthenticated(): boolean {

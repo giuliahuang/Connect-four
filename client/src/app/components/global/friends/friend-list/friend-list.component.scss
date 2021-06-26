@@ -1,27 +1,16 @@
-.social-container {
+.social-container{
+  height: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.bigcontainer {
-  display: flex;
-  flex-flow: column;
-  width: 35vh;
-  border: solid;
-  border-radius: 10%;
-  border-width: 1px;
-}
-
-.head {
+.friend {
   text-align: center;
-}
-
-.spacer {
   flex: 1;
 }
 
-.friends-container {
-  flex: 2_;
-  overflow: auto;
-  justify-content: space-between;
+.chat-container {
+  margin-top: 50px;
+  align-self: flex-end;
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { MatDialog } from '@angular/material/dialog'
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
 import { Subject } from 'rxjs'
+import { DialogService } from 'src/app/services/dialog.service'
 import { GamesocketService } from 'src/app/services/gamesocket.service'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'
@@ -46,7 +47,8 @@ export class MatchComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private userHttpService: UserHttpService,
-    private socketIoService: SocketioService
+    private socketIoService: SocketioService,
+    private dialogService: DialogService,
   ) {
     this.username = userHttpService.username
 
@@ -104,16 +106,16 @@ export class MatchComponent implements OnInit {
   }
 
   //opens a dialog with the winner message and an exit button
-  public openDialog(message: String) {
-    this.dialog.open(EndgameDialogComponent, { data: { message: message } })
+  public openEndGameDialog(message: string) {
+    this.dialogService.openEndGameDialog(message)
   }
 
   receivePlayerDisconnetedMessage() {
     this.gamesocketService.gamesocket?.on('playerDisconnected', (message) => {
       if(this.isPlayer)
-        this.openDialog('You won by forfeit')
+        this.openEndGameDialog('You won by forfeit')
       else
-        this.openDialog(`Player ${message} has forfeited the game`)
+        this.openEndGameDialog(`Player ${message} has forfeited the game`)
     })
   }
 
@@ -127,7 +129,9 @@ export class MatchComponent implements OnInit {
   //receives a message when player wins the game
   receiveWinnerMessage() {
     this.gamesocketService.gamesocket?.on('winner', (message) => {
-      this.openDialog(message)
+      this.openEndGameDialog(message)
+      this.gamesocketService.gamesocket?.disconnect()
+      
     })
   }
 

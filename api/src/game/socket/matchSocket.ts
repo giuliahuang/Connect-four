@@ -28,7 +28,10 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   getPlayers(match, socket)
   getGameBoard(match, socket)
 
-  socket.on('message', (message: string) => { chat(message, socket, match) })
+  socket.on('message', (message: string) => {
+    logger.info(message)
+    chat(message, socket, match)
+  })
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
@@ -66,10 +69,9 @@ function getGameBoard(match: Match, socket: Socket) {
  * @param match Match object containing the relative info
  */
 function joinChat(socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()) {
     socket.join(`${match.uuid}.player`)
-  else{
-    logger.info("joined observable chat")
+  } else {
     socket.join(`${match.uuid}.observers`)
   }
 }
@@ -81,15 +83,20 @@ function joinChat(socket: Socket, match: Match) {
  * @param match Match object containing the relative info
  */
 function chat(message: string, socket: Socket, match: Match) {
-  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
+  if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString()) {
     socket
       .to(`${match.uuid}.player`)
-      .to(`${match.uuid}.observers`)
-      .emit('message', { message, player: socket.request['user'].username })
-  else
+    .to(`${match.uuid}.observers`)
+    .emit('message', { message, player: socket.request['user'].username })
+
+    logger.info("emitted to players && observers")
+  }
+  else {
     socket
       .to(`${match.uuid}.observers`)
       .emit('message', { message, player: socket.request['user'].username })
+    logger.info("emitted to observers")
+  }
 }
 
 /**

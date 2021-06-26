@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute, NavigationEnd, Router, Event as NavigationEvent } from '@angular/router'
 import Friend from 'src/app/interfaces/Friend'
 import { SocketioService } from 'src/app/services/socketio.service'
+import { NotificationsService } from 'angular2-notifications'
+import { MatDialog } from '@angular/material/dialog'
+import { LobbyDialogComponent } from 'src/app/components/game/lobby-dialog/lobby-dialog.component'
 
 @Component({
   selector: 'app-friend-list',
@@ -22,8 +25,10 @@ export class FriendListComponent implements OnInit {
   constructor(
     private socketioService: SocketioService,
     private route: ActivatedRoute,
-    private router: Router
-  ) { 
+    private router: Router,
+    private notificationService: NotificationsService,
+    private dialog: MatDialog
+  ) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
         if (event instanceof NavigationEnd) {
@@ -43,23 +48,15 @@ export class FriendListComponent implements OnInit {
     })
     this.receiveStartedPlaying()
     this.receiveStoppedPlaying()
+    this.reiceveFriendReqNot()
   }
 
-  sendInviteRequest(username: string) {
-    this.socketioService.sendInviteRequest(username)
-  }
-
-  receiveInviter() {
-    this.socketioService.socket?.on('invite', username => {
-      this.inviterUsername = username
-    })
-  }
-
+  //replies to an invite response
   sendInviteResponse() {
     this.socketioService.sendInviteResponse(this.hasAccepted, this.inviterUsername)
   }
 
-
+  //receives the invite response
   receiveInviteResponse() {
     this.socketioService.socket?.on('inviteResponse', (message) => {
       this.hasAccepted = message
@@ -80,11 +77,7 @@ export class FriendListComponent implements OnInit {
     })
   }
 
-  openChat(friend: string) {
-    this.showChat = !this.showChat
-    this.chatMate = friend
-  }
-
+  //verifies if a friend is online
   isOnline(checkFriend: string) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (this.onlineFriends[i].username === checkFriend)
@@ -93,6 +86,8 @@ export class FriendListComponent implements OnInit {
     return false
   }
 
+  
+  //verifies if a friend started a game
   startedPlaying(playingFriend: Friend) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (this.onlineFriends[i].username === playingFriend.username) {
@@ -102,6 +97,8 @@ export class FriendListComponent implements OnInit {
     }
   }
 
+  
+  //verifies if a friend ended a game
   stoppedPlaying(stoppedPlayingFriend: string) {
     for (const friend of this.onlineFriends) {
       if (friend.username === stoppedPlayingFriend) {
@@ -111,6 +108,8 @@ export class FriendListComponent implements OnInit {
     }
   }
 
+  
+  //verifies if a friend has gone offline
   hasGoneOffline(friend: string) {
     for (let i = 0; i < this.onlineFriends.length; ++i) {
       if (friend === this.onlineFriends[i].username) {
@@ -118,5 +117,35 @@ export class FriendListComponent implements OnInit {
         return
       }
     }
+  }
+
+  chatEvent(username: any) {
+    if (username === this.chatMate) {
+      this.showChat = false
+      this.chatMate = ''
+    } else {
+      this.chatMate = username
+      this.showChat = true
+    }
+  }
+
+  openDialog() {
+    this.dialog.open(LobbyDialogComponent, { disableClose: true })
+  }
+
+  onFriendRequest(username: string) {
+    this.notificationService.info('Request', "You receive a friend requesto from " + username, {
+      position: ['bottom', 'right'],
+      timeOut: 8000,
+      animate: 'fade',
+      showProgressBar: true,
+    })
+  }
+
+  reiceveFriendReqNot() {
+    this.socketioService.receiveFriendRequest().subscribe((message) => {
+      console.log("Friend request from : " + message)
+      this.onFriendRequest(message as string)
+    })
   }
 }

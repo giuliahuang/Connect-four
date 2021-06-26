@@ -44,17 +44,28 @@ export async function setModerator(email: string): Promise<void> {
  * @param password 
  * @returns the mongodb document after it got stored in the DB
  */
-export async function newUser(username: string, email: string, password: string): Promise<User & mongoose.Document<User> | null> {
+export async function newUser(username: string, email: string, password: string, isMod=false): Promise<User & mongoose.Document<User> | null> {
   try {
     const pwdObj = genPassword(password)
-    const doc = new UserModel({
-      username: username,
-      email: email,
-      salt: pwdObj.salt,
-      hash: pwdObj.hash,
-      lastSeen: Date.now()
-    })
-    return await doc.save()
+    let newUser: User & mongoose.Document<User>
+    if (isMod) {
+      newUser = new UserModel({
+        username,
+        email,
+        salt: pwdObj.salt,
+        hash: pwdObj.hash,
+        lastSeen: null
+      })
+    } else {
+      newUser = new UserModel({
+        username: username,
+        email: email,
+        salt: pwdObj.salt,
+        hash: pwdObj.hash,
+        lastSeen: Date.now()
+      })
+    }
+    return await newUser.save()
   } catch (err) {
     logger.prettyError(err)
     return null
@@ -160,22 +171,11 @@ export async function deleteUserSudo(staffUsername: string, username: string): P
   try {
     if (staffUsername !== username) {
       const staff = await getUserByUsername(staffUsername)
-      // TODO
       if (staff && staff.roles.includes('ADMIN')) {
-        //UserModel.findOneAndDelete({username: username })
-        UserModel.findOneAndDelete({username: username}).then(
-          (q)=> {
-            console.log("User "+username+" deleted "+q?.id)
-          }
-        )
+        await UserModel.findOneAndDelete({username: username})
         return true
       } else if (staff && staff.roles.includes('MODERATOR')) {
-        //UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
-        UserModel.deleteOne({username: username, roles: { $nin: ['ADMIN', 'MODERATOR'] } }).then(
-          (q)=> {
-            console.log("User "+username+" deleted")
-          }
-        )
+        await UserModel.findOneAndDelete({ username, roles: { $nin: ['ADMIN', 'MODERATOR'] } })
         return true
       }
     }
@@ -194,6 +194,7 @@ export async function deleteUser(username: string): Promise<boolean> {
   console.log("son qua "+ username)
   try {
     await UserModel.findOneAndDelete({username: username})
+    logger.info(`User ${username} deleted`)
     return true
   } catch (err) {
     //console.log(err)

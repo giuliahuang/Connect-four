@@ -2,10 +2,6 @@ button {
 	background-color: #00E676;
 }
 
-::-webkit-scrollbar {
-	visibility: hidden;
-}
-
 .chat-container {
 	display: flex;
 	flex-direction: column;
@@ -39,19 +35,9 @@ hr {
 	word-wrap: break-word;
 }
 
-.chat-form-container {
-	padding: 20px 30px;
-}
-
-.chat-form-container form {
-	display: flex;
-}
-
 .chat-form-container input[type='text'] {
 	font-size: 16px;
 	padding: 5px;
-	height: 40px;
-	flex: 1;
 }
 
 .chat-header {
@@ -60,8 +46,8 @@ hr {
 	padding-top: 5px;
 }
 
-@media (max-width: 700px) {
-	.chat-main {
-		display: block;
-	}
+mat-list {
+    flex-grow: 1;
+    overflow: auto;
+		max-height: 15vh;
 }

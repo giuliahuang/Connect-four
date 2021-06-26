@@ -1,5 +1,5 @@
 <div>
-    List of admins:
+    List of moderators:
     <ul>
         <li *ngFor="let mod of mods">{{mod}}<button mat-button *ngIf="this.isAdmin == true" (click)="removeMod(mod)">Remove mod</button></li>
     </ul>

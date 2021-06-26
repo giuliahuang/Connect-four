@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import logger from '../logger'
 import User from '../models/User'
+import UserModel from '../mongo/User'
 import { getUserByEmail, setPassword } from '../mongo/userMethods'
 import { validatePassword } from '../utils/passwordUtils'
 
@@ -15,6 +15,7 @@ export async function changeTempPassword(req: Request, res: Response): Promise<v
 
   if (user && validatePassword(password, user.hash, user.salt)) {
     const result = await setPassword(user.email, req.body.newPassword)
+    await UserModel.findOneAndUpdate({ username: user.username }, { lastSeen: Date.now() })
     if (result) res.status(200).json({ message: 'Password set correctly' })
     else res.status(500).json({ error: true, message: 'Internal server error' })
   } else res.status(401).json({ error: true, message: 'Invalid password' })
@@ -29,7 +30,7 @@ export async function newPassword(req: Request, res: Response): Promise<void> {
   const user = req.user as User
   const currentPass = req.body.currentPass
   const newPass = req.body.newPass
-  
+
   if (user && validatePassword(currentPass, user.hash, user.salt)) {
     const result = await setPassword(user.email, newPass)
     if (result) res.status(200).json({ message: 'Password reset correctly' })

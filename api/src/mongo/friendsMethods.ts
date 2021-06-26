@@ -66,10 +66,8 @@ export async function processFriendRequest(hasAccepted: boolean, askerUsername: 
         }
         await asker.save()
         await requested.save()
-        const u = await UserModel.findOne({ username: asker.username })
-        const u2 = await UserModel.findOne({ username: requested.username })
-        logger.info(u)
-        logger.info(u2)
+        await UserModel.findOne({ username: asker.username })
+        await UserModel.findOne({ username: requested.username })
       } else {
         throw new Error('Request not found')
       }
@@ -94,24 +92,17 @@ export async function removeFromFriendList(sourceUsername: string, deleteFriendU
     await session.withTransaction(async () => {
       const sourceUser = await UserModel.findOne({ username: sourceUsername })
       const deletedFriend = await UserModel.findOne({ username: deleteFriendUsername })
-
-      logger.info(sourceUser)
-      logger.info(deletedFriend)
       if (sourceUser && deletedFriend &&
         sourceUser.friends.includes(deletedFriend.username) &&
         deletedFriend.friends.includes(sourceUser.username)) {
-
         sourceUser.friends = sourceUser.friends.filter(data => data !== deletedFriend.username)
         deletedFriend.friends = deletedFriend.friends.filter(data => data !== sourceUser.username)
-        logger.info(sourceUser)
-        logger.info(deletedFriend)
         await sourceUser.save()
         await deletedFriend.save()
       } else {
         throw new Error('Friend not found')
       }
     })
-
     session.endSession()
     return true
 

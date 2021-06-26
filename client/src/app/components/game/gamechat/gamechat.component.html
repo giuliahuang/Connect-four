@@ -1,7 +1,8 @@
 <div class="chat-container">
   <div class="chat-messages">
     <span class="message" *ngFor="let item of messageArray">
-      <span [ngStyle]="{'color': item.user === username ? playerColor : otherPlayerColor}" class="username">{{item.user}}</span>:
+      <span [ngStyle]="{'color': item.user === username ? playerColor : otherPlayerColor}"
+        class="username">{{item.user}}</span>:
       {{item.message}}
     </span>
   </div>
