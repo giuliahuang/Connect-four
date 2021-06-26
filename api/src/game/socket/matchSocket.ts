@@ -1,3 +1,4 @@
+import { userInfo } from 'os'
 import { Server as IOServer, Socket } from 'socket.io'
 import { promisify } from 'util'
 import logger from '../../logger'
@@ -67,8 +68,10 @@ function getGameBoard(match: Match, socket: Socket) {
 function joinChat(socket: Socket, match: Match) {
   if ((socket.request['user']._id).toString() === (match.player1.id).toString() || (socket.request['user']._id).toString() === (match.player2.id).toString())
     socket.join(`${match.uuid}.player`)
-  else
+  else{
+    logger.info("joined observable chat")
     socket.join(`${match.uuid}.observers`)
+  }
 }
 
 /**
@@ -102,6 +105,7 @@ function chat(message: string, socket: Socket, match: Match) {
 function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer) {
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
+  logger.info(moveResult.accepted)
   if (moveResult.accepted) {
     io.emit('dot', { column, player: user.username })
     if (moveResult.matchResult) {

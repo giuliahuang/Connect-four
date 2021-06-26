@@ -50,6 +50,7 @@ import { FriendListComponent } from './components/global/friends/friend-list/fri
 import { FriendComponent } from './components/global/friends/friend/friend.component'
 import { ChatComponent } from './components/global/friends/chat/chat.component'
 import { AdminComponent } from './components/admin/admin.component'
+import { InviteDialogComponent } from './components/game/invite-dialog/invite-dialog.component'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
@@ -78,6 +79,7 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     AdminComponent,
     ChangePasswordComponent,
     NotFoundComponent,
+    InviteDialogComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
@@ -107,6 +109,7 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     MatPaginatorModule,
     MatSortModule,
     MatIconModule,
+    MatSnackBarModule,
     ReactiveFormsModule
   ],
   providers: [

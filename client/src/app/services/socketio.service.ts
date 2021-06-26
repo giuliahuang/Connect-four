@@ -67,6 +67,7 @@ export class SocketioService {
   receiveStartedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('startedPlaying', (message) => {
+        console.log("有好友开始了游戏")
         observer.next(message)
       })
     })
@@ -75,13 +76,26 @@ export class SocketioService {
   receiveStoppedPlaying() {
     return new Observable((observer) => {
       this.socket?.on('stoppedPlaying', (message) => {
+        
+        console.log("有好友结束了游戏")
         observer.next(message)
       })
     })
   }
 
   sendInviteRequest(username: string) {
+    console.log("invite request sent")
     this.socket?.emit('invite', username)
+  }
+
+  receiveInviteRequest(){
+    return new Observable((observer)=>{
+      this.socket?.on('invite',(message)=>{
+        console.log("Invite request received")
+        observer.next(message)
+        observer.unsubscribe()
+      })
+    })
   }
 
   sendInviteResponse(hasAccepted: boolean, username: string) {
@@ -89,7 +103,18 @@ export class SocketioService {
       hasAccepted: hasAccepted,
       inviterUsername: username,
     }
+    console.log("inviteResponse emitted")
     this.socket?.emit('inviteResponse', message)
+  }
+
+  receiveInviteResponse(){
+    return new Observable((observer)=>{
+      this.socket?.on('inviteResponse',(message)=>{
+        observer.next(message);
+        observer.unsubscribe();
+      })
+    })
+
   }
 
   getOnlineFriend() {
