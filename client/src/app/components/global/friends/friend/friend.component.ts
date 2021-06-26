@@ -28,5 +28,4 @@ export class FriendComponent implements OnInit {
     if (this.friend.port)
       this.gameSocketService.connectMatch(this.friend.port)
   }
-
 }

@@ -1,4 +1,4 @@
-<div class="social-container">
+<div *ngIf="url !== '/login' && url !== '/signup'" class="social-container">
   <div id="chat-container" *ngIf="showChat">
     <app-chat [friendUsername]="chatMate" class='chat'></app-chat>
   </div>

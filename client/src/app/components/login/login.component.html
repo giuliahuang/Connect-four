@@ -1,20 +1,18 @@
-<div fxLayoutAlign="center center" fxFlexFill>
-  <mat-card fxFlex="50">
-      <mat-toolbar color="primary">Login Page</mat-toolbar>
-      <form fxLayoutAlign="stretch" fxLayout="column">
-          <mat-form-field>
-              <input matInput type="email" #mailtxt id="inputEmail" placeholder="Email address" #email="ngModel" name="email" [(ngModel)]="user.email" required autofocus>
-          </mat-form-field>
+<mat-card class="container">
+    <mat-toolbar color="primary">Login Page</mat-toolbar>
+    <form class="form">
+        <mat-form-field class="field">
+            <input matInput type="email" #mailtxt id="inputEmail" placeholder="Email address" #email="ngModel"
+                name="email" [(ngModel)]="user.email" required autofocus>
+        </mat-form-field>
 
-          <mat-form-field>
-              <input matInput type="password" #password="ngModel" required name="password" [(ngModel)]="user.password" #passwdtxt id="inputPassword" placeholder="Password" required>
-          </mat-form-field>
+        <mat-form-field class="field">
+            <input matInput type="password" #password="ngModel" required name="password" [(ngModel)]="user.password"
+                #passwdtxt id="inputPassword" placeholder="Password" required>
+        </mat-form-field>
 
-          <mat-checkbox #checkr value="remember-me">Remember me</mat-checkbox>
-
-          <!--<button mat-raised-button (click)="login( mailtxt.value, passwdtxt.value, checkr.checked );">Sign in</button>-->
-          <button mat-raised-button (click)="login();">Sign in</button>
-          <p><a routerLink="/signup">Sign-up new user</a></p>
-      </form>
-  </mat-card>
-</div>
+        <!--<button mat-raised-button (click)="login( mailtxt.value, passwdtxt.value, checkr.checked );">Sign in</button>-->
+        <button mat-raised-button (click)="login();">Sign in</button>
+        <button mat-raised-button routerLink="/signup">Sign up</button>
+    </form>
+</mat-card>

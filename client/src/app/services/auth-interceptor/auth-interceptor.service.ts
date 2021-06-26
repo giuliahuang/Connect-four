@@ -10,7 +10,7 @@ export class AuthInterceptorService implements HttpInterceptor {
   constructor(private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const idToken = localStorage.getItem('postmessages_token')
+    const idToken = localStorage.getItem('jwt')
 
     if (idToken) {
       const cloned = req.clone({
@@ -19,6 +19,7 @@ export class AuthInterceptorService implements HttpInterceptor {
       return next.handle(cloned).pipe(
         catchError((err) => {
           if (err && err.status === 401) {
+            localStorage.removeItem('jwt')
             this.router.navigate(['/login'])
           } else if (err && err.status === 404) {
             this.router.navigate(['/not-found'])

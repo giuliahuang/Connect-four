@@ -1,4 +1,4 @@
-import Message from './../../../interfaces/Message'
+import Message from '../../../../interfaces/Message'
 import { Component, Input, OnInit } from '@angular/core'
 import { SocketioService } from 'src/app/services/socketio.service'
 import { UserHttpService } from 'src/app/services/user-http.service'

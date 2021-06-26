@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, Router, Event as NavigationEvent } from '@angular/router'
 import Friend from 'src/app/interfaces/Friend'
 import { SocketioService } from 'src/app/services/socketio.service'
 
@@ -16,10 +16,22 @@ export class FriendListComponent implements OnInit {
   showChat: boolean = false
   chatMate: string = ''
 
+  url = '/home'
+  event$: any
+
   constructor(
     private socketioService: SocketioService,
-    private route: ActivatedRoute
-  ) { }
+    private route: ActivatedRoute,
+    private router: Router
+  ) { 
+    this.event$ = this.router.events.subscribe(
+      (event: NavigationEvent) => {
+        if (event instanceof NavigationEnd) {
+          this.url = event.url
+        }
+      }
+    )
+  }
 
   ngOnInit(): void {
     this.user = this.route.snapshot.data.profile
