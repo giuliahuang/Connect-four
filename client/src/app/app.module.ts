@@ -21,11 +21,6 @@ import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
 
-//Services
-import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
-import { GlobalErrorHandlerService } from './services/global-error-handler.service'
-import { UserHttpService } from './services/user-http.service'
-
 //Components
 import { AppComponent } from './app.component'
 import { NotFoundComponent } from './components/error/not-found/not-found.component'
@@ -50,15 +45,12 @@ import { FriendListComponent } from './components/global/friends/friend-list/fri
 import { FriendComponent } from './components/global/friends/friend/friend.component'
 import { ChatComponent } from './components/global/friends/chat/chat.component'
 import { AdminComponent } from './components/admin/admin.component'
+import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
 import { GlobalErrorHandlerService } from './services/global-error-handler.service'
-import { AdminComponent } from './components/admin/admin.component';
 import { UserHttpService } from './services/user-http.service';
-import { FriendListComponent } from './components/users/friend-list/friend-list.component';
-import { FriendComponent } from './components/users/friend/friend.component';
-import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
 
 @NgModule({
   declarations: [
@@ -83,7 +75,7 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     HomeComponent,
     FriendComponent,
     FriendListComponent,
-    SearchAdminComponent
+    SearchAdminComponent,
     ChatComponent
   ],
   entryComponents: [LobbyDialogComponent],
