@@ -1,8 +1,9 @@
 import { HttpClientJsonpModule, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { ErrorHandler, NgModule } from '@angular/core'
+
 // Modules
 import { FlexLayoutModule } from '@angular/flex-layout'
-import { FormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { MatButtonModule } from '@angular/material/button'
 import { MatCardModule } from '@angular/material/card'
 import { MatCheckboxModule } from '@angular/material/checkbox'
@@ -19,9 +20,14 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
+
+//Services
+import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
+import { GlobalErrorHandlerService } from './services/global-error-handler.service'
+import { UserHttpService } from './services/user-http.service'
+
 //Components
 import { AppComponent } from './app.component'
-import { NotAuthorizedComponent } from './components/error/not-authorized/not-authorized.component'
 import { NotFoundComponent } from './components/error/not-found/not-found.component'
 import { CellComponent } from './components/game/cell/cell.component'
 import { EndgameDialogComponent } from './components/game/endgame-dialog/endgame-dialog.component'
@@ -31,15 +37,19 @@ import { MatchComponent } from './components/game/match/match.component'
 import { FooterComponent } from './components/global/footer/footer.component'
 import { HeaderComponent } from './components/global/header/header.component'
 import { HomeComponent } from './components/home/home.component'
-import { ChangePasswordComponent } from './components/users/change-password/change-password.component'
-import { FileUploadComponent } from './components/users/file-upload/file-upload.component'
-import { LoginComponent } from './components/users/login/login.component'
-import { ProfileResolver } from './components/users/profile/profile-resolver'
-import { ProfileComponent } from './components/users/profile/profile.component'
-import { RankTableComponent } from './components/users/rank-table/rank-table.component'
-import { RankingComponent } from './components/users/ranking/ranking.component'
-import { SearchComponent } from './components/users/search/search.component'
-import { SignupComponent } from './components/users/signup/signup.component'
+import { ChangePasswordComponent } from './components/profile/change-password/change-password.component'
+import { FileUploadComponent } from './components/profile/file-upload/file-upload.component'
+import { LoginComponent } from './components/login/login.component'
+import { ProfileResolver } from './components/profile/profile-resolver'
+import { ProfileComponent } from './components/profile/profile.component'
+import { RankTableComponent } from './components/player-ranking/rank-table/rank-table.component'
+import { RankingComponent } from './components/player-ranking/ranking/ranking.component'
+import { SearchComponent } from './components/search/search.component'
+import { SignupComponent } from './components/signup/signup.component'
+import { FriendListComponent } from './components/global/friends/friend-list/friend-list.component'
+import { FriendComponent } from './components/global/friends/friend/friend.component'
+import { ChatComponent } from './components/global/friends/chat/chat.component'
+import { AdminComponent } from './components/admin/admin.component'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
@@ -68,13 +78,13 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     AdminComponent,
     ChangePasswordComponent,
     NotFoundComponent,
-    NotAuthorizedComponent,
     HeaderComponent,
     FooterComponent,
     HomeComponent,
     FriendComponent,
     FriendListComponent,
     SearchAdminComponent
+    ChatComponent
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -96,7 +106,8 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
-    MatIconModule
+    MatIconModule,
+    ReactiveFormsModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

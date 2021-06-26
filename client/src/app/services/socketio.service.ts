@@ -44,27 +44,13 @@ export class SocketioService {
     this.socket.emit('joinGame', 'joined on initial websocket')
   }
 
-  receiveMatchPort(token: any) {
+  receiveMatchPort() {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
-      console.log(message)
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
-      this.gs.connectMatch(
-        io('http://localhost:' + message.port, {
-          'forceNew': true,
-          extraHeaders: {
-            'x-auth-token': token
-          },
-          transportOptions: {
-            polling: {
-              extraHeaders: {
-                'x-auth-token': token
-              }
-            }
-          },
-        }))
+      this.gs.connectMatch(message.port)
     })
   }
 
@@ -115,6 +101,30 @@ export class SocketioService {
   getFriendDisconnected() {
     return new Observable<any>(observer => {
       this.socket?.on('friendDisconnected', (data) => observer.next(data))
+    })
+  }
+
+  sendMessage(message: string, destUsername: string) {
+    this.socket?.emit('dm', message, destUsername)
+  }
+
+  receiveMessage() {
+    return new Observable((observer) => {
+      this.socket?.on('dm', (message: string, username: string) => {
+        observer.next({ content: message, username })
+      })
+    })
+  }
+
+  requestMessageHistory(friendUsername: string) {
+    this.socket?.emit('history', friendUsername)
+  }
+
+  receiveMessageHistory() {
+    return new Observable<any>(observer => {
+      this.socket?.on('history', (messages) => {
+        observer.next(messages)
+      })
     })
   }
 }

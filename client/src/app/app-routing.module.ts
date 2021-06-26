@@ -3,14 +3,14 @@ import { RouterModule, Routes } from '@angular/router'
 import { NotFoundComponent } from './components/error/not-found/not-found.component'
 import { MatchComponent } from './components/game/match/match.component'
 import { HomeComponent } from './components/home/home.component'
-import { LoginComponent } from './components/users/login/login.component'
-import { ProfileResolver } from './components/users/profile/profile-resolver'
-import { RankingComponent } from './components/users/ranking/ranking.component'
-import { SearchComponent } from './components/users/search/search.component'
-import { SignupComponent } from './components/users/signup/signup.component'
+import { LoginComponent } from './components/login/login.component'
+import { ProfileResolver } from './components/profile/profile-resolver'
+import { RankingComponent } from './components/player-ranking/ranking/ranking.component'
+import { SearchComponent } from './components/search/search.component'
+import { SignupComponent } from './components/signup/signup.component'
 import { AuthGuardService } from './services/auth/auth-guard.service'
 
-import { ProfileComponent } from './components/users/profile/profile.component'
+import { ProfileComponent } from './components/profile/profile.component'
 import { AdminComponent } from './components/admin/admin.component'
 
 const routes: Routes = [
@@ -38,6 +38,7 @@ const routes: Routes = [
   },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
   { path: 'admin', component: AdminComponent },
+  { path: 'not-found', component: NotFoundComponent },
   { path: '**', component: NotFoundComponent },
 ]
 

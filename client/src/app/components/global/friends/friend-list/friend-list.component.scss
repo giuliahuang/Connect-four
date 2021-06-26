@@ -1,0 +1,27 @@
+.social-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.bigcontainer {
+  display: flex;
+  flex-flow: column;
+  width: 35vh;
+  border: solid;
+  border-radius: 10%;
+  border-width: 1px;
+}
+
+.head {
+  text-align: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.friends-container {
+  flex: 2_;
+  overflow: auto;
+  justify-content: space-between;
+}

@@ -1,0 +1,4 @@
+<div class="friend-container">
+  <span class="friend">{{friend.username}}</span><br>
+  <button matButton *ngIf="friend.port !== undefined" class="playing" (click)="spectate()">Spectate</button>
+</div>

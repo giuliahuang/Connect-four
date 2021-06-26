@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { NavigationStart, Router, Event as NavigationEvent } from '@angular/router'
+import { NavigationStart, Router, Event as NavigationEvent, NavigationEnd } from '@angular/router'
 
 @Component({
   selector: 'app-header',
@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
   constructor(private router: Router) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
-        if (event instanceof NavigationStart) {
+        if (event instanceof NavigationEnd) {
           this.selectedItem = event.url
         }
       }

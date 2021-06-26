@@ -22,17 +22,41 @@ const hsetAsync = promisify(redis.hset).bind(redis)
  */
 export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, io: IOServer, socket: Socket, port: number): void {
   joinChat(socket, match)
-  notifyStartedPlaying(p1, port)
-  notifyStartedPlaying(p2, port)
-  hsetAsync(['users', socket.id, socket.request['user'].username])
+  hsetAsync(['players', socket.id, socket.request['user'].username])
+
+  getPlayers(match, socket)
+  getGameBoard(match, socket)
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
-  socket.on('disconnecting', (reason: string) => {
+  socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
   })
+}
+
+function getPlayers(match: Match, socket: Socket) {
+  const player1 = {
+    username: match.player1.username,
+    color: match.player1Color
+  }
+  const player2 = {
+    username: match.player2.username,
+    color: match.player2Color
+  }
+  socket.emit('gamePlayers', { player1, player2 })
+}
+
+/**
+ * Emits game status to observer
+ * @param match 
+ * @param socket 
+ */
+function getGameBoard(match: Match, socket: Socket) {
+  const user = socket.request['user']
+  if (user.username !== match.player1.username && user.username !== match.player2.username)
+    socket.emit("gameStatus", JSON.parse(JSON.stringify(match.game_board)))
 }
 
 /**
@@ -82,7 +106,6 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
     io.emit('dot', { column, player: user.username })
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
-      logger.info(`Player ${socket.request['user'].username} has won the match!`)
         ; (p1.ws as Socket).broadcast.emit('stoppedPlaying', p1.player.username)
         ; (p2.ws as Socket).broadcast.emit('stoppedPlaying', p2.player.username)
 
@@ -103,8 +126,7 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
  */
 async function disconnect(reason: string, socket: Socket, player1: PlayerWithWS, player2: PlayerWithWS, io: IOServer) {
   try {
-    const username = await hgetAsync('users', socket.id)
-    logger.info(username)
+    const username = await hgetAsync('players', socket.id)
     if (username === player1.player.username) {
       endMatch({ winner: player2.player.username, loser: username })
       io.emit('playerDisconnected', username, reason)
@@ -128,13 +150,6 @@ function closeServer(io: IOServer, p1: PlayerWithWS, p2: PlayerWithWS) {
   notifyStoppedPlaying(p2)
   io.disconnectSockets()
   io.close()
-}
-
-async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
-  const user = await getUserById(p.player.id)
-  user?.friends.forEach(friend => {
-    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
-  })
 }
 
 async function notifyStoppedPlaying(p: PlayerWithWS) {

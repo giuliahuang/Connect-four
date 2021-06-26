@@ -1,4 +1,4 @@
-import { Socket, Server } from "socket.io"
+import { Socket } from "socket.io"
 import { promisify } from 'util'
 import logger from "../../logger"
 import Message from "../../models/Message"
@@ -25,7 +25,7 @@ const hexistsAsync = promisify(redis.hexists).bind(redis)
  */
 export function sendMessage(user: User, message: string, destUsername: string, socket: Socket): void {
   if (user.friends.includes(destUsername)) {
-    socket.to(destUsername).emit('dm', message)
+    socket.to(destUsername).emit('dm', message, user.username)
     dm(message, user.username, destUsername)
   } else
     socket.to(user.username).emit('dm', `${destUsername} is not a valid friend`)
@@ -100,10 +100,26 @@ export async function getNewMessages(socket: Socket): Promise<Message[]> {
     const user = await UserModel.findOne({ username })
     if (user && user.lastSeen) {
       const ls = user.lastSeen
-      return await MessageModel.find({ users: user, createdAt: { "$gt": { ls } } })
+      return await MessageModel.find({ users: user.username, createdAt: { "$gt": { ls } } })
     }
   } catch (err) {
     logger.error(err)
   }
   return []
+}
+
+/**
+ * Retrieves the past 50 messages between the two users
+ * @param socket Socket instance of the client who asked for the history
+ * @param username Username of the user the client is chatting with
+ */
+export async function getMessageHistory(socket: Socket, username: string): Promise<void> {
+  try {
+    const user = socket.request['user']
+    const res = await MessageModel.find({ users: { $all: [user.username, username] } }).limit(50)
+    console.log(res)
+    socket.emit(JSON.parse(JSON.stringify(res)))
+  } catch (err) {
+    logger.prettyError(err)
+  }
 }

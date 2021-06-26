@@ -1,4 +1,5 @@
 import { Socket } from "socket.io"
+import logger from "../../logger"
 import User from "../../models/User"
 import { getUserByUsername } from "../../mongo/userMethods"
 import { gameStart } from "../gameplay/gameplay"
@@ -18,7 +19,7 @@ export async function invitePlayer(socket: Socket, playerUsername: string): Prom
   const user: User = socket.request['user']
   const invited = await getUserByUsername(playerUsername)
 
-  if (invited && user.friends.includes(invited._id)) {
+  if (invited && user.friends.includes(invited.username)) {
     const player: Player = {
       id: user._id,
       username: user.username,
@@ -34,7 +35,7 @@ export async function invitePlayer(socket: Socket, playerUsername: string): Prom
       invited: invited
     }
     inviteMap.set(user.username, invite)
-    socket.emit('invite', invited.username)
+    socket.to(invited.username).emit('invite', user.username)
 
     // if the invite is not accepted within 30 seconds it gets automatically rejected
     setTimeout(clearInvite, THIRTY_SECONDS, invite)

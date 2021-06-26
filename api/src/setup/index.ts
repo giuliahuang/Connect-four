@@ -10,9 +10,9 @@ import { setupDB } from './setupMongo'
  */
 export default async function setup(): Promise<void> {
   setupEnv()
+  await setupDB()
   passportConfig()
   const expressApp = setupExpressApp()
   const httpServer = setupHTTP(expressApp)
   setupGlobalIOServer(httpServer)
-  await setupDB()
 }

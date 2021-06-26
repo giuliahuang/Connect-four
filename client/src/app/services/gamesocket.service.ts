@@ -3,6 +3,8 @@ import { Router } from '@angular/router'
 import { Observable } from 'rxjs'
 import { Socket } from 'socket.io-client'
 import { UserHttpService } from './user-http.service'
+import { io } from 'socket.io-client'
+import { AuthenticationService } from './auth/authentication.service'
 
 @Injectable({
   providedIn: 'root'
@@ -10,19 +12,43 @@ import { UserHttpService } from './user-http.service'
 export class GamesocketService {
 
   gamesocket: Socket | undefined
+  public players: any
 
   constructor(
     private router: Router,
-    private us: UserHttpService
+    private us: UserHttpService,
+    private authenticationService: AuthenticationService
   ) { }
 
-  connectMatch(socket: Socket) {
-    this.gamesocket = socket
-    this.router.navigate(['/match'])
+  connectMatch(port: number) {
+    const token = this.authenticationService.getToken()?.replace("Bearer ", "")
+    if (token) {
+      this.gamesocket = io('http://localhost:' + port, {
+        'forceNew': true,
+        extraHeaders: {
+          'x-auth-token': token
+        },
+        transportOptions: {
+          polling: {
+            extraHeaders: {
+              'x-auth-token': token
+            }
+          }
+        },
+      })
+      this.getPlayers()
+
+    }
+  }
+
+  getPlayers() {
+    this.gamesocket?.on('gamePlayers', (message) => {
+      this.players = message
+      this.router.navigate(['/match'])
+    })
   }
 
   addDotRequest(col: number) {
-    console.log('add dot request emitted')
     this.gamesocket?.emit('insertDisc', col)
   }
 
@@ -38,7 +64,6 @@ export class GamesocketService {
   receiveGameUpdate() {
     return new Observable((observer) => {
       this.gamesocket?.on('dot', (message) => {
-        console.log("received add dot")
         observer.next(message)
       })
     })
@@ -47,15 +72,13 @@ export class GamesocketService {
   receiveEndMatch() {
     return new Observable((observer) => {
       this.gamesocket?.on('stoppedPlaying', (message) => {
-        console.log("stoppedPlaying")
-        observer.unsubscribe()
+        observer.next(message)
       })
     })
   }
 
   sendMessage(message: String) {
     this.gamesocket?.emit('message', message)
-    console.log("message emitted")
   }
 
   receiveMessage() {
@@ -69,6 +92,14 @@ export class GamesocketService {
   receiveJoinedPlayers() {
     return new Observable((observer) => {
       this.gamesocket?.on('joinGame', (message) => {
+        observer.next(message)
+      })
+    })
+  }
+
+  receiveGameStatus() {
+    return new Observable((observer) => {
+      this.gamesocket?.on('gameStatus', (message) => {
         observer.next(message)
       })
     })
