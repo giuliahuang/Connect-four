@@ -1,41 +1,52 @@
 <div class="profile">
-  <h1>Username: {{user?.username}} <br><br>
-  MMR: {{user?.mmr}}<br><br>
-  Stats:<br>
-  <ul>
-    <li>Wins: {{wins}} </li>
-    <li>Losses: {{losses}}</li>
-    <li>W/L ration: {{ratio}}</li>
-  </ul>
+  <h1>{{user?.username}}</h1> <br><br>
+  <img class="avatar" src={{this.user.avatar}} width="200" height="200" />
+  <h2>
+    MMR: {{user?.mmr}}<br><br>
+    Stats:<br>
+    <ul>
+      <li>Wins: {{wins}} </li>
+      <li>Losses: {{losses}}</li>
+      <li>W/L ration: {{ratio}}</li>
+    </ul>
+  </h2>
   <br>
   Friends:
   <ul>
-    <li *ngFor="let friend of this.friends">{{friend}}<button mat-button(click)="removeFriend(friend)">Remove</button></li>
+    <li *ngFor="let friend of this.friends">{{friend}}<button mat-button(click)="removeFriend(friend)">Remove</button>
+    </li>
   </ul>
-  <button mat-button *ngIf="this.loggedUsername !== this.user.username && !this.user.friends.includes(this.loggedUsername)" class="button"
-    (click)="addFriend()">Send friend request</button>
-  <div *ngIf="this.loggedUsername === this.user.username" class="Friend requests">
-    <br>
-    Friend requests:
-    <ul>
-      <li *ngFor="let username of this.user.receivedFriendReqs">{{username}}<button mat-button
-          (click)="acceptFriend(username)">Accept</button><button mat-button (click)="refuseFriend(username)">Refuse</button></li>
-    </ul>
-  </div>
-  </h1>
-  <img class="avatar" src={{this.user.avatar}} width="200" height="200" />
-</div>
+  <button mat-button
+    *ngIf="this.loggedUsername !== this.user.username && !this.user.friends.includes(this.loggedUsername)"
+    class="button" (click)="addFriend()">Send friend request</button>
 
-<file-upload requiredFileType="image/png"></file-upload>
-<app-change-password></app-change-password>
-<br>
-<br>
-<br>
-<br>
-<h2><p><a *ngIf="this.isAdmin == true || this.isMod == true" routerLink="/admin">Admin page</a></p></h2>
-<br>
-<br>
-<br>
-<br>
-<br>
-<button mat-raised-button color="warn" (click)="removeSelf()">Delete account</button>
+
+  <div *ngIf="this.loggedUsername === this.user.username">
+    <div class="Friend requests">
+      <br>
+      Friend requests:
+      <ul>
+        <li *ngFor="let username of this.user.receivedFriendReqs">{{username}}<button mat-button
+            (click)="acceptFriend(username)">Accept</button><button mat-button
+            (click)="refuseFriend(username)">Refuse</button></li>
+      </ul>
+    </div>
+
+
+    <file-upload requiredFileType="image/png"></file-upload>
+    <app-change-password></app-change-password>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h2>
+      <p><a *ngIf="this.isAdmin == true || this.isMod == true" routerLink="/admin">Admin page</a></p>
+    </h2>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button mat-raised-button color="warn" (click)="removeSelf()">Delete account</button>
+  </div>
+</div>
