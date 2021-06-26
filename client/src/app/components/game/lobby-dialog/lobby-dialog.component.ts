@@ -25,7 +25,6 @@ export class LobbyDialogComponent implements OnInit {
   }
 
   closeDialog(){
-    console.log("close dialog")
     this.dialogRef.close()
   }
 

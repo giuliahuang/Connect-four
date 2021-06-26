@@ -128,6 +128,8 @@ export class MatchComponent implements OnInit {
   receiveWinnerMessage() {
     this.gamesocketService.gamesocket?.on('winner', (message) => {
       this.openDialog(message)
+      this.gamesocketService.gamesocket?.disconnect()
+      
     })
   }
 

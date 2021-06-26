@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { InviteDialogComponent } from '../components/game-components/invite-dialog/invite-dialog.component';
-import { LobbyDialogComponent } from '../components/game-components/lobby-dialog/lobby-dialog.component';
+import { InviteDialogComponent } from '../components/game/invite-dialog/invite-dialog.component';
+import { LobbyDialogComponent } from '../components/game/lobby-dialog/lobby-dialog.component';
 
 @Injectable({
   providedIn: 'root'
