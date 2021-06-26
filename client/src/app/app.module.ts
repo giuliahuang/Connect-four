@@ -24,7 +24,7 @@ import { SimpleNotificationsModule } from 'angular2-notifications'
 import { MatListModule } from '@angular/material/list'
 
 //Services
-import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
+import { ResponseInterceptor } from './services/auth/response-interceptor/response-interceptor.service'
 import { GlobalErrorHandlerService } from './services/global-error-handler.service'
 import { UserHttpService } from './services/user-http.service'
 
@@ -53,7 +53,8 @@ import { FriendComponent } from './components/global/friends/friend/friend.compo
 import { ChatComponent } from './components/global/friends/chat/chat.component'
 import { AdminComponent } from './components/admin/admin.component'
 import { InviteDialogComponent } from './components/game/invite-dialog/invite-dialog.component'
-import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component'
+import { SearchAdminComponent } from './components/admin/search-admin/search-admin.component';
+import { ModNewPasswordComponent } from './components/admin/mod-new-password/mod-new-password.component'
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     FriendComponent,
     FriendListComponent,
     SearchAdminComponent,
-    ChatComponent
+    ChatComponent,
+    ModNewPasswordComponent
   ],
   entryComponents: [LobbyDialogComponent],
   imports: [
@@ -111,7 +113,7 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ResponseInterceptor, multi: true },
     { provide: ErrorHandler, useClass: GlobalErrorHandlerService },
     BrowserAnimationsModule,
     MatSnackBarModule,

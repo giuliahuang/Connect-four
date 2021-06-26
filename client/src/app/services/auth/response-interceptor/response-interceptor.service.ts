@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 
 @Injectable()
-export class AuthInterceptorService implements HttpInterceptor {
+export class ResponseInterceptor implements HttpInterceptor {
 
   constructor(private router: Router) { }
 
@@ -28,6 +28,14 @@ export class AuthInterceptorService implements HttpInterceptor {
         })
       )
     }
-    return next.handle(req)
+    return next.handle(req).pipe(
+      catchError((err) => {
+        if (err.status === 300) {
+          console.log('memes')
+          this.router.navigate(['/modnewpass'])
+        }
+        return next.handle(req)
+      })
+    )
   }
 }

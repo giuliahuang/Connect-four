@@ -27,4 +27,10 @@ export class SudoService {
         return this.httpClient.delete(this.url+"/users/"+username)
     }
 
+    changePasswordMod(email: string, tempPass: string, newPass: string) {
+        const data = { 'email': email, 'password': tempPass, 'newPassword': newPass }
+        const config = { headers: new HttpHeaders().set('Content-Type', 'application/json') }
+        return this.httpClient.post(`http://localhost:5000/login/first`, data, config)
+    }
+
 }

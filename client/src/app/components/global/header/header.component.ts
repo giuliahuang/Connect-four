@@ -11,6 +11,11 @@ export class HeaderComponent implements OnInit {
   @Output() public sidenavToggle = new EventEmitter();
   selectedItem = '/home'
   event$: any
+  whitelist: string[] = [
+    '/home',
+    '/profile',
+    '/match'
+  ]
 
   constructor(private router: Router,
     private authService: AuthenticationService

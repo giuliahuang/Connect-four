@@ -12,6 +12,7 @@ import { AuthGuardService } from './services/auth/auth-guard.service'
 
 import { ProfileComponent } from './components/profile/profile.component'
 import { AdminComponent } from './components/admin/admin.component'
+import { ModNewPasswordComponent } from './components/admin/mod-new-password/mod-new-password.component'
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -38,6 +39,7 @@ const routes: Routes = [
   },
   { path: 'search', component: SearchComponent, canActivate: [AuthGuardService] },
   { path: 'admin', component: AdminComponent },
+  { path: 'modnewpass', component: ModNewPasswordComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', component: NotFoundComponent },
 ]
