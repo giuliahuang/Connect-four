@@ -30,7 +30,7 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
-  socket.on('disconnecting', (reason: string) => {
+  socket.on('disconnect', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
   })
 }

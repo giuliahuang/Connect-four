@@ -47,8 +47,8 @@ export class GamesocketService {
   receiveEndMatch() {
     return new Observable((observer) => {
       this.gamesocket?.on('stoppedPlaying', (message) => {
-        console.log("stoppedPlaying")
-        observer.unsubscribe()
+        // console.log("stoppedPlaying")
+        // observer.unsubscribe()
       })
     })
   }
