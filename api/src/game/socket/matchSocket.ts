@@ -10,6 +10,7 @@ import PlayerWithWS from '../matchmaking/UnmatchedPlayer'
 
 // Promisifed Redis hashmap get method
 const hgetAsync = promisify(redis.hget).bind(redis)
+const hsetAsync = promisify(redis.hset).bind(redis)
 
 /**
  * Handles events for the newly created match Socket.io server
@@ -23,12 +24,13 @@ export function matchCallback(match: Match, p1: PlayerWithWS, p2: PlayerWithWS, 
   joinChat(socket, match)
   notifyStartedPlaying(p1, port)
   notifyStartedPlaying(p2, port)
+  hsetAsync(['users', socket.id, socket.request['user'].username])
 
   socket.on('message', (message: string) => { chat(message, socket, match) })
 
   socket.on('insertDisc', (column: number) => { play(column, socket, match, p1, p2, io) })
 
-  socket.on('disconnect', (reason: string) => {
+  socket.on('disconnecting', (reason: string) => {
     disconnect(reason, socket, p1, p2, io)
   })
 }
@@ -77,7 +79,7 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
   const user: User = socket.request['user']
   const moveResult = match.addDot(column, user._id)
   if (moveResult.accepted) {
-    io.emit('dot', {column, player: user.username})
+    io.emit('dot', { column, player: user.username })
     if (moveResult.matchResult) {
       io.emit('winner', `Player ${socket.request['user'].username} has won the match!`)
       logger.info(`Player ${socket.request['user'].username} has won the match!`)
@@ -102,6 +104,7 @@ function play(column: number, socket: Socket, match: Match, p1: PlayerWithWS, p2
 async function disconnect(reason: string, socket: Socket, player1: PlayerWithWS, player2: PlayerWithWS, io: IOServer) {
   try {
     const username = await hgetAsync('users', socket.id)
+    logger.info(username)
     if (username === player1.player.username) {
       endMatch({ winner: player2.player.username, loser: username })
       io.emit('playerDisconnected', username, reason)

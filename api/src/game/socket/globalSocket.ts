@@ -46,7 +46,7 @@ export function globalCallback(io: IOServer, socket: Socket): void {
  * @param socket Socket client of the user who just connected
  */
 async function clientInit(socket: Socket) {
-  socket.join(socket.request['user.username'])
+  await socket.join(socket.request['user'].username)
   await clientConnected(socket)
   const newMessages = await getNewMessages(socket)
   if (newMessages.length > 0) socket.emit('newMessages', newMessages)

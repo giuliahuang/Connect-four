@@ -105,4 +105,16 @@ export class SocketioService {
     }
     this.socket?.emit('inviteResponse', message)
   }
+
+  getOnlineFriend() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendConnected', (data) => observer.next(data))
+    })
+  }
+
+  getFriendDisconnected() {
+    return new Observable<any>(observer => {
+      this.socket?.on('friendDisconnected', (data) => observer.next(data))
+    })
+  }
 }
