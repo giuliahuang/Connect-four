@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io'
 import logger from '../../logger/'
+import { getUserById } from '../../mongo/userMethods'
 import { createIOServer } from '../../setup/setupIOServer'
 import freePortFinder from '../../utils/freePortFinder'
 import PlayerWithWS from '../matchmaking/UnmatchedPlayer'
@@ -40,7 +41,10 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
         ; (p1.ws as Socket).emit('matched', { port, first: false, color: color2, otherPlayer: p1.player.username })
     }
 
-    const match = new Match(player1, player2)
+    notifyStartedPlaying(p1, port)
+    notifyStartedPlaying(p2, port)
+
+    const match = new Match(player1, color1, player2, color2)
     logger.info(`Started a new match between ${player1.username} and ${player2.username}`)
     io.on('connection', socket => matchCallback(match, p1, p2, io, socket, port))
   } else {
@@ -48,4 +52,11 @@ export async function gameStart(p1: PlayerWithWS, p2: PlayerWithWS): Promise<voi
       ; (p1.ws as Socket).emit('notMatched', 'An error occured while the match was starting')
       ; (p2.ws as Socket).emit('notMatched', 'An error occured while the match was starting')
   }
+}
+
+async function notifyStartedPlaying(p: PlayerWithWS, port: number) {
+  const user = await getUserById(p.player.id)
+  user?.friends.forEach(friend => {
+    ; (p.ws as Socket).to(friend).emit('startedPlaying', { username: user.username, port })
+  })
 }

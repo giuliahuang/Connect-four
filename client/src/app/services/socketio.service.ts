@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { io, Socket } from 'socket.io-client'
 import { environment } from 'src/environments/environment'
-import Message from '../interfaces/Message'
 import { AuthenticationService } from './auth/authentication.service'
 import { GamesocketService } from './gamesocket.service'
 
@@ -45,26 +44,13 @@ export class SocketioService {
     this.socket.emit('joinGame', 'joined on initial websocket')
   }
 
-  receiveMatchPort(token: any) {
+  receiveMatchPort() {
     console.log('waiting for port')
     this.socket?.on('matched', (message: any) => {
       this.isFirst = message.first
       this.color = message.color
       this.otherPlayer = message.otherPlayer
-      this.gs.connectMatch(
-        io('http://localhost:' + message.port, {
-          'forceNew': true,
-          extraHeaders: {
-            'x-auth-token': token
-          },
-          transportOptions: {
-            polling: {
-              extraHeaders: {
-                'x-auth-token': token
-              }
-            }
-          },
-        }))
+      this.gs.connectMatch(message.port)
     })
   }
 
