@@ -93,7 +93,6 @@ export class SocketioService {
       this.socket?.on('invite', (message) => {
         console.log("Invite request received")
         observer.next(message)
-        observer.unsubscribe()
       })
     })
   }
@@ -111,7 +110,6 @@ export class SocketioService {
     return new Observable((observer) => {
       this.socket?.on('inviteResponse', (message) => {
         observer.next(message)
-        observer.unsubscribe()
       })
     })
 

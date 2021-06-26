@@ -3,12 +3,9 @@
     <app-chat [friendUsername]="chatMate" class='chat'></app-chat>
   </div>
   <div class="bigcontainer">
-    <span class="head">
-      <h2>Friends!</h2>
-    </span>
-    <div class="spacer"></div>
-    <div class="friends-container">
-      <app-friend *ngFor="let friend of onlineFriends" [friend]="friend" (click)="openChat(friend.username)"></app-friend>
-    </div>
+    <mat-list>
+      <mat-list-item>Online friends</mat-list-item>
+      <app-friend mat-list-item *ngFor="let friend of onlineFriends" [friend]="friend" (chatEvent)="chatEvent($event)"></app-friend>
+    </mat-list>
   </div>
 </div>

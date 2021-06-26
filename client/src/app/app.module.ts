@@ -20,6 +20,7 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { AppRoutingModule } from './app-routing.module'
+import { MatListModule } from '@angular/material/list'
 
 //Services
 import { AuthInterceptorService } from './services/auth-interceptor/auth-interceptor.service'
@@ -44,7 +45,7 @@ import { ProfileResolver } from './components/profile/profile-resolver'
 import { ProfileComponent } from './components/profile/profile.component'
 import { RankTableComponent } from './components/player-ranking/rank-table/rank-table.component'
 import { RankingComponent } from './components/player-ranking/ranking/ranking.component'
-import { SearchComponent } from './components/search/search.component'
+import { SearchComponent } from './components/global/header/search/search.component'
 import { SignupComponent } from './components/signup/signup.component'
 import { FriendListComponent } from './components/global/friends/friend-list/friend-list.component'
 import { FriendComponent } from './components/global/friends/friend/friend.component'
@@ -102,7 +103,8 @@ import { SearchAdminComponent } from './components/admin/search-admin/search-adm
     MatSortModule,
     MatIconModule,
     MatSnackBarModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatListModule
   ],
   providers: [
     { provide: UserHttpService, useClass: UserHttpService },

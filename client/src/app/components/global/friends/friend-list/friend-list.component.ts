@@ -23,7 +23,7 @@ export class FriendListComponent implements OnInit {
     private socketioService: SocketioService,
     private route: ActivatedRoute,
     private router: Router
-  ) { 
+  ) {
     this.event$ = this.router.events.subscribe(
       (event: NavigationEvent) => {
         if (event instanceof NavigationEnd) {
@@ -43,16 +43,6 @@ export class FriendListComponent implements OnInit {
     })
     this.receiveStartedPlaying()
     this.receiveStoppedPlaying()
-  }
-
-  sendInviteRequest(username: string) {
-    this.socketioService.sendInviteRequest(username)
-  }
-
-  receiveInviter() {
-    this.socketioService.socket?.on('invite', username => {
-      this.inviterUsername = username
-    })
   }
 
   sendInviteResponse() {
@@ -78,11 +68,6 @@ export class FriendListComponent implements OnInit {
     this.socketioService.receiveStartedPlaying().subscribe((message: any) => {
       this.startedPlaying(message)
     })
-  }
-
-  openChat(friend: string) {
-    this.showChat = !this.showChat
-    this.chatMate = friend
   }
 
   isOnline(checkFriend: string) {
@@ -117,6 +102,16 @@ export class FriendListComponent implements OnInit {
         this.onlineFriends = this.onlineFriends.splice(i, 1)
         return
       }
+    }
+  }
+
+  chatEvent(username: any) {
+    if (username === this.chatMate) {
+      this.showChat = false
+      this.chatMate = ''
+    } else {
+      this.chatMate = username
+      this.showChat = true
     }
   }
 }

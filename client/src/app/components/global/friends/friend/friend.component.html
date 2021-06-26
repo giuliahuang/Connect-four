@@ -1,4 +1,10 @@
-<div class="friend-container">
-  <span class="friend">{{friend.username}}</span><br>
-  <button matButton *ngIf="friend.port !== undefined" class="playing" (click)="spectate()">Spectate</button>
-</div>
+<mat-card>
+  <mat-card-title>
+    <span class="friend" (click)="openChat()">{{friend.username}} </span>
+  </mat-card-title>
+  <mat-card-actions>
+    <button mat-flat-button color="primary" *ngIf="friend.port !== undefined" (click)="spectate()">Spectate</button>
+    <button mat-flat-button color="primary" *ngIf="friend.port === undefined" (click)="inviteToPlay()">Invite to play</button>
+  </mat-card-actions>
+  
+</mat-card>

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core'
-import { NavigationStart, Router, Event as NavigationEvent, NavigationEnd } from '@angular/router'
+import { Component, EventEmitter, OnInit, Output } from '@angular/core'
+import { Event as NavigationEvent, NavigationEnd, Router } from '@angular/router'
 
 @Component({
   selector: 'app-header',
@@ -7,6 +7,7 @@ import { NavigationStart, Router, Event as NavigationEvent, NavigationEnd } from
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  @Output() public sidenavToggle = new EventEmitter();
   selectedItem = '/home'
   event$: any
 
