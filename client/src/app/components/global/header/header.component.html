@@ -1,18 +1,25 @@
-<mat-toolbar color="primary">
-  <div fxFlex fxLayout fxLayoutAlign="start" fxHide.xs>
-    <ul fxLayout fxLayoutGap="25px" class="navigation-items">
-      <li>
-        <a [ngClass]="{'active': selectedItem === '/home' || selectedItem === '/'}" [routerLink]="['/home/']">Home</a>
-      </li>
-      <li>
-        <a [ngClass]="{'active': selectedItem === '/ranking'}" routerLink="/ranking">Ranking</a>
-      </li>
-      <li>
-        <a [ngClass]="{'active': selectedItem === '/profile'}" [routerLink]="['/profile/']">Profile</a>
-      </li>
-    </ul>
-  </div>
-  <div fxFlex fxLayout fxLayoutAlign="end" fxHide.xs>
-    <app-search></app-search>
-  </div>
-</mat-toolbar>
+<header *ngIf="selectedItem !== '/login' && selectedItem !== '/signup'">
+  <mat-toolbar color="primary">
+    <div fxFlex fxLayout fxLayoutAlign="start" fxHide.xs>
+      <ul fxLayout fxLayoutGap="25px" class="navigation-items">
+        <li>
+          <a [ngClass]="{'active': selectedItem === '/home' || selectedItem === '/'}" [routerLink]="['/home/']">Home</a>
+        </li>
+        <li>
+          <a [ngClass]="{'active': selectedItem === '/ranking'}" routerLink="/ranking">Ranking</a>
+        </li>
+        <li>
+          <a [ngClass]="{'active': selectedItem === '/profile'}" [routerLink]="['/profile/']">Profile</a>
+        </li>
+      </ul>
+    </div>
+    <div fxFlex fxLayout fxLayoutAlign="end" fxHide.xs>
+      <ul fxLayout fxLayoutGap="25px" class="navigation-items">
+        <li>
+          <app-search></app-search>
+        </li>
+        <li><a (click)="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </mat-toolbar>
+</header>
