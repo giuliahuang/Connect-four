@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import Friend from 'src/app/interfaces/Friend'
 
 @Component({
   selector: 'app-friend',
@@ -6,8 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./friend.component.scss']
 })
 export class FriendComponent implements OnInit {
-  @Input() username: string = ''
-  @Input() isOnline: boolean = false
+  @Input() friend!: Friend
 
   constructor() { }
 

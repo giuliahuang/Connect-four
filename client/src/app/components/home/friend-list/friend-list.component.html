@@ -8,7 +8,7 @@
     </span>
     <div class="spacer"></div>
     <div class="friends-container">
-      <app-friend *ngFor="let friend of onlineFriends" [username]="friend" (click)="openChat(friend)"></app-friend>
+      <app-friend *ngFor="let friend of onlineFriends" [friend]="friend" (click)="openChat(friend.username)"></app-friend>
     </div>
   </div>
 </div>
