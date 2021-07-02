@@ -1,7 +1,8 @@
 # Connect Four
 ![Kiku](https://www.unive.it/pag/fileadmin/user_upload/extra/pid/img/loghi/logo_CF_1.png)  
 [![CodeFactor](https://www.codefactor.io/repository/github/owsky/connect-four/badge)](https://www.codefactor.io/repository/github/owsky/connect-four)  
-This was the university project for the course of web development. It was required to design and develop a MEAN application that allows users to register and play the classical game of Connect Four.
+This was the university project for the course of web development. It was required to design and develop a MEAN application that allows users to register and play the classical game of Connect Four.  
+The frontend is very rough, a full redesign will be performed in the near future.
 
 # System architecture
 The project was structured according to the Clean Architecture style to better redistribute code, increase readability and improve comprehension. TypeScript was used in-place of JavaScript to introduce robust type checking at compile time.</br>
