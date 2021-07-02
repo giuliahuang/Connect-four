@@ -1,5 +1,6 @@
 # Connect Four
 ![Kiku](https://www.unive.it/pag/fileadmin/user_upload/extra/pid/img/loghi/logo_CF_1.png)  
+[![CodeFactor](https://www.codefactor.io/repository/github/owsky/connect-four/badge)](https://www.codefactor.io/repository/github/owsky/connect-four)  
 This was the university project for the course of web development. It was required to design and develop a MEAN application that allows users to register and play the classical game of Connect Four.
 
 # System architecture
