@@ -1,0 +1,508 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+
+  # API name
+  title: connect-four
+
+  # Extended information about the API
+  description: |
+    connect-four is an API that serves as an HTTP server and as a game server
+    for the well known game of connect four
+
+# API server and base URL
+servers:
+  - url: http://localhost:5000
+    description: HTTP REST server
+
+# paths define the API's exposed endpoints
+paths:
+  '/health':
+    get:
+      operationId: getHealthCheck
+      summary: Retrieves the health check of the server
+      description: Retrieves the health check of the server, used to test availability
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthCheck'
+  '/login':
+    post:
+      operationId: login
+      summary: Provides user authentication
+      description: If the login information is correct, the user is issued a JWT
+      requestBody:
+        description: Login information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInformation'
+      responses:
+        '200':
+          $ref: '#/components/responses/Authorized'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+  '/login/first':
+    post:
+      operationId: firstLogin
+      summary: Lets a moderator change password
+      description: |
+        Moderators are required to change the temporary password during their first login
+      requestBody:
+        description: Login information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInformation'
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/profile/newpassword':
+    post:
+      operationId: changePassword
+      summary: Lets a user change their password
+      description: By providing the old password and the new one the user is allowed to change it
+      requestBody:
+        description: Old and new password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPass:
+                  type: string
+                newPass:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/schemas/GenericError'
+        '500':
+          $ref: '#/components/schemas/GenericError'
+  '/signup':
+    post:
+      operationId: signup
+      summary: Lets a user register an account
+      description: |
+        By providing a unique set of username and email, and a password the user is allowed to signup
+      requestBody:
+        description: Signup information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupInformation'
+      responses:
+        '200':
+          $ref: '#/components/responses/Authorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/profile':
+    get:
+      operationId: getProfile
+      summary: Retrieves the user's profile
+      description: Lets a logged user retrieve their own profile's information
+      responses:
+        '200':
+          $ref: '#/components/responses/UserProfile'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+    delete:
+      operationId: deleteProfile
+      summary: Deletes the user profile
+      description: Lets a user remove their own information from the database
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/schemas/GenericError'
+  '/auth/profile/friends':
+    get:
+      operationId: getFriends
+      summary: Retrieves user friends
+      description: Lets a logged user retrieve their own friends list
+      responses:
+        '200':
+          $ref: '#/components/responses/Friends'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+  '/auth/profile/avatar':
+    put:
+      operationId: uploadAvatar
+      summary: Sets user avatar
+      description: Lets a user upload an avatar for their profile
+      requestBody:
+        description: New avatar
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/profile/user/{username}':
+    get:
+      operationId: getFriendProfile
+      summary: Retrives a friend's profile
+      description: Lets a user retrieve a friend's profile information. Staff members can retrieve every profile
+      parameters:
+        - $ref: '#/components/parameters/username'
+      responses:
+        '200':
+          $ref: '#/components/responses/FriendProfile'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/friends':
+    post:
+      operationId: addFriend
+      summary: Sends a friend request
+      description: Sends a friend request to the specified user
+      requestBody:
+        description: Username of the profile who's to be added to the friends list
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestedUsername:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/friends/:username':
+    delete:
+      operationId: deleteFriend
+      summary: Deletes a friend
+      description: Removes a friends from the user's friend list
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/friends/friendrequests':
+    get:
+      operationId: getFriendRequests
+      summary: Retrieves friend requests
+      description: Retrives all received friend requests
+      responses:
+        '200':
+          $ref: '#/components/responses/FriendRequests'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+    post:
+      operationId: replyFriendRequest
+      summary: Sends a reply to a received friend request
+      description: Allows a user to decide whether to accept or deny a friend request
+      requestBody:
+        description: Information needed to process friend request response
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hasAccepted:
+                  type: boolean
+                askerUsername:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+  '/ranking':
+    get:
+      operationId: getRanking
+      summary: Retrieves ranking
+      description: Retrieves an array of the best players
+      responses:
+        '200':
+          $ref: '#/components/responses/Players'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/sudo/mods':
+    get:
+      operationId: getMods
+      summary: Get list of mods
+      description: Retrieves a list contaning all the mods' profiles
+      responses:
+        '200':
+          $ref: '#/components/responses/Moderators'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+    put:
+      operationId: createMod
+      summary: Create a new mod
+      description: Creates a new mod with the provided user information
+      requestBody:
+        description: Information needed to create a new mod profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupInformation'
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/sudo/users/{username}':
+    delete:
+      operationId: deleteUser
+      summary: Deletes a user from DB
+      description: Deletes the user profile associated to the username passed as a parameter
+      parameters:
+        - $ref: '#/components/parameters/username'
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/NotAuthorized'
+        '500':
+          $ref: '#/components/responses/GenericErrorResponse'
+  '/auth/search':
+    get:
+      operationId: searchProfile
+      summary: Tries to retrieve a profile
+      description: If the provided username is associated to a profile, it is relayed to the user
+      parameters:
+        - in: query
+          name: username
+          schema:
+            $ref: '#/components/parameters/username'
+      responses:
+        '200':
+          $ref: '#/components/responses/GenericSuccessResponse'
+        '404':
+          $ref: '#/components/responses/GenericErrorResponse'
+
+components:
+  responses:
+    GenericErrorResponse:
+      description: An error occurred
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericError'
+    GenericSuccessResponse:
+      description: All went fine
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericSuccess'
+    HealthCheck:
+      description: OK, server is up and running
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+    Authorized:
+      description: User has been authorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              expiresIn:
+                type: string
+    NotAuthorized:
+      description: User has not been authorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/GenericError'
+              - $ref: '#/components/schemas/ChangePasswordNeeded'
+    UserProfile:
+      description: Logged user's profile
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserProfile'
+    Moderators:
+      description: List of moderators' profiles
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserProfile'
+    FriendProfile:
+      description: Logged user's profile
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              mmr:
+                type: number
+              friends:
+                type: array
+                items:
+                  type: string
+              avatar:
+                type: string
+              matchesPlayed:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Match'
+    FriendRequests:
+      description: Array of usernames associated to the profiles who sent a friend request to the user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              receivedFriendReqs:
+                type: array
+                items:
+                  type: string
+    Players:
+      description: Array of players
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Player'
+    Friends:
+      description: Array of strings
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+
+  schemas:
+    GenericError:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
+    GenericSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+    ChangePasswordNeeded:
+      type: object
+      properties:
+        error:
+          type: boolean
+        message:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+    Match:
+      type: object
+      properties:
+        winner:
+          type: string
+        loser:
+          type: string
+    Player:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        mmr:
+          type: number
+    UserProfile:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        mmr:
+          type: number
+        friends:
+          type: array
+          items:
+            type: string
+        sentFriendReqs:
+          type: array
+          items:
+            type: string
+        receivedFriendReqs:
+          type: array
+          items:
+            type: string
+        avatar:
+          type: string
+        matchesPlayed:
+          type: array
+          items:
+            $ref: '#/components/schemas/Match'
+    LoginInformation:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    SignupInformation:
+      type: object
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+    NewPassword:
+      type: object
+      properties:
+        password:
+          type: string
+
+  parameters:
+    username:
+      name: username
+      in: path
+      description: Username of the requested profile
+      required: true
+      schema:
+        type: string
